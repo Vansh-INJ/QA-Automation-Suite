@@ -1,13 +1,138 @@
 from playwright.sync_api import expect
 from playwright.sync_api import TimeoutError
-
+from datetime import datetime, timedelta
+import os
+from utils.helpers import RUN_FOLDER
 from locators.onboarding_locators import (
     OnboardingLocators
 )
 
+import os
+
+from utils.run_manager import (
+    get_run_folder
+)
+
+RUN_FOLDER = get_run_folder()
+
 from pages.base_page import BasePage
 
 class OnboardingPage(BasePage):
+    def get_next_hierarchy_index(self):
+
+        counter_file = os.path.join(
+            RUN_FOLDER,
+            "hierarchy_counter.txt"
+        )
+
+        if not os.path.exists(counter_file):
+
+            with open(counter_file, "w") as f:
+                f.write("0")
+
+        with open(counter_file, "r") as f:
+
+            current = int(
+                f.read().strip()
+            )
+
+        with open(counter_file, "w") as f:
+
+            f.write(
+                str(current + 1)
+            )
+
+        return current
+
+    def select_hierarchy_level(
+        self,
+        option_text
+    ):
+        print(
+            f"\n[HIERARCHY] Selecting: {option_text}"
+        )
+
+        dropdown = self.page.locator(
+            "div:has(label:text('Hierarchy Level')) button[role='combobox']"
+        )
+
+        dropdown.click()
+
+        self.page.wait_for_selector(
+            "[role='option']",
+            timeout=10000
+        )
+
+        option = self.page.locator(
+            "[role='option']"
+        ).filter(
+            has_text=option_text
+        ).first
+
+        option.click()
+
+        self.page.wait_for_timeout(500)
+
+        return option_text
+
+    def select_job_offered(
+        self,
+        option_text
+    ):
+        print(
+            f"\n[JOB OFFERED] Selecting: {option_text}"
+        )
+
+        dropdown = self.page.locator(
+            "div:has(label:text('Job Offered')) button[role='combobox']"
+        )
+
+        dropdown.click()
+
+        self.page.wait_for_selector(
+            "[role='option']",
+            timeout=10000
+        )
+
+        option = self.page.locator(
+            "[role='option']"
+        ).filter(
+            has_text=option_text
+        ).first
+
+        option.click()
+
+        self.page.wait_for_timeout(500)
+
+        return option_text
+
+    def get_next_job_title_index(self):
+
+        RUN_FOLDER = get_run_folder()
+
+        counter_file = os.path.join(
+            RUN_FOLDER,
+            "job_title_counter.txt"
+        )
+
+        if not os.path.exists(counter_file):
+
+            with open(counter_file, "w") as f:
+                f.write("0")
+
+        with open(counter_file, "r") as f:
+
+            current = int(
+                f.read().strip()
+            )
+
+        with open(counter_file, "w") as f:
+
+            f.write(
+                str(current + 1)
+            )
+
+        return current
 
     def fill_remaining_dropdowns(self):
 
@@ -175,26 +300,81 @@ class OnboardingPage(BasePage):
     # ==========================================
 
     def open(self):
-        self.page.goto(
+
+        target_url = (
             "https://injin.injtechnologies.com/hr/users/onboarding"
         )
 
-    # ==========================================
-    # OPEN MODAL
-    # ==========================================
-
-    def open_employee_onboarding_modal(self):
-        self.page.get_by_role(
-            "button",
-            name="Employee Onboarding"
-        ).click()
-        self.page.locator(OnboardingLocators.FIRST_NAME).wait_for(
-            state="visible", timeout=10000
+        self.page.goto(
+            target_url,
+            wait_until="domcontentloaded"
         )
 
-    # ==========================================
+        self.page.wait_for_timeout(3000)
+
+        if "/onboarding" not in self.page.url:
+
+            self.page.goto(
+                target_url,
+                wait_until="domcontentloaded"
+            )
+
+            self.page.wait_for_timeout(3000)
+
+    # OPEN MODAL
+
+    def open_employee_onboarding_modal(self):
+
+        target_url = (
+            "https://injin.injtechnologies.com/hr/users/onboarding"
+        )
+
+        for attempt in range(5):
+
+            try:
+
+                if "/onboarding" not in self.page.url:
+
+                    print(
+                        "[NOT ON ONBOARDING PAGE]"
+                    )
+
+                    self.page.goto(
+                        target_url,
+                        wait_until="domcontentloaded"
+                    )
+
+                    self.page.wait_for_timeout(
+                        3000
+                    )
+
+                btn = self.page.get_by_role(
+                    "button",
+                    name="Employee Onboarding"
+                )
+
+                btn.wait_for(
+                    state="visible",
+                    timeout=10000
+                )
+
+                btn.click()
+
+                return
+
+            except Exception:
+
+                self.page.reload()
+
+                self.page.wait_for_timeout(
+                    3000
+                )
+
+        raise Exception(
+            "Employee Onboarding button never appeared"
+        )
+    
     # INPUT FIELDS
-    # ==========================================
 
     def enter_first_name(self, value):
         self.page.locator(OnboardingLocators.FIRST_NAME).fill(value)
@@ -228,14 +408,6 @@ class OnboardingPage(BasePage):
 
         actual = email_field.input_value()
 
-        print(
-            f"[EMAIL DEBUG] Expected: {value}"
-        )
-
-        print(
-            f"[EMAIL DEBUG] Actual: {actual}"
-        )
-
         assert actual == value, (
             f"Email overwritten. "
             f"Expected={value}, "
@@ -245,12 +417,10 @@ class OnboardingPage(BasePage):
     def enter_job_offered(self, value):
         self.page.locator(OnboardingLocators.JOB_OFFERED).fill(value)
 
-    # ==========================================
     # GENERIC SEARCHABLE DROPDOWN
     # Multi-strategy: handles custom select components where
     # placeholder text appears as a visible span/div, not an
     # HTML placeholder attribute.
-    # ==========================================
 
     def select_dropdown(
     self,
@@ -261,8 +431,6 @@ class OnboardingPage(BasePage):
         """
         Stable dropdown selector for React/MUI/ShadCN components.
         """
-
-        print(f"\n[Dropdown] Opening: {placeholder_text}")
 
         trigger = None
 
@@ -302,10 +470,16 @@ class OnboardingPage(BasePage):
             )
 
         trigger.scroll_into_view_if_needed()
-
         trigger.click(force=True)
 
-        options = self.wait_for_dropdown_options()
+        # Wait for API-driven options to render
+        self.page.wait_for_selector(
+            "[role='option']",
+            state="visible",
+            timeout=10000
+        )
+
+        options = self.page.locator("[role='option']")
 
         option_count = options.count()
 
@@ -333,10 +507,10 @@ class OnboardingPage(BasePage):
 
             try:
 
-                target = self.page.locator(
-                    "[role='option']"
-                ).filter(
-                    has_text=option_text
+                target = self.page.get_by_role(
+                    "option",
+                    name=option_text,
+                    exact=True
                 ).first
 
                 target.wait_for(
@@ -348,33 +522,132 @@ class OnboardingPage(BasePage):
 
                 selected_text = target.inner_text().strip()
 
-                target.click()
+                try:
+                    target.click(timeout=3000)
 
-                self.page.wait_for_timeout(800)
+                except Exception:
 
-                print(
-                    f"[Dropdown] Selected: "
-                    f"{selected_text}"
-                )
+                    print(
+                        f"[Dropdown Retry] Force clicking: "
+                        f"{selected_text}"
+                    )
+
+                    target.click(
+                        force=True,
+                        timeout=3000
+                    )
+
+                self.page.wait_for_timeout(1000)
 
                 return selected_text
 
             except Exception:
 
+                print(f"[Dropdown] " f"'{option_text}' not found")
+
+        # =====================================
+        # Dynamic Selection Logic
+        # =====================================
+
+        if placeholder_text == "Select location":
+
+            valid_options = []
+
+            for i in range(option_count):
+
+                text = options.nth(i).inner_text().strip()
+
+                if text.lower().startswith("select"):
+                    continue
+
+                valid_options.append(text)
+
+            if valid_options:
+
+                selected_text = valid_options[0]
+
                 print(
-                    f"[Dropdown] "
-                    f"'{option_text}' not found"
+                    f"[LOCATION AUTO SELECT] {selected_text}"
                 )
 
-        selected_text = options.first.inner_text().strip()
+                target = options.filter(
+                    has_text=selected_text
+                ).first
 
-        options.first.click()
+                target.click(force=True)
 
-        self.page.wait_for_timeout(800)
+                self.page.wait_for_timeout(1000)
+
+                return selected_text
+
+        available_options = []
+
+        for i in range(option_count):
+
+            text = options.nth(i).inner_text().strip()
+
+            if text.lower().startswith("select"):
+                continue
+
+            available_options.append(text)
+
+        if not available_options:
+
+            raise Exception(
+                f"No valid options found for {placeholder_text}"
+            )
+        
+        # Job Title Rotation
+        # =====================================
+
+        if placeholder_text == "Select job title":
+
+            index = (
+                self.get_next_job_title_index()
+                % len(available_options)
+            )
+
+            selected_text = available_options[index]
+            options.nth(index).click()
+
+            self.page.wait_for_timeout(1000)
+
+            return selected_text
+        
+        # Hierarchy Rotation
+
+        if placeholder_text == "Select hierarchy level":
+
+            index = (
+                self.get_next_hierarchy_index()
+                % len(available_options)
+            )
+
+            selected_text = available_options[index]
+
+            print(
+                f"[HIERARCHY ROTATION] "
+                f"Index={index} "
+                f"Selected={selected_text}"
+            )
+
+            options.nth(index).click()
+
+            self.page.wait_for_timeout(1000)
+
+            return selected_text
+
+        # Default Selection
+
+        selected_text = available_options[0]
+
+        options.filter(
+            has_text=selected_text
+        ).first.click()
+
+        self.page.wait_for_timeout(1000)
 
         return selected_text
-
-        
 
     def handle_dynamic_dropdowns_after_department(self):
 
@@ -385,7 +658,12 @@ class OnboardingPage(BasePage):
 
         filled = {}
 
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_load_state(
+            "networkidle"
+        )
+        self.page.wait_for_timeout(
+            1000
+        )
 
         comboboxes = self.onboarding_modal().locator(
             "[role='combobox']:visible"
@@ -425,19 +703,11 @@ class OnboardingPage(BasePage):
                 if text not in dynamic_placeholders:
                     continue
 
-                print(f"[Dynamic] Filling: {text}")
-
-                print(f"\nTrying to open: {text}")
-
                 cb.click()
 
                 self.page.wait_for_timeout(2000)
 
                 options = self.page.locator("[role='option']:visible")
-
-                print(
-                    f"Visible options count = {options.count()}"
-                )
 
                 for j in range(options.count()):
                     try:
@@ -468,26 +738,89 @@ class OnboardingPage(BasePage):
         return filled
 
     def select_joining_date(self):
-        self.page.locator("#joining_date").click()
-        self.page.wait_for_timeout(500)
 
-        enabled_dates = self.page.locator(
-            "button:not([disabled])[data-day]"
+        counter_file = os.path.join(
+            RUN_FOLDER,
+            "joining_date_counter.txt"
+        )
+        print(
+            f"[JOB TITLE COUNTER FILE] {counter_file}"
         )
 
-        try:
-            enabled_dates.first.wait_for(state="visible", timeout=5000)
-        except Exception:
-            pass
+        # =====================================
+        # Read Counter
+        # =====================================
 
-        count = enabled_dates.count()
-        if count == 0:
-            raise Exception("No enabled dates found in date picker")
+        if not os.path.exists(counter_file):
 
-        # Pick index 5 if available (avoids weekends near month start), else first
-        idx = min(5, count - 1)
-        enabled_dates.nth(idx).click()
-        self.page.wait_for_timeout(500)
+            with open(counter_file, "w") as f:
+                f.write("0")
+
+        with open(counter_file, "r") as f:
+
+            offset = int(f.read().strip())
+
+        # =====================================
+        # Calculate Target Date
+        # =====================================
+
+        target_date = (
+            datetime.now() +
+            timedelta(days=offset)
+        )
+
+        target_day = (
+            f"{target_date.month}/"
+            f"{target_date.day}/"
+            f"{target_date.year}"
+        )
+
+        print(
+            f"[DOJ] Selecting: {target_day}"
+        )
+
+        # =====================================
+        # Open Date Picker
+        # =====================================
+
+        self.page.locator(
+            "#joining_date"
+        ).click()
+
+        self.page.wait_for_timeout(
+            1000
+        )
+
+        # =====================================
+        # Select Exact Date
+        # =====================================
+
+        target_button = self.page.locator(
+            f'button[data-day="{target_day}"]'
+        )
+
+        target_button.first.wait_for(
+            state="visible",
+            timeout=5000
+        )
+
+        target_button.first.click()
+
+        print(
+            f"[DOJ Selected] {target_day}"
+        )
+
+        # =====================================
+        # Increment Counter
+        # =====================================
+
+        with open(counter_file, "w") as f:
+
+            f.write(str(offset + 1))
+
+        self.page.wait_for_timeout(
+            500
+        )
 
     # ==========================================
     # BUTTONS

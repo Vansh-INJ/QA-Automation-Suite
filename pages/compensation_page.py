@@ -5,6 +5,7 @@ class CompensationPage:
 
     def __init__(self, page):
         self.page = page
+        self.captured_data = {}
 
     # ==========================================
     # VERIFY TAB
@@ -71,6 +72,10 @@ class CompensationPage:
             try:
                 match.wait_for(state="visible", timeout=3000)
                 match.click()
+                self.captured_data[
+                    "salary_structure"
+                ] = option_text
+                
                 self.page.wait_for_load_state("networkidle")
                 self.page.wait_for_timeout(800)
                 return option_text
@@ -104,47 +109,130 @@ class CompensationPage:
         self._fill_comboboxes()
 
     def _fill_text_inputs(self):
+
         inputs = self.page.locator(
             "input:visible:not([type='hidden']):not([type='checkbox'])"
-            ":not([type='radio']):not([type='file']):not([disabled]):not([readonly])"
+            ":not([type='radio']):not([type='file'])"
+            ":not([disabled]):not([readonly])"
         )
+
         count = inputs.count()
-        print(f"\n[Compensation] Filling {count} text input(s)")
+
+        print(
+            f"\n[Compensation] Filling {count} text input(s)"
+        )
+
         for i in range(count):
+
             try:
+
                 field = inputs.nth(i)
-                # Re-check attributes at fill time (list may shift after fills)
-                if (field.get_attribute("disabled") is not None
-                        or field.get_attribute("readonly") is not None):
+
+                if (
+                    field.get_attribute("disabled") is not None
+                    or field.get_attribute("readonly") is not None
+                ):
                     continue
+
+                field_name = (
+                    field.get_attribute("name")
+                    or field.get_attribute("id")
+                    or f"comp_input_{i}"
+                )
+
+                field_type = (
+                    field.get_attribute("type")
+                    or "text"
+                )
+
                 current = field.input_value().strip()
+
+                # =====================================
+                # Already populated value
+                # =====================================
                 if current:
-                    continue  # already has a value
-                field_type = field.get_attribute("type") or "text"
+
+                    self.captured_data[
+                        field_name
+                    ] = current
+
+                    print(
+                        f"[Captured Existing] "
+                        f"{field_name} = {current}"
+                    )
+
+                    continue
+
+                # =====================================
+                # Generate value
+                # =====================================
                 if field_type in ("number", "tel"):
-                    field.fill("10000")
+
+                    value = "10000"
+
                 elif field_type == "email":
-                    field.fill("hr@injtechnologies.com")
+
+                    value = "hr@injtechnologies.com"
+
                 elif field_type == "date":
-                    field.fill("2026-01-01")
+
+                    value = "2026-01-01"
+
                 else:
-                    field.fill("10000")
-                print(f"  Filled input [{i}] type={field_type}")
+
+                    value = "10000"
+
+                field.fill(value)
+
+                self.captured_data[
+                    field_name
+                ] = value
+
+                print(
+                    f"[Captured Filled] "
+                    f"{field_name} = {value}"
+                )
+
             except Exception as e:
-                print(f"  Skipped input [{i}]: {e}")
+
+                print(
+                    f"Skipped input [{i}]: {e}"
+                )
 
     def _fill_textareas(self):
+
         areas = self.page.locator(
             "textarea:visible:not([disabled]):not([readonly])"
         )
+
         for i in range(areas.count()):
+
             try:
+
                 area = areas.nth(i)
+
                 if area.input_value().strip():
                     continue
-                area.fill("Automated compensation entry")
+
+                area.fill(
+                    "Automated compensation entry"
+                )
+
+                field_name = (
+                    area.get_attribute("name")
+                    or area.get_attribute("id")
+                    or f"comp_textarea_{i}"
+                )
+
+                self.captured_data[
+                    field_name
+                ] = "Automated compensation entry"
+
             except Exception as e:
-                print(f"  Skipped textarea [{i}]: {e}")
+
+                print(
+                    f"  Skipped textarea [{i}]: {e}"
+                )
 
     def _fill_native_selects(self):
         selects = self.page.locator("select:visible:not([disabled])")
@@ -158,6 +246,14 @@ class CompensationPage:
                     val = non_placeholder_opts.first.get_attribute("value")
                     if val:
                         select.select_option(val)
+
+                        field_name = (
+                            select.get_attribute("name")
+                            or select.get_attribute("id")
+                            or f"comp_select_{i}"
+                        )
+
+                        self.captured_data[field_name] = val
             except Exception as e:
                 print(f"  Skipped native select [{i}]: {e}")
 
@@ -188,7 +284,19 @@ class CompensationPage:
                 except Exception:
                     pass
                 if opts.count() > 0:
+                    selected_text = (
+                        opts.first.inner_text().strip()
+                    )
+
                     opts.first.click()
+
+                    field_name = (
+                        cb.get_attribute("name")
+                        or cb.get_attribute("id")
+                        or f"comp_dropdown_{i}"
+                    )
+
+                    self.captured_data[field_name] = selected_text
                     self.page.wait_for_timeout(400)
             except Exception as e:
                 print(f"  Skipped combobox [{i}]: {e}")

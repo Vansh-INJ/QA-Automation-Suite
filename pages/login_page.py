@@ -6,8 +6,38 @@ class LoginPage:
 
     def open(self):
 
+        login_url = "https://injin.injtechnologies.com/login"
+
         self.page.goto(
-            "https://injin.injtechnologies.com/login"
+            login_url,
+            wait_until="domcontentloaded"
+        )
+
+        for attempt in range(10):
+
+            try:
+
+                self.page.get_by_role(
+                    "button",
+                    name="Fill Super Admin Credentials",
+                    exact=True
+                ).wait_for(
+                    state="visible",
+                    timeout=3000
+                )
+
+                return
+
+            except Exception:   
+
+                self.page.reload(
+                    wait_until="domcontentloaded"
+                )
+
+                self.page.wait_for_timeout(2000)
+
+        raise Exception(
+            "Login page failed to load after 10 refresh attempts"
         )
 
     def fill_super_admin_credentials(self):

@@ -34,21 +34,10 @@ LAST_NAMES = [
     "Malhotra"
 ]
 JOB_DESIGNATIONS = [
-    "Software Engineer",
-    "Software Developer",
-    "QA Engineer",
-    "QA Analyst",
-    "Data Engineer",
-    "Business Analyst",
-    "Product Analyst",
-    "DevOps Engineer",
-    "HR Executive",
-    "Technical Recruiter",
-    "Project Coordinator",
-    "Frontend Developer",
-    "Backend Developer",
-    "Full Stack Developer",
-    "Data Analyst"
+    "Referral",
+    "Direct",
+    "Campus Placed",
+   
 ]
 
 

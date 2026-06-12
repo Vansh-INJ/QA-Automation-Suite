@@ -19,12 +19,67 @@ from utils.test_data_generator import (
 # allpairspy generates the optimal pairwise subset automatically.
 # ============================================================
 parameters = [
-    ['ASD', 'Information Technology', 'Business Development'],   # Department
-    ['Software Developer Intern', 'Software Developer'],          # Job Title
-    ['Amit Kumar Sharma (EMP001)', 'Neha Ramesh Verma (EMP002)', 'Rahul S. Mehta (EMP003)'],  # Manager
-    ['Full Time', 'Part Time', 'Contract', 'Intern'],             # Employment Type
-    ['INJ Partners', 'INJ Technologies', 'Lead X Prospects'],     # Company Entity
-    ['Noida Salary Structure Main', 'Noida Salary Structure WO Bonus'],  # Salary Structure
+
+    # Job Offered
+    [
+        "Reference",
+        "Campus Placement",
+        "Direct"
+    ],
+
+    # Department
+    [
+        "ASD",
+        "Information Technology",
+        "Business Development"
+    ],
+
+    # Job Title
+    [
+        "Software Developer Intern",
+        "Software Developer"
+    ],
+
+    # Hierarchy Level
+    [
+        "C-Level",
+        "Senior director",
+        "Director",
+        "Senior Manager",
+        "Manager",
+        "Assistant Manager",
+        "Team Lead",
+        "Senior Associate",
+        "Associate"
+    ],
+
+    # Reporting Manager
+    [
+        "Amit Kumar Sharma (EMP001)",
+        "Neha Ramesh Verma (EMP002)",
+        "Rahul S. Mehta (EMP003)"
+    ],
+
+    # Employment Type
+    [
+        "Full Time",
+        "Part Time",
+        "Contract",
+        "Intern"
+    ],
+
+    # Company Entity
+    [
+        "INJ Partners",
+        "INJ Technologies",
+        "Lead X Prospects"
+    ],
+
+    # Salary Structure
+    [
+        "Noida Salary Structure Main",
+        "Noida Salary Structure WO Bonus"
+    ],
 ]
 
 
@@ -33,10 +88,10 @@ def generate_pairs():
 
 
 @pytest.mark.parametrize(
-    "dept, job_title, manager, emp_type, entity, salary_struct",
+    "job_offered, dept, job_title, hierarchy, manager, emp_type, entity, salary_struct",
     generate_pairs()
 )
-def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entity, salary_struct):
+def test_combinatorial_dropdowns(page, job_offered, dept, job_title, hierarchy, manager, emp_type, entity, salary_struct):
 
     # Use the first valid employee profile as the base payload
     employee_data = EMPLOYEE_PROFILES[0]
@@ -50,6 +105,7 @@ def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entit
     # =========================================================
     login.open()
     login.login_as_super_admin()
+    
 
     # =========================================================
     # OPEN ONBOARDING MODAL
@@ -69,10 +125,9 @@ def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entit
     onboarding.enter_last_name(last_name)
     onboarding.enter_email(email)
 
-    job_offered = unique_job_offered()
-
-    onboarding.enter_job_offered(
-        job_offered
+    selected_job_offered = onboarding.select_dropdown(
+        "Select job offered",
+        option_text=job_offered
     )
 
     print(
@@ -97,8 +152,25 @@ def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entit
     # dropdowns (e.g., Sub Department for "Information Technology")
     # dynamic_filled = onboarding.handle_dynamic_dropdowns_after_department()
 
-    selected_job = onboarding.select_dropdown("Select job title", option_text=job_title)
-    selected_manager = onboarding.select_dropdown("Select reporting manager", option_text=manager)
+    print(
+        f"[PAIRWISE JOB TITLE] "
+        f"{job_title}"
+    )
+
+    selected_job = onboarding.select_dropdown(
+        "Select job title",
+        option_text=job_title
+    )
+
+    selected_hierarchy = onboarding.select_dropdown(
+        "Select hierarchy level",
+        option_text=hierarchy
+    )
+
+    selected_manager = onboarding.select_dropdown(
+        "Select reporting manager",
+        option_text=manager
+    )
 
     onboarding.select_joining_date()
 
@@ -114,13 +186,33 @@ def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entit
         "Select location"
     )
 
+    assert (
+        selected_location
+        and
+        "select" not in selected_location.lower()
+    ), f"Location not selected: {selected_location}"
+
     onboarding.fill_remaining_dropdowns()
 
     missing = onboarding.check_unfilled_required_fields()
 
+    if "Select location" in missing:
+
+        print(
+            "[RETRY] Location was not selected. Retrying..."
+        )
+
+        onboarding.select_dropdown("Select location")
+
+        missing = onboarding.check_unfilled_required_fields()
+
     assert len(missing) == 0
 
-    job_value = page.locator("#job_offered").input_value()
+    job_value = page.locator(
+        "button[role='combobox']"
+    ).filter(
+        has_text=job_offered
+    ).inner_text()
 
     print(
         f"[DEBUG] Job Offered Field = "
@@ -150,6 +242,7 @@ def test_combinatorial_dropdowns(page, dept, job_title, manager, emp_type, entit
         "email": email,       
         "middle_name": employee_data["middle_name"],        
         "job_offered": job_offered,
+        "hierarchy_level": selected_hierarchy,
         "department": selected_dept,
         "job_title": selected_job,
         "manager": selected_manager,
