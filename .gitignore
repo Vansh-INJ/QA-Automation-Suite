@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# Playwright
+playwright-report/
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Reports
+reports/
+
+# Screenshots
+*.png
+
+# Excel Outputs
+*.xlsx
+
+# Logs
+*.log
