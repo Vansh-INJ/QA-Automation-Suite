@@ -544,6 +544,47 @@ class OnboardingPage(BasePage):
             except Exception:
 
                 print(f"[Dropdown] " f"'{option_text}' not found")
+        
+        else:
+
+            options = self.page.locator(
+                '[role="option"]'
+            )
+
+            count = options.count()
+
+            print(
+                f"[Dropdown] {placeholder_text} "
+                f"loaded {count} option(s)"
+            )
+
+            for i in range(count):
+                print(
+                    f"Option {i}: "
+                    f"{options.nth(i).inner_text()}"
+                )
+
+            if count <= 1:
+                raise Exception(
+                    f"No selectable options found "
+                    f"for {placeholder_text}"
+                )
+
+            option = options.nth(1)
+
+            selected_text = option.inner_text()
+
+            option.click()
+
+            print(
+                f"[AUTO SELECT] "
+                f"{placeholder_text} -> "
+                f"{selected_text}"
+            )
+
+            self.page.wait_for_timeout(1000)
+
+            return selected_text
 
         # =====================================
         # Dynamic Selection Logic
@@ -608,7 +649,9 @@ class OnboardingPage(BasePage):
             )
 
             selected_text = available_options[index]
-            options.nth(index).click()
+            options.filter(
+                has_text=selected_text
+            ).first.click()
 
             self.page.wait_for_timeout(1000)
 
@@ -631,7 +674,9 @@ class OnboardingPage(BasePage):
                 f"Selected={selected_text}"
             )
 
-            options.nth(index).click()
+            options.filter(
+                has_text=selected_text
+            ).first.click()
 
             self.page.wait_for_timeout(1000)
 

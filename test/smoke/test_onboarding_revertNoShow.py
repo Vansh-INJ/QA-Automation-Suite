@@ -114,7 +114,7 @@ def test_onboarding_revert_no_show(page):
 
     assert (
         revert_response["data"][
-            "message"
+            "message" 
         ]
         ==
         "No-show reverted and joining date updated successfully"

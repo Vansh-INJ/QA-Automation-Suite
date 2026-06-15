@@ -144,3 +144,5 @@ CANDIDATE_DATA = {
     "specialization": "Computer Science",
     "passing_year": "2017",
 }
+
+ADD_EMPLOYEE_DATA = EMPLOYEE_PROFILES[0]
