@@ -269,15 +269,64 @@ class OnboardingApprovalPage:
                     candidate_email
                 )
 
-                action_btn = (
-                    row.locator("td")
-                    .nth(7)
-                    .locator("button")
-                    .nth(1)
+                print(
+                    f"\nChecking Row {i}"
+                    f"\nName : {candidate_name}"
+                    f"\nEmail: {candidate_email}"
                 )
 
                 self.capture_candidate_details(row)
-                action_btn.click()
+
+                action_cell = row.locator(
+                    "td"
+                ).nth(7)
+
+                edit_btn = action_cell.locator(
+                    "button[title='Edit details']"
+                )
+
+                edit_btn.wait_for(
+                    state="visible",
+                    timeout=10000
+                )
+
+                print(
+                    "Edit count:",
+                    edit_btn.count()
+                )
+
+                print(
+                    "Visible:",
+                    edit_btn.is_visible()
+                )
+
+                print(
+                    "Enabled:",
+                    edit_btn.is_enabled()
+                )
+                
+                edit_btn.scroll_into_view_if_needed()
+                edit_btn.highlight()
+                print(
+                    "Current URL:",
+                    self.page.url
+                )
+
+                self.page.wait_for_timeout(2000)
+
+                print(
+                    "Page title:",
+                    self.page.title()
+                )
+                print("BEFORE CLICK")
+
+                edit_btn.click(force=True)
+
+                print("AFTER CLICK")
+
+                self.page.wait_for_timeout(3000)
+
+                print("URL:", self.page.url)
 
                 self.page.wait_for_load_state(
                     "networkidle"
@@ -288,7 +337,7 @@ class OnboardingApprovalPage:
                     name="Approve"
                 )
 
-                if approve_btn.count() > 0:
+                if approve_btn.is_visible():
 
                     print(
                         f"[APPROVE FOUND] Row {i}"
@@ -320,7 +369,7 @@ class OnboardingApprovalPage:
                         "networkidle"
                     )
 
-                except:
+                except Exception:
                     pass
 
         return False
@@ -438,8 +487,8 @@ class OnboardingApprovalPage:
         ).count() > 0
     
     def find_candidate_with_action(
-        self,
-        action_name
+            self,
+            action_name
     ):
 
         rows = self.page.locator(
@@ -463,17 +512,54 @@ class OnboardingApprovalPage:
 
                 row = rows.nth(i)
 
-                action_btn = (
-                    row.locator("td")
-                    .nth(7)
-                    .locator("button")
-                    .nth(1)
+                print(
+                    f"\nChecking Row {i}"
                 )
 
-                action_btn.click()
+                edit_btn = row.locator(
+                    "button[title='Edit details']"
+                )
 
-                self.page.wait_for_load_state(
-                    "networkidle"
+                edit_btn.wait_for(
+                    state="visible",
+                    timeout=10000
+                )
+
+                print(
+                    "Edit count:",
+                    edit_btn.count()
+                )
+                print(
+                    "Visible:",
+                    edit_btn.is_visible()
+                )
+                print(
+                    "Enabled:",
+                    edit_btn.is_enabled()
+                )
+
+                edit_btn.scroll_into_view_if_needed()
+                edit_btn.highlight()
+
+                self.page.wait_for_timeout(
+                    1000
+                )
+
+                print("BEFORE CLICK")
+
+                edit_btn.click(
+                    force=True
+                )
+
+                print("AFTER CLICK")
+
+                self.page.wait_for_timeout(
+                    2000
+                )
+
+                print(
+                    "URL:",
+                    self.page.url
                 )
 
                 target_btn = self.page.get_by_role(
@@ -481,7 +567,7 @@ class OnboardingApprovalPage:
                     name=action_name
                 )
 
-                if target_btn.count() > 0:
+                if target_btn.is_visible():
 
                     print(
                         f"[{action_name.upper()} FOUND] "
@@ -497,15 +583,9 @@ class OnboardingApprovalPage:
 
                 self.page.go_back()
 
-                self.page.wait_for_load_state(
-                    "networkidle"
+                self.page.wait_for_timeout(
+                    2000
                 )
-
-                self.reload_filtered_candidates()
-
-                self.show_100_candidates()
-
-                self.reload_filtered_candidates()
 
             except Exception as e:
 
@@ -517,16 +597,14 @@ class OnboardingApprovalPage:
 
                     self.page.go_back()
 
-                    self.page.wait_for_load_state(
-                        "networkidle"
+                    self.page.wait_for_timeout(
+                        2000
                     )
 
-                except:
+                except Exception:
                     pass
 
         return False
-
-
 
     def reopen_employee(self):
 

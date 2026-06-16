@@ -1,5 +1,6 @@
 ﻿import os
 from datetime import datetime
+from utils.logger import logger
 from utils.run_manager import get_run_folder
 import pytest
 from playwright.sync_api import sync_playwright
@@ -13,6 +14,9 @@ from utils.helpers import (
 
 @pytest.fixture(scope="function")
 def page(request):
+    logger.info(
+        f"========== STARTING TEST: {request.node.name} =========="
+    )
 
     create_excel_report()
     RUN_FOLDER = get_run_folder()
@@ -36,12 +40,19 @@ def page(request):
 
         browser = p.chromium.launch(
             headless=False,
-            slow_mo=300
+            slow_mo=100
+        )
+
+        logger.info(
+            "Chromium browser launched"
         )
 
         context = browser.new_context()
-
         page = context.new_page()
+
+        logger.info(
+            "New browser page created"
+        )
 
         # ======================================
         # API FAILURE LISTENER
@@ -51,10 +62,10 @@ def page(request):
 
             if response.status >= 400:
 
-                print(
-                    f"\n[API FAILURE]"
-                    f"\nSTATUS : {response.status}"
-                    f"\nURL    : {response.url}"
+                logger.error(
+                    f"API FAILURE | "
+                    f"STATUS: {response.status} | "
+                    f"URL: {response.url}"
                 )
 
                 try:
@@ -86,14 +97,14 @@ def page(request):
 
                         f.write(body)
 
-                    print(
-                        f"[API LOG SAVED] {file_path}"
+                    logger.info(
+                        f"API failure log saved: {file_path}"
                     )
 
                 except Exception as e:
 
-                    print(
-                        f"[BODY CAPTURE FAILED] {e}"
+                    logger.exception(
+                        f"Failed to capture API response body: {e}"
                     )
 
         page.on(
@@ -101,8 +112,8 @@ def page(request):
             capture_failed_response
         )
 
-        print(
-            "[INFO] Response listener attached"
+        logger.info(
+            "Response listener attached"
         )
 
         # ======================================
@@ -141,19 +152,23 @@ def page(request):
                     f"{test_name}.png"
                 )
 
+                logger.error(
+                    f"TEST FAILED: {request.node.name}"
+                )
+
                 page.screenshot(
                     path=screenshot_path,
                     full_page=True
                 )
 
-                print(
-                    f"[SCREENSHOT SAVED] {screenshot_path}"
+                logger.info(
+                    f"Failure screenshot saved: {screenshot_path}"
                 )
 
             except Exception as e:
 
-                print(
-                    f"[SCREENSHOT FAILED] {e}"
+                logger.exception(
+                    f"Failed to capture screenshot: {e}"
                 )
 
                 screenshot_path = ""
@@ -202,7 +217,14 @@ def page(request):
         # PASSED TEST
         # ======================================
 
-        else:
+        
+
+        else:  
+
+            if request.node.rep_call.passed:
+                logger.info(
+                    f"TEST PASSED: {request.node.name}"
+                )         
 
             write_result(
                 test_name=test_name,
@@ -238,6 +260,16 @@ def page(request):
                     ""
                 ),
             )
+
+        context.close()
+
+        logger.info(
+            f"Closing browser for: {request.node.name}"
+        )
+
+        logger.info(
+            f"========== FINISHED TEST: {request.node.name} =========="
+        )
 
         context.close()
         browser.close()

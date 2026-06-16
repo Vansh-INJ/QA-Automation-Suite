@@ -85,61 +85,22 @@ def get_run_folder():
         f"Run_{next_run:03d}_{run_type}"
     )
 
-    # ==================================================
-    # CREATE RUN ROOT
-    # ==================================================
+    subfolders = [
+        "excel",
+        "screenshots",
+        "html",
+        "api_failures",
+        "logs"
+    ]
 
-    os.makedirs(
-        _RUN_FOLDER,
-        exist_ok=True
-    )
+    for folder in subfolders:
+        os.makedirs(
+            os.path.join(
+                _RUN_FOLDER,
+                folder
+            ),
+            exist_ok=True
+        )
 
-    # ==================================================
-    # EXCEL REPORTS
-    # ==================================================
-
-    os.makedirs(
-        os.path.join(
-            _RUN_FOLDER,
-            "excel"
-        ),
-        exist_ok=True
-    )
-
-    # ==================================================
-    # SCREENSHOTS
-    # ==================================================
-
-    os.makedirs(
-        os.path.join(
-            _RUN_FOLDER,
-            "screenshots"
-        ),
-        exist_ok=True
-    )
-
-    # ==================================================
-    # HTML REPORTS
-    # ==================================================
-
-    os.makedirs(
-        os.path.join(
-            _RUN_FOLDER,
-            "html"
-        ),
-        exist_ok=True
-    )
-
-    # ==================================================
-    # API FAILURE LOGS
-    # ==================================================
-
-    os.makedirs(
-        os.path.join(
-            _RUN_FOLDER,
-            "api_failures"
-        ),
-        exist_ok=True
-    )
 
     return _RUN_FOLDER

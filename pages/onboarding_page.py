@@ -310,7 +310,13 @@ class OnboardingPage(BasePage):
             wait_until="domcontentloaded"
         )
 
-        self.page.wait_for_timeout(3000)
+        self.page.get_by_role(
+            "button",
+            name="Employee Onboarding"
+        ).wait_for(
+            state="visible",
+            timeout=15000
+        )
 
         if "/onboarding" not in self.page.url:
 
