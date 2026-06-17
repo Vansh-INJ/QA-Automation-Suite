@@ -18,13 +18,6 @@ os.makedirs(
     exist_ok=True
 )
 
-RUN_FOLDER = get_run_folder()
-
-EXCEL_FOLDER = os.path.join(
-    RUN_FOLDER,
-    "excel"
-)
-
 os.makedirs(
     EXCEL_FOLDER,
     exist_ok=True
@@ -38,6 +31,10 @@ REPORT_FILE = os.path.join(
 FIELD_LOG_FILE = os.path.join(
     EXCEL_FOLDER,
     "onboarding_data_log.xlsx"
+)
+API_LOG_FILE = os.path.join(
+    EXCEL_FOLDER,
+    "api_execution_log.xlsx"
 )
 
 # ==========================================================
@@ -244,4 +241,111 @@ def write_field_log(
     wb.save(FIELD_LOG_FILE)
     print(
         f"[FIELD LOG UPDATED] {FIELD_LOG_FILE}"
+    )
+
+# ==========================================================
+# API EXECUTION LOG
+# ==========================================================
+
+def create_api_log():
+
+    if not os.path.exists(
+            API_LOG_FILE
+    ):
+
+        wb = Workbook()
+
+        ws = wb.active
+
+        ws.title = (
+            "API Execution Log"
+        )
+        
+
+        ws.append([
+            "Execution Time",
+            "Run ID",
+            "Environment",
+            "Username",
+            "Test Name",
+            "Method",
+            "Endpoint",
+            "Status Code",
+            "Expected Status",
+            "Actual Status",
+            "Duration(ms)",
+            "SLA(ms)",
+            "SLA Status",
+            "Result",
+            "Request Payload",
+            "Response Body",
+            "Error"
+        ])
+
+        wb.save(
+            API_LOG_FILE
+        )
+
+        print(
+            f"[EXCEL CREATED] "
+            f"{API_LOG_FILE}"
+        )
+
+
+def write_api_log(
+        test_name,
+        method,
+        endpoint,
+        status_code,
+        run_id="",
+        environment="",
+        username="",
+        expected_status="",
+        actual_status="",
+        duration="",
+        sla="",
+        sla_status="",
+        result="",
+        request_payload="",
+        response_body="",
+        error=""
+):
+
+    create_api_log()
+
+    wb = load_workbook(
+        API_LOG_FILE
+    )
+
+    ws = wb[
+        "API Execution Log"
+    ]
+
+    ws.append([
+        str(datetime.now()),
+        run_id,
+        environment,
+        username,
+        test_name,
+        method,
+        endpoint,
+        status_code,
+        expected_status,
+        actual_status,
+        duration,
+        sla,
+        sla_status,
+        result,
+        request_payload,
+        response_body,
+        error
+    ])
+
+    wb.save(
+        API_LOG_FILE
+    )
+
+    print(
+        f"[API LOG UPDATED] "
+        f"{API_LOG_FILE}"
     )

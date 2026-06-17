@@ -1,6 +1,8 @@
 import os
 import sys
+
 _RUN_FOLDER = None
+
 
 def get_run_type():
 
@@ -29,6 +31,8 @@ def get_run_type():
             )
 
     return "General"
+
+
 
 
 def get_run_folder():

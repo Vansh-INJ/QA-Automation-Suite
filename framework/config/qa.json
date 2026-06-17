@@ -1,0 +1,6 @@
+{
+  "base_url": "https://injin.injtechnologies.com",
+  "timeout": 30000,
+  "retry": 3,
+  "headless": false
+}

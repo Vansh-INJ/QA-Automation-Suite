@@ -3,6 +3,7 @@ from datetime import datetime
 from utils.logger import logger
 from utils.run_manager import get_run_folder
 import pytest
+from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 from utils.test_context import TEST_CONTEXT
 from utils.helpers import (
@@ -10,6 +11,79 @@ from utils.helpers import (
     create_field_log,
     write_result,
 )
+
+import json
+
+from utils.api_context import (
+    API_CONTEXT
+)
+
+from utils.helpers import (
+    write_api_log
+)
+
+from utils.api_summary import (
+    print_api_summary
+)
+
+from api_framework.auth.token_manager import (
+    TokenManager
+)
+from api_framework.clients.offer_client import (
+    OfferClient
+)
+
+
+load_dotenv()
+
+
+@pytest.fixture
+def authenticated_offer_client():
+
+    token = (
+        TokenManager.get_token()        
+    )
+    print("\nTOKEN FETCHED")
+
+    headers = {
+        "Authorization":
+            f"Bearer {token}",
+        "Content-Type":
+            "application/json"
+    }
+
+    return OfferClient(
+        base_url=os.getenv(
+            "BASE_URL"
+        ),
+        headers=headers
+    )
+
+import pytest
+
+from api_framework.auth.token_manager import (
+    TokenManager
+)
+
+from api_framework.clients.offer_client import (
+    OfferClient
+)
+
+from api_framework.config.settings import (
+    Settings
+)
+
+
+@pytest.fixture(scope="session")
+def authenticated_offer_client():
+
+    return OfferClient(
+        base_url=
+        Settings.BASE_URL,
+
+        headers=
+        TokenManager.get_headers()
+    )
 
 
 @pytest.fixture(scope="function")
@@ -294,3 +368,108 @@ def pytest_runtest_makereport(
         "rep_" + rep.when,
         rep
     )
+
+
+@pytest.hookimpl(
+    hookwrapper=True
+)
+def pytest_runtest_makereport(
+        item,
+        call
+):
+
+    outcome = yield
+
+    report = (
+        outcome.get_result()
+    )
+
+    if report.when != "call":
+        return
+
+    if not API_CONTEXT:
+        return
+
+    response = API_CONTEXT.get(
+        "response"
+    )
+
+    status_code = (
+        response.status_code
+    )
+
+    result = (
+        "PASS"
+        if report.passed
+        else "FAIL"
+    )
+
+    try:
+        request_payload = (
+            json.dumps(
+                API_CONTEXT.get(
+                    "payload"
+                ),
+                indent=4,
+                default=str
+            )
+        )
+    except Exception:
+        request_payload = str(
+            API_CONTEXT.get(
+                "payload"
+            )
+        )
+
+    try:
+        response_body = (
+            json.dumps(
+                response.json(),
+                indent=4
+            )
+        )
+    except Exception:
+        response_body = (
+            response.text
+        )
+
+    write_api_log(
+        test_name=item.name,
+        method=API_CONTEXT.get(
+            "method"
+        ),
+        endpoint=API_CONTEXT.get(
+            "endpoint"
+        ),
+        status_code=status_code,
+        expected_status="",
+        actual_status=status_code,
+        duration=API_CONTEXT.get(
+            "duration"
+        ),
+        request_payload=request_payload,
+        response_body=response_body,
+        error=(
+            report.longreprtext
+            if report.failed
+            else ""
+        )
+    )
+
+    API_CONTEXT.clear()
+
+def pytest_sessionfinish(
+        session,
+        exitstatus
+):
+
+    try:
+
+        print_api_summary()
+
+    except Exception as e:
+
+        print(
+            "\n[SUMMARY ERROR]",
+            e
+        )

@@ -30,9 +30,7 @@ class OnboardingApprovalPage:
             "[REVERT NO SHOW CLICKED]"
         )
 
-        # =====================================
         # CONFIRM POPUP
-        # =====================================
 
         yes_btn = self.page.get_by_role(
             "button",
