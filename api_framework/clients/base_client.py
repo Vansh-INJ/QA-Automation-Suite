@@ -5,6 +5,31 @@ from utils.api_context import (
     API_CONTEXT
 )
 
+# Keys that should never be written to the Excel log in plaintext.
+# Add to this set if your payloads/headers carry other secrets.
+SENSITIVE_KEYS = {"password", "authorization", "token", "access_token"}
+
+
+def _redact(data):
+    """
+    Returns a redacted COPY of a dict for LOGGING purposes only.
+    The original dict (with real values) is still what's actually sent
+    on the request - this only affects what gets written to Excel.
+    """
+    if not isinstance(data, dict):
+        return data
+
+    redacted = {}
+
+    for key, value in data.items():
+        if key.lower() in SENSITIVE_KEYS:
+            redacted[key] = "***REDACTED***"
+        else:
+            redacted[key] = value
+
+    return redacted
+
+
 class BaseClient:
 
     def __init__(
@@ -20,23 +45,72 @@ class BaseClient:
             headers or {}
         )
 
+    def _track(
+            self,
+            method,
+            endpoint,
+            payload,
+            response,
+            duration
+    ):
+        API_CONTEXT.clear()
+
+        API_CONTEXT.update({
+            "method":
+                method,
+
+            "endpoint":
+                endpoint,
+
+            "payload":
+                _redact(payload),
+
+            "headers":
+                _redact(self.headers),
+
+            "response":
+                response,
+
+            "duration":
+                duration,
+        })
+
     def get(
             self,
             endpoint,
             params=None
     ):
-        return requests.get(
+        start = time.time()
+
+        response = requests.get(
             f"{self.base_url}{endpoint}",
             headers=self.headers,
             params=params
         )
+
+        duration = round(
+            (
+                time.time()
+                - start
+            ) * 1000,
+            2
+        )
+
+        self._track(
+            "GET",
+            endpoint,
+            params,
+            response,
+            duration
+        )
+
+        return response
 
     def post(
             self,
             endpoint,
             payload=None
     ):
-
         start = time.time()
 
         response = requests.post(
@@ -53,24 +127,13 @@ class BaseClient:
             2
         )
 
-        API_CONTEXT.clear()
-
-        API_CONTEXT.update({
-            "method":
-                "POST",
-
-            "endpoint":
-                endpoint,
-
-            "payload":
-                payload,
-
-            "response":
-                response,
-
-            "duration":
-                duration
-        })
+        self._track(
+            "POST",
+            endpoint,
+            payload,
+            response,
+            duration
+        )
 
         return response
 
@@ -79,17 +142,57 @@ class BaseClient:
             endpoint,
             payload=None
     ):
-        return requests.put(
+        start = time.time()
+
+        response = requests.put(
             f"{self.base_url}{endpoint}",
             headers=self.headers,
             json=payload
         )
 
+        duration = round(
+            (
+                time.time()
+                - start
+            ) * 1000,
+            2
+        )
+
+        self._track(
+            "PUT",
+            endpoint,
+            payload,
+            response,
+            duration
+        )
+
+        return response
+
     def delete(
             self,
             endpoint
     ):
-        return requests.delete(
+        start = time.time()
+
+        response = requests.delete(
             f"{self.base_url}{endpoint}",
             headers=self.headers
-        ) 
+        )
+
+        duration = round(
+            (
+                time.time()
+                - start
+            ) * 1000,
+            2
+        )
+
+        self._track(
+            "DELETE",
+            endpoint,
+            None,
+            response,
+            duration
+        )
+
+        return response

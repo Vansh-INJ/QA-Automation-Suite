@@ -6,32 +6,34 @@ _RUN_FOLDER = None
 
 def get_run_type():
 
+    test_type = "General"
+    test_name = "General"
+
     for arg in sys.argv:
 
-        if (
-            arg.endswith(".py")
-            and "test_" in arg
-        ):
+        if arg.endswith(".py") and "test_" in arg:
+
+            normalized = arg.replace("\\", "/")
+
+            if "/api/" in normalized:
+                test_type = "API"
+
+            elif "/pages/" in normalized:
+                test_type = "UI"
 
             filename = os.path.basename(arg)
+            filename = filename.replace(".py", "")
+            filename = filename.replace("test_", "")
 
-            filename = filename.replace(
-                ".py",
-                ""
+            test_name = (
+                filename
+                .title()
+                .replace("_", "")
             )
 
-            filename = filename.replace(
-                "test_",
-                ""
-            )
+            break
 
-            return filename.title().replace(
-                "_",
-                ""
-            )
-
-    return "General"
-
+    return f"{test_type}_{test_name}"
 
 
 
