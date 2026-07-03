@@ -7,6 +7,63 @@ class OnboardingApprovalPage:
     def __init__(self, page):
         self.page = page
 
+    
+    def revoke_invite(self):
+
+        revoke_btn = self.page.get_by_role(
+            "button",
+            name="Revoke Invite"
+        )
+
+        revoke_btn.wait_for(
+            state="visible",
+            timeout=10000
+        )
+
+        print(
+            "[STEP] Revoking Invite"
+        )
+
+        with self.page.expect_response(
+            lambda response:
+                "/revoke" in response.url
+                and response.request.method == "POST"
+        ) as response_info:
+
+            revoke_btn.click()
+
+        response = response_info.value
+
+        print(
+            f"[REVOKE API] {response.status} | {response.url}"
+        )
+
+        assert response.status == 200, (
+            f"Revoke Invite API failed. "
+            f"Expected 200, got {response.status}"
+        )
+
+        payload = response.json()
+
+        print(
+            "\n===== REVOKE INVITE RESPONSE ====="
+        )
+
+        print(payload)
+
+        assert payload["status"] == "success"
+
+        assert (
+            payload["data"]["message"]
+            == "Invite revoked successfully"
+        )
+
+        print(
+            "[SUCCESS] Invite revoked successfully"
+        )
+
+        return payload
+
 
     def revert_no_show(self):
 

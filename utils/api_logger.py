@@ -2,98 +2,21 @@ import json
 import time
 import os
 
-from utils.helpers import write_api_log
-from utils.api_failure_logger import save_api_failure
-from utils.run_manager import get_run_folder
-
-
-def log_api_execution(
-        test_name,
-        method,
-        endpoint,
-        payload,
-        response,
-        start_time,
-        expected_status=200
-):
-
-    # =========================
-    # DURATION
-    # =========================
-    duration = round(
-        (time.time() - start_time) * 1000,
-        2
-    )
-
-    # =========================
-    # RUN CONTEXT (FIXED)
-    # =========================
-    run_id = os.path.basename(get_run_folder())   # 🔥 FIXED HERE
-
-    environment = os.getenv("TEST_ENV", "SIT")
-    username = os.getenv("TEST_USER", "amit.sharma@company.com")
-
-    sla = 1000
-
-    # =========================
-    # SAFE EXPECTED STATUS
-    # =========================
-    try:
-        expected_status = int(expected_status)
-    except:
-        expected_status = 200
-
-    # =========================
-    # SLA CHECK
-    # =========================
-    sla_status = "PASS" if duration <= sla else "FAIL"
-
-    # =========================
-    # RESULT CHECK
-    # =========================
-    actual_status = response.status_code
-
-    result = "PASS" if actual_status == expected_status else "FAIL"
-
-    # =========================
-    # FAILURE LOGGING
-    # =========================
-    if result == "FAIL":
-        save_api_failure(
-            test_name=test_name,
-            method=method,
-            endpoint=endpoint,
-            expected_status=expected_status,
-            actual_status=actual_status,
-            duration=duration,
-            payload=payload,
-            response=response,
-            error=f"Expected {expected_status} but got {actual_status}"
-        )
-
-    # =========================
-    # SERIALIZATION SAFETY
-    # =========================
-    try:
-        request_payload = json.dumps(payload, indent=4, default=str)
-    except:
-        request_payload = str(payload)
-
-    try:
-        response_body = json.dumps(response.json(), indent=4)
-    except:
-        response_body = response.text
-
-    # =========================
-    # DEBUG LOGimport json
-import time
-from datetime import datetime
-
 from utils.helpers import write_result
+from utils.api_failure_logger import save_api_failure
 from utils.run_manager import get_run_folder
 from api_framework.config.settings import Settings
 
 
+import re
+
+def safe_filename(name: str) -> str:
+    """
+    Removes invalid Windows filename characters
+    """
+    return re.sub(r'[<>:"/\\|?*]', '_', name)
+
+
 def log_api_execution(
         test_name,
         method,
@@ -101,9 +24,22 @@ def log_api_execution(
         payload,
         response,
         start_time,
-        expected_status=200
+        expected_status=200,
+        error=""
 ):
+    """
+    Central API execution logger.
 
+    Responsibilities:
+    1. Calculate duration
+    2. Determine PASS / FAIL
+    3. Save failure details
+    4. Write execution report to Excel
+    """
+
+    # ==========================================
+    # Duration
+    # ==========================================
     duration_ms = round(
         (time.time() - start_time) * 1000,
         2
@@ -117,11 +53,28 @@ def log_api_execution(
         else "FAIL"
     )
 
+    # ==========================================
+    # Response Body
+    # ==========================================
     try:
         body = response.json()
     except Exception:
-        body = {}
+        body = {
+            "raw": response.text,
+            "error": "Invalid JSON response"
+        }
 
+    actual_status = response.status_code
+
+    status = (
+        "PASS"
+        if actual_status == expected_status
+        else "FAIL"
+    )
+
+    # ==========================================
+    # Candidate Details
+    # ==========================================
     candidate_name = (
         f"{payload.get('first_name', '')} "
         f"{payload.get('last_name', '')}"
@@ -143,24 +96,52 @@ def log_api_execution(
     request_headers = {
         "Authorization":
             "***REDACTED***",
+
         "Content-Type":
             "application/json"
     }
 
-    error = ""
+    # ==========================================
+    # Preserve custom error
+    # ==========================================
+    if not error:
 
-    if response.status_code >= 400:
-        error = response.text
+        if actual_status >= 400:
+            error = response.text
+        else:
+            error = ""
 
+    # ==========================================
+    # Debug
+    # ==========================================
+    print("\nINSIDE LOGGER")
+    print("STATUS :", status)
+    print("ERROR  :", repr(error))
+
+    # ==========================================
+    # Failure Logger
+    # ==========================================
+    if status == "FAIL":
+
+        save_api_failure(
+            test_name=test_name,
+            method=method,
+            endpoint=endpoint,
+            expected_status=expected_status,
+            actual_status=actual_status,
+            duration=duration_ms,
+            payload=payload,
+            response=response,
+            error=error
+        )
+
+    # ==========================================
+    # Excel Report
+    # ==========================================
     write_result(
         test_name=test_name,
 
-        status=(
-            "PASS"
-            if response.status_code
-            == expected_status
-            else "FAIL"
-        ),
+        status=status,
 
         candidate_name=candidate_name,
 
@@ -180,7 +161,7 @@ def log_api_execution(
 
         endpoint=endpoint,
 
-        api_status=response.status_code,
+        api_status=actual_status,
 
         expected_status=expected_status,
 
@@ -199,12 +180,14 @@ def log_api_execution(
 
         request_payload=json.dumps(
             payload,
-            indent=4
+            indent=4,
+            default=str
         ),
 
         response_body=json.dumps(
             body,
-            indent=4
+            indent=4,
+            default=str
         ),
 
         error=error,

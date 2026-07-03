@@ -1,11 +1,10 @@
 import pytest
-from allpairspy import AllPairs
 from pages.login_page import LoginPage
 from pages.onboarding_page import OnboardingPage
 from pages.compensation_page import CompensationPage
 from test_data.employee_data import EMPLOYEE_PROFILES
 from utils.helpers import write_field_log
-
+from allpairspy import AllPairs
 from utils.test_data_generator import (
     unique_email,
     unique_first_name,

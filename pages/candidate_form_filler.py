@@ -177,7 +177,22 @@ class CandidateFormFiller:
 
                     continue
 
-                inp.fill(str(value))
+                # For number-type inputs (like passing_year),
+                # use press_sequentially to type digit by digit
+                input_type = inp.get_attribute("type") or "text"
+                str_value = str(value)
+
+                if input_type == "number":
+                    # Clear existing value first, then type digit by digit
+                    inp.click()
+                    inp.fill("")
+                    inp.press_sequentially(str_value, delay=50)
+                    print(
+                        f"[Number Input Typed] "
+                        f"{key} = {str_value}"
+                    )
+                else:
+                    inp.fill(str_value)
 
                 self.captured_data[key] = value     
 
@@ -476,57 +491,131 @@ class CandidateFormFiller:
 
     def fill_file_uploads(self):
 
-        profile_input = self.page.locator(
-            'input[type="file"]:not([id^="doc-"])'
-        ).first
+        import os
 
-        if profile_input.count():
+        # ===== PROFILE IMAGE =====
+        try:
+            profile_input = self.page.locator(
+                'input[type="file"][id*="profile"],'
+                'input[type="file"][id*="avatar"]'
+            ).first
 
-            profile_input.set_input_files(
-                PROFILE_IMAGE
-            )
+            if profile_input.count():
 
-            self.page.wait_for_timeout(
-                1000
-            )
-
-            try:
-
-                profile_container = profile_input.locator(
-                    "xpath=ancestor::div[contains(@class,'space-y-1.5')]"
-                )
-
-                profile_upload_btn = profile_container.get_by_role(
-                    "button",
-                    name="Upload"
-                )
-
-                profile_upload_btn.click()
-
-                self.page.wait_for_timeout(
-                    3000
-                )
-
+                abs_profile = os.path.abspath(PROFILE_IMAGE)
                 print(
-                    "[Profile Image Uploaded]"
+                    f"[PROFILE IMAGE PATH] {abs_profile}"
                 )
 
-            except Exception as e:
+                if os.path.exists(abs_profile):
+                    profile_input.set_input_files(
+                        abs_profile
+                    )
 
-                print(
-                    f"[Profile Upload Button Error] {e}"
-                )
+                    print(
+                        "[PROFILE IMAGE SELECTED]"
+                    )
 
-            self.captured_data[
-                "profile_image"
-            ] = PROFILE_IMAGE
+                    self.page.wait_for_timeout(3000)
 
+                    # Click "Crop Image" button if it appears
+                    crop_buttons = self.page.locator(
+                        "button"
+                    ).filter(
+                        has_text="Crop Image"
+                    )
+
+                    print(
+                        f"[Crop Buttons Found] "
+                        f"{crop_buttons.count()}"
+                    )
+
+                    if crop_buttons.count():
+
+                        crop_btn = crop_buttons.first
+
+                        crop_btn.wait_for(
+                            state="visible",
+                            timeout=10000
+                        )
+
+                        crop_btn.scroll_into_view_if_needed()
+
+                        crop_btn.click(
+                            force=True
+                        )
+
+                        print(
+                            "[CROP IMAGE CLICKED]"
+                        )
+
+                        self.page.wait_for_timeout(
+                            3000
+                        )
+
+                    else:
+                        print(
+                            "[CROP BUTTON NOT FOUND]"
+                        )
+
+                    self.captured_data[
+                        "profile_image"
+                    ] = PROFILE_IMAGE
+
+                else:
+                    print(
+                        f"[PROFILE IMAGE FILE NOT FOUND] "
+                        f"{abs_profile}"
+                    )
+            else:
+                print("[NO PROFILE INPUT FOUND]")
+
+        except Exception as e:
+            print(f"[Profile Image Error] {e}")
+
+        # ===== DOCUMENT UPLOADS =====
         print("\n===== DOCUMENT UPLOAD START =====")
+
+        abs_pdf = os.path.abspath(TEST_PDF)
+        print(f"[TEST PDF PATH] {abs_pdf}")
+
+        if not os.path.exists(abs_pdf):
+            print(f"[TEST PDF NOT FOUND] {abs_pdf}")
+            return
 
         uploaded = 0
 
-        while True:
+        # Find all document file inputs
+        document_inputs = self.page.locator(
+            'input[type="file"][id^="doc-"]'
+        )
 
+        doc_count = document_inputs.count()
+        print(f"[Document Inputs Found] {doc_count}")
+
+        if doc_count == 0:
+            # Try alternate selector for document uploads
+            document_inputs = self.page.locator(
+                'input[type="file"]'
+            ).filter(
+                has_not=self.page.locator(
+                    '[id*="profile"], [id*="avatar"]'
+                )
+            )
+            doc_count = document_inputs.count()
+            print(
+                f"[Alternate Doc Inputs Found] "
+                f"{doc_count}"
+            )
+
+        # Use indexed approach - upload one at a time
+        max_attempts = 50  # safety limit
+        attempt = 0
+
+        while attempt < max_attempts:
+            attempt += 1
+
+            # Re-query each iteration since DOM changes after upload
             document_inputs = self.page.locator(
                 'input[type="file"][id^="doc-"]'
             )
@@ -534,11 +623,9 @@ class CandidateFormFiller:
             remaining = document_inputs.count()
 
             if remaining == 0:
-
                 break
 
             try:
-
                 file_input = document_inputs.first
 
                 doc_id = (
@@ -547,30 +634,43 @@ class CandidateFormFiller:
                 )
 
                 print(
-                    f"[Uploading] {doc_id}"
+                    f"[Uploading] {doc_id} "
+                    f"({remaining} remaining)"
                 )
 
-                file_input.set_input_files(
-                    TEST_PDF
-                )
-                self.captured_data[
-                    doc_id
-                ] = TEST_PDF
+                file_input.set_input_files(abs_pdf)
 
+                self.page.wait_for_timeout(1000)
+
+                # Try to find and click Upload button
+                # Method 1: Look for Upload button near the file input
                 container = file_input.locator(
-                    "xpath=ancestor::div[contains(@class,'space-y-1.5')]"
+                    "xpath=ancestor::div[contains(@class,'space-y')]"
                 )
 
-                upload_btn = container.get_by_role(
-                    "button",
-                    name="Upload"
-                )
+                upload_btn = None
 
-                upload_btn.click()
+                if container.count():
+                    upload_btn = container.get_by_role(
+                        "button",
+                        name="Upload"
+                    )
 
-                self.page.wait_for_timeout(
-                    3000
-                )
+                # Method 2: Fallback - find any visible Upload button
+                if not upload_btn or not upload_btn.count():
+                    upload_btn = self.page.get_by_role(
+                        "button",
+                        name="Upload"
+                    ).first
+
+                if upload_btn and upload_btn.count():
+                    upload_btn.click()
+                    self.page.wait_for_timeout(3000)
+                else:
+                    print(
+                        f"[No Upload Button Found] {doc_id}"
+                    )
+                    self.page.wait_for_timeout(1000)
 
                 uploaded += 1
 
@@ -578,6 +678,7 @@ class CandidateFormFiller:
                     f"[Uploaded] {doc_id}"
                 )
 
+                self.captured_data[doc_id] = TEST_PDF
                 self.captured_data[
                     f"upload_{doc_id}"
                 ] = TEST_PDF
@@ -585,10 +686,12 @@ class CandidateFormFiller:
             except Exception as e:
 
                 print(
-                    f"[Upload Error] {doc_id}: {e}"
+                    f"[Upload Error] {e}"
                 )
 
-                break
+                # Don't break - try next document
+                self.page.wait_for_timeout(1000)
+                continue
 
         print(
             f"===== DOCUMENT UPLOAD COMPLETE ({uploaded}) =====\n"

@@ -109,15 +109,23 @@ class BaseClient:
     def post(
             self,
             endpoint,
-            payload=None
+            payload=None,
+            **kwargs
     ):
         start = time.time()
 
-        response = requests.post(
-            f"{self.base_url}{endpoint}",
-            headers=self.headers,
-            json=payload
-        )
+        if kwargs:
+            response = requests.post(
+                f"{self.base_url}{endpoint}",
+                headers=self.headers,
+                **kwargs
+            )
+        else:
+            response = requests.post(
+                f"{self.base_url}{endpoint}",
+                headers=self.headers,
+                json=payload
+            )
 
         duration = round(
             (

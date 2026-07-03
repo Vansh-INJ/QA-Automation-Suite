@@ -1,7 +1,8 @@
-﻿import pytest
+import pytest
 from conftest import page
 from pages.login_page import LoginPage
 from pages.onboarding_page import OnboardingPage
+from pages.candidate_form_filler import CandidateFormFiller
 from pages.compensation_page import CompensationPage
 from pages.candidate_onboarding_page import (
     CandidateOnboardingPage

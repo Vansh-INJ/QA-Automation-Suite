@@ -22,6 +22,10 @@ def test_add_employee(page):
 
     employee.fill_compensation()
 
+    employee.fill_additional_details()
+
+    employee.fill_documents()
+
     payload = employee.create_employee()
 
     assert payload["status"] == "success"

@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 from datetime import datetime
 
@@ -8,7 +8,7 @@ from utils.run_manager import get_run_folder
 import pytest
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
-
+from utils.helpers import write_result
 from utils.test_context import TEST_CONTEXT
 from utils.api_context import API_CONTEXT
 from utils.helpers import (
@@ -21,6 +21,7 @@ from utils.api_summary import print_api_summary
 
 from api_framework.auth.token_manager import TokenManager
 from api_framework.clients.offer_client import OfferClient
+from api_framework.clients.onboarding_client import OnboardingClient
 from api_framework.config.settings import Settings
 
 
@@ -41,6 +42,12 @@ def authenticated_offer_client():
     return OfferClient(
         base_url=Settings.BASE_URL,
         headers=TokenManager.get_headers(),
+    )
+
+@pytest.fixture(scope="function")
+def onboarding_client():
+    return OnboardingClient(
+        base_url=Settings.BASE_URL,
     )
 
 
@@ -219,7 +226,63 @@ def report_result(request, run_folder):
             pass
     
     if "/api/" not in str(request.node.nodeid).replace("\\", "/"):
-      write_result(...)
+        write_result(
+            test_name=test_name,
+            status="FAILED" if failed else "PASSED",
+            error=error,
+            screenshot=TEST_CONTEXT.get(
+                "screenshot",
+                ""
+            ),
+            action=TEST_CONTEXT.get(
+                "action",
+                ""
+            ),
+            candidate_name=TEST_CONTEXT.get(
+                "candidate_name",
+                ""
+            ),
+            candidate_email=TEST_CONTEXT.get(
+                "candidate_email",
+                ""
+            ),
+            api_message=TEST_CONTEXT.get(
+                "api_message",
+                ""
+            ),
+            run_id=os.path.basename(
+                run_folder
+            ),
+            environment=os.getenv(
+                "BASE_URL",
+                ""
+            ),
+            username=os.getenv(
+                "TEST_USER",
+                ""
+            ),
+            method=method,
+            endpoint=endpoint,
+            api_status=excel_safe(
+                api_status
+            ),
+            expected_status=TEST_CONTEXT.get(
+                "expected_status",
+                ""
+            ),
+            duration=duration,
+            sla=sla,
+            sla_status=sla_status,
+            request_headers=excel_safe(
+                request_headers
+            ),
+            request_payload=excel_safe(
+                request_payload
+            ),
+            response_body=excel_safe(
+                response_body
+            )
+        )
 
     write_result(
         test_name=test_name,
@@ -312,6 +375,12 @@ def page(request, run_folder):
         # ======================================
 
         def capture_failed_response(response):
+            if "upload" in response.url.lower():
+                print(f"UPLOAD API INTERCEPTED: {response.request.method} {response.url}")
+                try:
+                    print("UPLOAD RESPONSE:", response.text())
+                except:
+                    pass
             if response.status >= 400:
                 logger.error(
                     f"API FAILURE | "

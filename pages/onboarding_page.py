@@ -292,7 +292,10 @@ class OnboardingPage(BasePage):
         super().__init__(page)
     
     def onboarding_modal(self):
-     return self.page.locator("[role='dialog']").last
+        dialog = self.page.locator("[role='dialog']")
+        if dialog.count() > 0:
+            return dialog.last
+        return self.page
 
 
     # ==========================================

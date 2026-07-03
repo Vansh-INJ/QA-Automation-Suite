@@ -120,11 +120,14 @@ class CandidateOnboardingPage:
     def verify_form_loaded(self):
         self.page.wait_for_load_state("networkidle")
 
+        # Exclude hidden file inputs which cause visibility timeouts
         controls = self.page.locator(
-            "input, textarea, select, [role='combobox']"
+            "input:not([type='file']):not([type='hidden']), "
+            "textarea, select, [role='combobox']"
         )
 
-        controls.first.wait_for(timeout=10000)
+        # Wait for the first visible control to be attached in the DOM
+        controls.first.wait_for(state="attached", timeout=15000)
 
         count = controls.count()
 

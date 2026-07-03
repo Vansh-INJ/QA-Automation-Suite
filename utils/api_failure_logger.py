@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-
+from utils.file_sanitizer import safe_filename
 from utils.run_manager import (
     get_run_folder
 )
@@ -38,9 +38,11 @@ def save_api_failure(
         )
     )
 
+    safe_name = safe_filename(test_name)
+
     filename = os.path.join(
         failure_folder,
-        f"{test_name}_{timestamp}.json"
+        f"{safe_name}_{timestamp}.json"
     )
 
     try:

@@ -44,82 +44,82 @@ import json
 import time
 import os
 
-def log_api_execution(
-        test_name,
-        method,
-        endpoint,
-        payload,
-        response,
-        start_time,
-        expected_status=200,
-        environment="",
-        username=""
-):
+# def log_api_execution(
+#         test_name,
+#         method,
+#         endpoint,
+#         payload,
+#         response,
+#         start_time,
+#         expected_status=200,
+#         environment="",
+#         username=""
+# ):
 
-    duration = round(
-        (time.time() - start_time) * 1000,
-        2
-    )
+#     duration = round(
+#         (time.time() - start_time) * 1000,
+#         2
+#     )
 
-    try:
-        body = response.json()
-    except Exception:
-        body = {}
+#     try:
+#         body = response.json()
+#     except Exception:
+#         body = {}
 
-    write_result(
-        test_name=test_name,
-        status="PASS"
-        if response.status_code == expected_status
-        else "FAIL",
+#     write_result(
+#         test_name=test_name,
+#         status="PASS"
+#         if response.status_code == expected_status
+#         else "FAIL",
 
-        run_id=os.path.basename(RUN_FOLDER),
+#         run_id=os.path.basename(RUN_FOLDER),
 
-        environment=environment,
-        username=username,
+#         environment=environment,
+#         username=username,
 
-        candidate_name=(
-            f"{payload.get('first_name', '')} "
-            f"{payload.get('last_name', '')}"
-        ).strip(),
+#         candidate_name=(
+#             f"{payload.get('first_name', '')} "
+#             f"{payload.get('last_name', '')}"
+#         ).strip(),
 
-        candidate_email=payload.get("email"),
+#         candidate_email=payload.get("email"),
 
-        action="Offer Creation",
+#         action="Offer Creation",
 
-        method=method,
-        endpoint=endpoint,
-        api_status=response.status_code,
-        expected_status=expected_status,
-        duration=duration,
-        sla=1000,
-        sla_status=(
-            "PASS"
-            if duration <= 1000
-            else "FAIL"
-        ),
+#         method=method,
+#         endpoint=endpoint,
+#         api_status=response.status_code,
+#         expected_status=expected_status,
+#         duration=duration,
+#         sla=1000,
+#         sla_status=(
+#             "PASS"
+#             if duration <= 1000
+#             else "FAIL"
+#         ),
 
-        api_message=body.get(
-            "message",
-            body.get("status", "")
-        ),
+#         api_message=body.get(
+#             "message",
+#             body.get("status", "")
+#         ),
 
-        request_headers=json.dumps({
-            "Authorization": "***REDACTED***",
-            "Content-Type": "application/json"
-        }),
+#         request_headers=json.dumps({
+#             "Authorization": "***REDACTED***",
+#             "Content-Type": "application/json"
+#         }),
 
-        request_payload=json.dumps(
-            payload,
-            indent=4
-        ),
+#         request_payload=json.dumps(
+#             payload,
+#             indent=4
+#         ),
 
-        response_body=json.dumps(
-            body,
-            indent=4
-        ),
+#         response_body=json.dumps(
+#             body,
+#             indent=4
+#         ),
 
-        error=""
-    )
+#         error=""
+#     )
     
 def create_excel_report():
 
@@ -158,8 +158,8 @@ def create_excel_report():
             "Response Body",
 
             # Failure details
-            "Error",
             "Screenshot",
+            "Error",
         ])
 
         wb.save(REPORT_FILE)
@@ -191,6 +191,7 @@ def write_result(
     request_headers="",
     request_payload="",
     response_body="",
+
 ):
 
     create_excel_report()
@@ -251,7 +252,7 @@ def write_api_log(*,
         request_headers=None,
         request_payload=None,
         response_body=None,
-        error=None
+        error=""
 ):
     """
     BACKWARD-COMPATIBLE WRAPPER.
