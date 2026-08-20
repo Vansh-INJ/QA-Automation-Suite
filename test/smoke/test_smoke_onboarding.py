@@ -10,7 +10,7 @@ from pages.candidate_onboarding_page import (
 from utils.run_manager import get_run_folder
 
 RUN_FOLDER = get_run_folder()
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from test_data.employee_data import (
     EMPLOYEE_PROFILES,
@@ -85,7 +85,7 @@ def test_valid_employee_onboarding(page, employee_data):
     # LOGIN
     # ======================================
     login.open()
-    login.login_as_super_admin()
+    login.login()
     print(
         f"[URL AFTER LOGIN] {page.url}"
     )
@@ -293,6 +293,10 @@ def test_valid_employee_onboarding(page, employee_data):
         full_page=True)
 
         candidate.verify_form_loaded()
+
+        # Set a past date for DOB specifically in this script case
+        CANDIDATE_DATA["dob"] = "2016-05-15"
+        print(f"[DOB override] Set Date of Birth to past date: {CANDIDATE_DATA['dob']}")
 
         candidate_data = candidate.fill_all_tabs()
 

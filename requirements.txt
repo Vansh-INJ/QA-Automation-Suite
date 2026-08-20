@@ -1,3 +1,5 @@
-﻿pytest
+pytest
 playwright
 openpyxl
+allpairspy
+python-dotenv

@@ -19,6 +19,56 @@ class AddEmployeePage:
         self.compensation = CompensationPage(page)
         self.filler = CandidateFormFiller(page)
 
+    
+    def create_multiple_employees(self, employee, count=1):
+        """
+        Creates multiple employees using the existing flow.
+
+        Args:
+            employee (dict): Employee test data.
+            count (int): Number of employees to create.
+        """
+
+        created_employees = []
+
+        for i in range(count):
+            print("\n" + "=" * 70)
+            print(f"Creating Employee {i + 1} of {count}")
+            print("=" * 70)
+
+            # Open Add Employee page
+            self.open()
+
+            # Employment Details
+            self.fill_employee_details(employee)
+
+            # Compensation
+            self.fill_compensation()
+
+            # Additional Details
+            self.fill_additional_details()
+
+            # Documents
+            self.fill_documents()
+
+            # Profile Picture
+            self.upload_profile_picture()
+
+            # Save Employee
+            payload = self.create_employee()
+
+            created_employees.append({
+                "emp_code": TEST_CONTEXT.get("emp_code"),
+                "user_uuid": TEST_CONTEXT.get("user_uuid"),
+                "email": TEST_CONTEXT.get("email"),
+                "first_name": TEST_CONTEXT.get("first_name"),
+                "last_name": TEST_CONTEXT.get("last_name")
+            })
+
+            print(f"Employee {i + 1} Created Successfully")
+
+        return created_employees
+
         
     def fill_documents(self):
 
@@ -178,7 +228,7 @@ class AddEmployeePage:
 
         # Employee Type
         self.onboarding.select_dropdown(
-            "Select type",
+            "Select Employment Type",
             employee["employee_type"]
         )
 
@@ -190,11 +240,43 @@ class AddEmployeePage:
 
         # Work Location
         self.onboarding.select_dropdown(
-            "Select location"
+            "Select Work Location"
         )
 
         # Fill any remaining dropdowns (e.g. shift, grade, etc.)
         self.onboarding.fill_remaining_dropdowns()
+
+        # self.page.pause()
+
+        # Date of Joining
+       # ---------------- Date of Joining ---------------- #
+
+        joining_date = employee.get("joining_date")
+
+        if joining_date:
+            from datetime import datetime
+            try:
+                doj = datetime.strptime(joining_date, "%d/%m/%y")
+            except ValueError:
+                doj = datetime.strptime(joining_date, "%d-%m-%Y")
+
+            target_day = f"{doj.month}/{doj.day}/{doj.year}"
+            print(f"[JOINING DATE] Selecting: {target_day}")
+
+            try:
+                # Try finding the trigger relative to the label
+                date_btn = self.page.locator("label:has-text('Date of Joining')").locator("..").locator('button[data-slot="popover-trigger"]')
+                if date_btn.count() == 0:
+                    date_btn = self.page.locator('button[data-slot="popover-trigger"]').last
+            except Exception:
+                date_btn = self.page.locator('button[data-slot="popover-trigger"]').last
+
+            date_btn.first.click()
+
+            day_btn = self.page.locator(f'button[data-day="{target_day}"]')
+            day_btn.first.wait_for(state="visible", timeout=5000)
+            day_btn.first.click()
+            print("[JOINING DATE] Date selected successfully")
 
         # Validate that all required fields on the first tab are filled
         missing = self.onboarding.check_unfilled_required_fields()

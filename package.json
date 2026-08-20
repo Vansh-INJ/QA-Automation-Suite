@@ -1,0 +1,44 @@
+{
+    "name": "qa-automation-suite",
+    "version": "1.0.0",
+    "description": "Enterprise QA Automation Suite using Playwright (Python) and Cypress (JavaScript)",
+    "private": true,
+    "engines": {
+        "node": ">=22.0.0",
+        "npm": ">=10.0.0"
+    },
+    "scripts": {
+        "cy:open": "cypress open",
+        "cy:run": "cypress run",
+        "cy:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.js\"",
+        "cy:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.js\"",
+        "cy:performance": "cypress run --spec \"cypress/e2e/performance/**/*.cy.js\"",
+        "cy:responsive": "cypress run --spec \"cypress/e2e/responsive/**/*.cy.js\"",
+        "cy:browser": "cypress run --spec \"cypress/e2e/browser/**/*.cy.js\"",
+        "cy:integration": "cypress run --spec \"cypress/e2e/integration/**/*.cy.js\"",
+        "cy:chrome": "cypress run --browser chrome",
+        "cy:firefox": "cypress run --browser firefox",
+        "cy:edge": "cypress run --browser edge",
+        "cy:headed": "cypress run --headed",
+        "cy:headless": "cypress run --headless",
+        "cy:report": "mochawesome-merge reports/mochawesome/*.json > reports/mochawesome/report.json && marge reports/mochawesome/report.json --reportDir reports/mochawesome",
+        "cy:clean": "npx rimraf reports cypress/screenshots cypress/videos",
+        "cy:verify": "cypress verify"
+    },
+    "devDependencies": {
+        "@percy/cypress": "^3.1.4",
+        "cypress": "^15.2.0",
+        "cypress-axe": "^1.7.0",
+        "cypress-visual-regression": "^6.0.0",
+        "dotenv": "^17.2.0",
+        "eslint": "^9.35.0",
+        "mochawesome": "^7.1.4",
+        "mochawesome-merge": "^5.0.0",
+        "mochawesome-report-generator": "^6.3.0",
+        "prettier": "^3.6.2",
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7",
+        "rimraf": "^6.0.1",
+        "vite": "^8.1.4"
+    }
+}

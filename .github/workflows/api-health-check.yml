@@ -1,0 +1,57 @@
+name: Daily API Health Check
+
+on:
+  schedule:
+    # 01:30 UTC = 11:30 IST. GitHub Actions cron is always UTC — adjust the
+    # hour here if HEALTH_RUN_TIME in your local .env ever changes, since
+    # this cron value is now the actual source of truth for the schedule
+    # (not .env / setup_scheduler.py — that was the Windows-only path).
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}   # lets you trigger a manual run anytime from the Actions tab
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run API Health Suite (includes report + email + Slack)
+        env:
+          BASE_URL: ${{ secrets.HEALTH_BASE_URL }}
+          HEALTH_USER_USERNAME: ${{ secrets.HEALTH_USER_USERNAME }}
+          HEALTH_USER_PASSWORD: ${{ secrets.HEALTH_USER_PASSWORD }}
+          HEALTH_SLACK_WEBHOOK_URL: ${{ secrets.HEALTH_SLACK_WEBHOOK_URL }}
+          HEALTH_MAIL_ENABLED: ${{ secrets.HEALTH_MAIL_ENABLED }}
+          HEALTH_SMTP_HOST: ${{ secrets.HEALTH_SMTP_HOST }}
+          HEALTH_SMTP_PORT: ${{ secrets.HEALTH_SMTP_PORT }}
+          HEALTH_SMTP_USERNAME: ${{ secrets.HEALTH_SMTP_USERNAME }}
+          HEALTH_SMTP_PASSWORD: ${{ secrets.HEALTH_SMTP_PASSWORD }}
+          HEALTH_MAIL_FROM: ${{ secrets.HEALTH_MAIL_FROM }}
+          HEALTH_MAIL_TO: ${{ secrets.HEALTH_MAIL_TO }}
+          HEALTH_MAIL_SUBJECT_PREFIX: ${{ secrets.HEALTH_MAIL_SUBJECT_PREFIX }}
+        run: |
+          python run_health_check.py
+
+      - name: Upload report + failure logs as artifact
+        if: always()   # upload even if tests failed — that's the run you most want to inspect
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-health-report-${{ github.run_id }}
+          path: |
+            junit-health.xml
+            **/api_health_report.xlsx
+            **/api_failures/**
+          retention-days: 30

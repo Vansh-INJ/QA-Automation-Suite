@@ -430,31 +430,45 @@ class OnboardingApprovalPage:
         return False
     
     def show_100_candidates(self):
+        """
+        Change pagination from 10 -> 100 rows.
+        Compatible with Radix/ShadCN Select.
+        """
 
-        pagination = self.page.get_by_role(
-            "combobox"
-        ).filter(
-            has_text="10"
-        ).first
+        # Locate the pagination selector (10 rows)
+        pagination = (
+            self.page.locator(
+                "button[data-slot='select-trigger']"
+            )
+            .filter(has_text="10")
+            .last
+        )
 
+        pagination.wait_for(state="visible", timeout=10000)
         pagination.click()
 
-        self.page.get_by_text(
-            "100",
-            exact=True
-        ).click()
+        # Wait until dropdown opens
+        listbox = self.page.get_by_role("listbox")
+        listbox.wait_for(state="visible", timeout=10000)
 
-        self.page.wait_for_load_state(
-            "networkidle"
+        # Wait until the 100 option is visible
+        option = listbox.get_by_role(
+            "option",
+            name="100"
         )
 
-        self.page.wait_for_timeout(
-            3000
-        )
+        option.wait_for(state="visible", timeout=10000)
 
-        print(
-            "[PAGINATION CHANGED] Showing 100 candidates"
-        )
+        # Click the option
+        option.click()
+
+        # Wait until dropdown closes
+        listbox.wait_for(state="hidden", timeout=10000)
+
+        # Wait until table refreshes
+        self.page.wait_for_load_state("networkidle")
+
+        print("[PAGINATION CHANGED] Showing 100 candidates")
 
     
     def show_all_candidates(self):

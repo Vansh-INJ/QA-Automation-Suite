@@ -103,7 +103,7 @@ def test_combinatorial_dropdowns(page, job_offered, dept, job_title, hierarchy, 
     # LOGIN
     # =========================================================
     login.open()
-    login.login_as_super_admin()
+    login.login()
     
 
     # =========================================================

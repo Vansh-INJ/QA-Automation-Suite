@@ -20,7 +20,7 @@ def test_employee_onboarding_rejection(page):
 
     login.open()
 
-    login.login_as_super_admin()
+    login.login.login()
    
 
     # =====================================

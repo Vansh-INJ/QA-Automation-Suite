@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 
 
@@ -34,6 +35,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Reference",
         "department": "Information Technology",
         "employee_type": "Full Time",
+        "joining_date": datetime.today().strftime("%d/%m/%y"),
         "company_entity": "INJ Technologies",
         "salary_structure": "Noida Salary Structure Main",
     },
@@ -46,6 +48,7 @@ EMPLOYEE_PROFILES = [
         "department": "Information Technology",
         "employee_type": "Part Time",
         "company_entity": "INJ Partners",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "salary_structure": "Noida Salary Structure WO Bonus",
     },
     {
@@ -56,6 +59,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Reference",
         "department": "Information Technology",
         "employee_type": "Full Time",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "company_entity": "INJ Technologies",
         "salary_structure": "Noida Salary Structure Main",
     },
@@ -68,6 +72,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Engineering",
         "department": "Information Technology",
         "employee_type": "Part Time",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "company_entity": "INJ Partners",
         "salary_structure": "Noida Salary Structure WO Bonus",
     },
@@ -80,6 +85,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Engineering",
         "department": "Information Technology",
         "employee_type": "Contract",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "company_entity": "INJ Technologies",
         "salary_structure": "Noida Salary Structure Main",
     },
@@ -92,6 +98,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Reference",
         "department": "Information Technology",
         "employee_type": "Full Time",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "company_entity": "INJ Partners",
         "salary_structure": "Noida Salary Structure WO Bonus",
     },
@@ -104,6 +111,7 @@ EMPLOYEE_PROFILES = [
         "job_offered": "Engineering",
         "department": "Information Technology",
         "employee_type": "Part Time",
+        "joining_date": datetime.today().strftime("%d-%m-%Y"),
         "company_entity": "INJ Technologies",
         "salary_structure": "Noida Salary Structure Main",
     },

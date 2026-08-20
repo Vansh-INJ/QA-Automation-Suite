@@ -23,7 +23,7 @@ def test_onboarding_revert_no_show(page):
 
     login.open()
 
-    login.login_as_super_admin()
+    login.login.login()
 
     # =====================================
     # OPEN ONBOARDING PAGE

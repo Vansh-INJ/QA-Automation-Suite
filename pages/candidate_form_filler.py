@@ -344,36 +344,70 @@ class CandidateFormFiller:
                     # =========================
                     # MONTH
                     # =========================
-                    month_dropdown = self.page.locator(
-                        'select[aria-label="Choose the Month"]'
-                    )
+                    month_native = self.page.locator('select[aria-label="Choose the Month"]')
+                    month_radix = self.page.locator('button.rdp-months_dropdown')
 
-                    if month_dropdown.count():
-
-                        month_dropdown.select_option(
-                            label=month_name
-                        )
-
-                        print(
-                            f"[DOB Month Selected] {month_name}"
-                        )
+                    if month_native.count():
+                        month_native.select_option(label=month_name)
+                        print(f"[DOB Month Selected] {month_name}")
+                    elif month_radix.count():
+                        month_radix.click()
+                        self.page.wait_for_timeout(500)
+                        
+                        import re
+                        month_opt = self.page.get_by_role("option", name=re.compile(f"^{month_name}", re.IGNORECASE))
+                        if month_opt.count():
+                            month_opt.first.click()
+                            print(f"[DOB Month Selected (Radix)] {month_name}")
+                        else:
+                            print(f"[DOB] Month {month_name} not found in Radix options.")
+                            self.page.keyboard.press("Escape")
 
                     # =========================
                     # YEAR
                     # =========================
-                    year_dropdown = self.page.locator(
-                        'select[aria-label="Choose the Year"]'
-                    )
+                    year_native = self.page.locator('select[aria-label="Choose the Year"]')
+                    year_radix = self.page.locator('button.rdp-years_dropdown')
 
-                    if year_dropdown.count():
-
-                        year_dropdown.select_option(
-                            value=year
-                        )
-
-                        print(
-                            f"[DOB Year Selected] {year}"
-                        )
+                    if year_native.count():
+                        target_y = int(year)
+                        
+                        for _ in range(20): # Max 20 shifts
+                            opts = year_native.evaluate(
+                                "el => Array.from(el.options).map(o => parseInt(o.text)).filter(v => !isNaN(v)).sort((a,b) => a-b)"
+                            )
+                            if not opts:
+                                print("[DOB] No numeric options in year dropdown")
+                                break
+                                
+                            min_y = opts[0]
+                            max_y = opts[-1]
+                            
+                            if min_y <= target_y <= max_y:
+                                year_native.select_option(label=str(target_y))
+                                print(f"[DOB Year Selected] {target_y}")
+                                break
+                            elif target_y < min_y:
+                                year_native.select_option(label=str(min_y))
+                                self.page.wait_for_timeout(500)
+                            else:
+                                year_native.select_option(label=str(max_y))
+                                self.page.wait_for_timeout(500)
+                    elif year_radix.count():
+                        year_radix.click()
+                        self.page.wait_for_timeout(500)
+                        
+                        year_opt = self.page.get_by_role("option", name=year)
+                        if year_opt.count():
+                            year_opt.first.click()
+                            print(f"[DOB Year Selected (Radix)] {year}")
+                        else:
+                            print(f"[DOB] Year {year} not found in Radix options. Selecting earliest available.")
+                            options = self.page.get_by_role("option")
+                            if options.count():
+                                options.first.click()
+                            else:
+                                self.page.keyboard.press("Escape")
 
                     self.page.wait_for_timeout(
                         1000
