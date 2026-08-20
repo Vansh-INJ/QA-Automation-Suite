@@ -1,23 +1,9 @@
 """
-Reporting for the API Health Suite — v3.
+Reporting for the API Health Suite — v5.
 
-Full column set:
-    Candidate Name, Candidate Email, Action, Method, Endpoint, API Status,
-    Expected Status, Duration(ms), SLA(ms), SLA Status, API Message,
-    Request Headers, Request Payload, Response Body, Screenshot, Error
-
-Notes on mapping for an API-only health suite (no browser/candidate flow):
-    - "Candidate Name" / "Candidate Email" = the identity the API call was
-      executed as (the health-check service account), not an actual
-      onboarding candidate. Populated from the login response's `user`
-      block so the report always shows exactly who/what ran the check.
-    - "Screenshot" is always "N/A (API-only check)" — this suite has no
-      browser/UI leg. Kept as a column for template consistency with the
-      rest of the suite's reports, and to make room for it if a UI leg is
-      ever added to health checks later.
-    - "API Message" = a short human-readable one-liner (e.g. "OK" or the
-      server's error message), separate from the full raw body which goes
-      in "Response Body".
+Same as v3's column set and Excel logic, PLUS a write_summary_json() method
+so n8n (or anything else) can consume results as structured JSON instead of
+having to parse an Excel file.
 """
 
 import os
@@ -27,7 +13,6 @@ from datetime import datetime
 try:
     from openpyxl import Workbook
     from openpyxl.styles import Font, PatternFill, Alignment
-    from openpyxl.utils import get_column_letter
 except ImportError as e:
     raise ImportError(
         "openpyxl is required for health reporting. Add `openpyxl` to requirements.txt"
@@ -98,6 +83,7 @@ class HealthReporter:
             sla_status = "WITHIN SLA" if elapsed_ms <= sla_ms else "SLA BREACH"
 
         self.results.append({
+            "name": name,
             "candidate_name": candidate_name or "N/A",
             "candidate_email": candidate_email or "N/A",
             "action": action,
@@ -127,6 +113,12 @@ class HealthReporter:
         failed = total - passed
         sla_breaches = [r["action"] for r in self.results if r["sla_status"] == "SLA BREACH"]
         critical_failed = [r["action"] for r in self.results if r["critical"] and not r["passed"]]
+        failed_endpoints = [
+            {"name": r["name"], "action": r["action"], "status_code": r["status_code"],
+             "expected_status": r["expected_status"], "error": r["error"],
+             "api_message": r["api_message"]}
+            for r in self.results if not r["passed"]
+        ]
         return {
             "total": total,
             "passed": passed,
@@ -134,13 +126,13 @@ class HealthReporter:
             "pass_rate": round((passed / total) * 100, 1) if total else 0,
             "critical_failed": critical_failed,
             "sla_breaches": sla_breaches,
+            "failed_endpoints": failed_endpoints,
             "run_time": datetime.now().isoformat(timespec="seconds"),
         }
 
     def write_excel(self) -> str:
         wb = Workbook()
 
-        # --- Summary sheet ---
         ws = wb.active
         ws.title = "Summary"
         s = self.summary
@@ -159,7 +151,6 @@ class HealthReporter:
         ws.column_dimensions["A"].width = 22
         ws.column_dimensions["B"].width = 70
 
-        # --- Details sheet ---
         wd = wb.create_sheet("Details")
         headers = [
             "Candidate Name", "Candidate Email", "Action", "Method", "Endpoint",
@@ -178,45 +169,36 @@ class HealthReporter:
         for r in self.results:
             row_idx = wd.max_row + 1
             wd.append([
-                r["candidate_name"],
-                r["candidate_email"],
-                r["action"],
-                r["method"],
-                r["endpoint"],
-                r["status_code"],
-                r["expected_status"],
-                r["elapsed_ms"],
-                r["sla_ms"],
-                r["sla_status"],
-                r["api_message"],
-                _pretty(r["request_headers"]),
-                _pretty(r["request_payload"]),
-                _pretty(r["response_body"]),
-                r["screenshot"],
-                r["error"],
-                r["timestamp"],
+                r["candidate_name"], r["candidate_email"], r["action"], r["method"],
+                r["endpoint"], r["status_code"], r["expected_status"], r["elapsed_ms"],
+                r["sla_ms"], r["sla_status"], r["api_message"],
+                _pretty(r["request_headers"]), _pretty(r["request_payload"]),
+                _pretty(r["response_body"]), r["screenshot"], r["error"], r["timestamp"],
             ])
-
             pass_fill = PASS_FILL if r["passed"] else FAIL_FILL
             for col in range(1, len(headers) + 1):
                 wd.cell(row=row_idx, column=col).fill = pass_fill
-                wd.cell(row=row_idx, column=col).alignment = Alignment(
-                    vertical="top", wrap_text=True
-                )
-
-            # SLA Status column gets its own highlight when it's a breach,
-            # independent of pass/fail coloring (a 200 OK can still be slow).
+                wd.cell(row=row_idx, column=col).alignment = Alignment(vertical="top", wrap_text=True)
             if r["sla_status"] == "SLA BREACH":
                 wd.cell(row=row_idx, column=10).fill = SLA_WARN_FILL
 
-        widths = {
-            "A": 18, "B": 24, "C": 26, "D": 8, "E": 32, "F": 11, "G": 13,
-            "H": 13, "I": 10, "J": 13, "K": 30, "L": 34, "M": 34, "N": 40,
-            "O": 20, "P": 40, "Q": 20,
-        }
+        widths = {"A": 18, "B": 24, "C": 26, "D": 8, "E": 32, "F": 11, "G": 13,
+                  "H": 13, "I": 10, "J": 13, "K": 30, "L": 34, "M": 34, "N": 40,
+                  "O": 20, "P": 40, "Q": 20}
         for col_letter, width in widths.items():
             wd.column_dimensions[col_letter].width = width
 
         out_path = os.path.join(self.run_folder, "api_health_report.xlsx")
         wb.save(out_path)
+        return out_path
+
+    def write_summary_json(self) -> str:
+        """
+        Writes a compact JSON summary (not the full per-row detail) —
+        this is what n8n's HTTP Request node will actually parse to decide
+        pass/fail branching and compose the notification message.
+        """
+        out_path = os.path.join(self.run_folder, "summary.json")
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(self.summary, f, indent=2)
         return out_path
