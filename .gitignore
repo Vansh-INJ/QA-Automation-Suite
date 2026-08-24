@@ -32,3 +32,5 @@ reports/
 
 # Logs
 *.log
+/.env
+.env

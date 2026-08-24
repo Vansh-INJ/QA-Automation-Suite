@@ -573,13 +573,26 @@ class OnboardingPage(BasePage):
                     f"{options.nth(i).inner_text()}"
                 )
 
-            if count <= 1:
+            if count == 0:
                 raise Exception(
                     f"No selectable options found "
                     f"for {placeholder_text}"
                 )
 
-            option = options.nth(1)
+            first_opt_text = options.nth(0).inner_text().strip().lower()
+
+            if count == 1:
+                if first_opt_text.startswith("select"):
+                    raise Exception(
+                        f"No selectable options found "
+                        f"for {placeholder_text}"
+                    )
+                option = options.nth(0)
+            else:
+                if first_opt_text.startswith("select"):
+                    option = options.nth(1)
+                else:
+                    option = options.nth(0)
 
             selected_text = option.inner_text()
 

@@ -3,3 +3,4 @@ playwright
 openpyxl
 allpairspy
 python-dotenv
+resend

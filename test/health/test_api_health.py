@@ -1,40 +1,40 @@
 """
-Daily API Health Suite — v3.
+Daily API Health Suite — v7.
 
-Feeds the full reporting column set (identity, SLA, payload, response body,
-etc.) into HealthReporter.record() for every endpoint, using real data
-captured from the actual request/response — nothing fabricated.
+New in this version: entries can use "path_template" + "resolve_vars"
+instead of a static "path". These get their real IDs filled in at runtime
+via id_resolver (see utils/health_id_resolver.py) before the request is
+made. If ID resolution itself fails, that's reported as this endpoint's
+failure reason — clearly distinguished from the endpoint itself being down.
 """
 
 import pytest
 
 from api_framework.config.health_endpoints import ENDPOINTS, DEFAULT_SLA_MS
 from api_framework.auth.health_token_manager import HealthAuthError
+from utils.health_id_resolver import IdResolutionError
 
 
 @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
 def test_endpoint_health(endpoint, health_client, health_reporter, failure_logger,
-                          token_managers, base_url):
+                          token_managers, id_resolver, base_url):
     name = endpoint["name"]
     action = endpoint.get("action", name)
     method = endpoint["method"]
-    path = endpoint["path"]
     expected_status = endpoint["expected_status"]
     critical = endpoint.get("critical", False)
     sla_ms = endpoint.get("sla_ms", DEFAULT_SLA_MS)
-    params = endpoint["params"]() if "params" in endpoint else None
 
     manager = token_managers.get("employee")
-    # Identity the check runs as — populated from the login response's
-    # `user` block once login has happened at least once this session.
     candidate_name = manager.user_info.get("name", "") if manager else ""
     candidate_email = manager.user_info.get("email", "") if manager else ""
 
-    # --- Login is a special case: it validates auth itself ---
+    # --- Login is a special case ---
     if endpoint.get("is_login"):
         from api_framework.config.health_endpoints import AUTH_PROFILES
         from api_framework.auth.health_token_manager import resolve_credentials
 
+        path = endpoint["path"]
         profile_cfg = AUTH_PROFILES["employee"]
         username, password = resolve_credentials(profile_cfg)
 
@@ -53,7 +53,6 @@ def test_endpoint_health(endpoint, health_client, health_reporter, failure_logge
             passed = status_code == expected_status
             api_message = "Login successful" if passed else "Login failed"
             response_body = manager.last_login_response.get("body_snippet")
-            # Now that login succeeded, backfill identity for this row too
             candidate_name = manager.user_info.get("name", "")
             candidate_email = manager.user_info.get("email", "")
         except HealthAuthError as e:
@@ -64,27 +63,48 @@ def test_endpoint_health(endpoint, health_client, health_reporter, failure_logge
             response_body = manager.last_login_response.get("body_snippet")
 
         health_reporter.record(
-            name=name, action=action, method=method, path=path, params=params,
+            name=name, action=action, method=method, path=path, params=None,
             status_code=status_code, expected_status=expected_status,
             passed=passed, elapsed_ms=elapsed_ms, sla_ms=sla_ms,
             api_message=api_message,
             request_headers={"Content-Type": "application/json"},
-            request_payload=request_payload,
-            response_body=response_body,
+            request_payload=request_payload, response_body=response_body,
             candidate_name=candidate_name, candidate_email=candidate_email,
             error=error_msg, critical=critical,
         )
-
-        if not passed:
-            failure_logger.log_failure(
-                name=name, method=method, url=f"{base_url}{path}",
-                request_params={}, request_headers={"Content-Type": "application/json"},
-                status_code=status_code or 0, response_headers={},
-                response_body=response_body or "", error=error_msg,
-            )
-
         assert passed, error_msg or f"Login check failed (status={status_code})"
         return
+
+    # --- Resolve path_template -> real path, if needed ---
+    if "path_template" in endpoint:
+        resolve_vars = endpoint.get("resolve_vars", [])
+        try:
+            resolved = id_resolver.resolve_all(resolve_vars)
+            path = endpoint["path_template"].format(**resolved)
+        except IdResolutionError as e:
+            # ID resolution failed — report THIS as the failure reason,
+            # clearly distinct from "the endpoint itself returned an error".
+            error_msg = f"ID resolution failed: {e}"
+            health_reporter.record(
+                name=name, action=action, method=method,
+                path=endpoint["path_template"], params=None,
+                status_code=None, expected_status=expected_status,
+                passed=False, elapsed_ms=None, sla_ms=sla_ms,
+                api_message="Could not resolve required path variable(s)",
+                request_headers={}, request_payload={}, response_body="",
+                candidate_name=candidate_name, candidate_email=candidate_email,
+                error=error_msg, critical=critical,
+            )
+            failure_logger.log_failure(
+                name=name, method=method, url=f"{base_url}{endpoint['path_template']}",
+                request_params={}, request_headers={}, status_code=0,
+                response_headers={}, response_body="", error=error_msg,
+            )
+            pytest.fail(error_msg)
+    else:
+        path = endpoint["path"]
+
+    params = endpoint["params"]() if "params" in endpoint else None
 
     # --- Standard endpoint check ---
     error_msg = ""
@@ -109,7 +129,6 @@ def test_endpoint_health(endpoint, health_client, health_reporter, failure_logge
         if passed:
             api_message = "OK"
         else:
-            # Try to surface the server's own message field if present
             try:
                 body_json = resp.json()
                 api_message = body_json.get("message", f"Unexpected status {status_code}")
@@ -125,10 +144,8 @@ def test_endpoint_health(endpoint, health_client, health_reporter, failure_logge
         name=name, action=action, method=method, path=path, params=params,
         status_code=status_code, expected_status=expected_status,
         passed=passed, elapsed_ms=elapsed_ms, sla_ms=sla_ms,
-        api_message=api_message,
-        request_headers=req_headers,
-        request_payload=params or {},   # GET requests: query params doubles as the "payload" shown
-        response_body=response_body,
+        api_message=api_message, request_headers=req_headers,
+        request_payload=params or {}, response_body=response_body,
         candidate_name=candidate_name, candidate_email=candidate_email,
         error=error_msg, critical=critical,
     )

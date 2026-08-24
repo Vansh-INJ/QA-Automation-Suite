@@ -3,7 +3,7 @@ from pages.login_page import LoginPage
 from test_data.employee_data import ADD_EMPLOYEE_DATA
 from utils.test_context import TEST_CONTEXT
 
-EMPLOYEE_COUNT = 3
+EMPLOYEE_COUNT = 5
 
 def test_add_employee(page):
 
@@ -12,7 +12,7 @@ def test_add_employee(page):
 
     # LOGIN ONLY ONCE
     login.open()
-    login.login.login()
+    login.login()
 
     created_employees = []
 
