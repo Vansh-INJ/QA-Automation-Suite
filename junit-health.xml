@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="23" skipped="0" tests="152" time="82.643" timestamp="2026-08-24T16:25:52.026474+05:30" hostname="INJ-HQ-LAP-0174"><testcase classname="test.health.test_api_health" name="test_endpoint_health[login]" time="0.265"><failure message="AssertionError: KeyError: 'None'&#10;assert False">endpoint = {'name': 'login', 'action': 'User Login / Authentication', 'method': 'POST', 'path': '/api/auth/login', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="23" skipped="0" tests="152" time="80.179" timestamp="2026-08-24T16:52:42.855083+05:30" hostname="INJ-HQ-LAP-0174"><testcase classname="test.health.test_api_health" name="test_endpoint_health[login]" time="0.157"><failure message="AssertionError: KeyError: 'None'&#10;assert False">endpoint = {'name': 'login', 'action': 'User Login / Authentication', 'method': 'POST', 'path': '/api/auth/login', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -154,12 +154,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: KeyError: 'None'
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[me]" time="0.759" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_user_details]" time="0.396" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_leave_policy]" time="0.422" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_holiday_policy]" time="0.373" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_monthly]" time="0.389" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[leave_requests]" time="0.418" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[ticketing_tickets]" time="0.473" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[notifications]" time="0.538" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[hr_payslips]" time="0.516" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[login_pm]" time="0.385" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[me_pm]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_user_details_pm]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_leave_policy_pm]" time="0.409" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_holiday_policy_pm]" time="0.381" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_monthly_pm]" time="0.463" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[leave_requests_pm]" time="0.604" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[ticketing_tickets_pm]" time="0.500" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[notifications_pm]" time="0.423" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[hr_payslips_pm]" time="0.405" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ticket_types]" time="0.395" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_invite_list]" time="0.505" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[onboarding_approved]" time="0.499" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_users_list]" time="0.478" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_user_detail_by_user]" time="0.454" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_summary]" time="0.432" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_full_manager_list]" time="0.419" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[metrics]" time="0.428" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[workforce_snapshot]" time="0.384" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_overview]" time="0.399" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pending_approvals]" time="0.455" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[recent_joiners]" time="0.469" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[today_onboarding]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[celebrations]" time="0.476" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_announcements_hr_admin]" time="0.453" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[my_announcements_feed_employee]" time="0.437" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_templates]" time="0.430" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[self_permissions]" time="0.405" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_user_attendance_config]" time="0.463" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hr_level_employee_leave_policy]" time="0.463"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Undefined constant PDO::FETCH_ASSgetAllEmployeesAppliedLeavesOC&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_hr_level_employee_leave_policy', 'action': 'Fetch Hr Level Employee Leave Policy', 'method': 'GET', 'path': '/api/hr/hr-employee-leave-policy', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[me]" time="0.792" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_user_details]" time="0.419" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_leave_policy]" time="0.437" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_holiday_policy]" time="0.428" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_monthly]" time="0.460" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[leave_requests]" time="0.464" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[ticketing_tickets]" time="0.417" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[notifications]" time="0.399" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[hr_payslips]" time="0.420" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[login_pm]" time="0.360" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[me_pm]" time="0.434" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_user_details_pm]" time="0.495" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_leave_policy_pm]" time="0.410" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[employee_holiday_policy_pm]" time="0.405" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_monthly_pm]" time="0.399" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[leave_requests_pm]" time="0.664" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[ticketing_tickets_pm]" time="0.426" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[notifications_pm]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[hr_payslips_pm]" time="0.388" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ticket_types]" time="0.354" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_invite_list]" time="0.517" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[onboarding_approved]" time="0.523" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_users_list]" time="0.445" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_user_detail_by_user]" time="0.491" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_summary]" time="0.418" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_full_manager_list]" time="0.431" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[metrics]" time="0.423" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[workforce_snapshot]" time="0.396" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[attendance_overview]" time="0.430" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pending_approvals]" time="0.466" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[recent_joiners]" time="0.556" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[today_onboarding]" time="0.425" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[celebrations]" time="0.432" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_announcements_hr_admin]" time="0.412" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[my_announcements_feed_employee]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_templates]" time="0.449" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[self_permissions]" time="0.427" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_user_attendance_config]" time="0.455" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hr_level_employee_leave_policy]" time="0.415"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Undefined constant PDO::FETCH_ASSgetAllEmployeesAppliedLeavesOC&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_hr_level_employee_leave_policy', 'action': 'Fetch Hr Level Employee Leave Policy', 'method': 'GET', 'path': '/api/hr/hr-employee-leave-policy', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -310,12 +310,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Undefined constant PDO::FETCH_ASSgetAllEmployeesAppliedLeavesOC","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_all_employee_applied_leave]" time="0.502" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hr_level_applied_leave]" time="0.498" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_tickets]" time="0.391"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'fetch_tickets', 'action': 'Fetch Tickets', 'method': 'GET', 'path': '/api/ticketing/tickets', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_all_employee_applied_leave]" time="0.435" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hr_level_applied_leave]" time="0.425" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_tickets]" time="0.392"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'fetch_tickets', 'action': 'Fetch Tickets', 'method': 'GET', 'path': '/api/ticketing/tickets', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -466,12 +466,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 404: {"error":"Route not found!"}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[upcoming_events]" time="0.476" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pending_tickets]" time="0.408"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'fetch_pending_tickets', 'action': 'Fetch Pending Tickets', 'method': 'GET', 'path': '/api/ticketing/pending-approvals', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[upcoming_events]" time="0.425" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pending_tickets]" time="0.373"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'fetch_pending_tickets', 'action': 'Fetch Pending Tickets', 'method': 'GET', 'path': '/api/ticketing/pending-approvals', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -622,12 +622,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 404: {"error":"Route not found!"}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[my_team_manager_direct_reports]" time="0.455" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[organisation_chart_flat_list]" time="0.510" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[organisation_chart_nested_tree]" time="0.473" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_dashboard]" time="0.501" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_roster_full_subtree]" time="0.482" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pending_leave_requests_mine_to_approve]" time="0.457" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_leave_calendar_month_subtree]" time="0.575" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_leave_balance]" time="0.493" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_attendance_calendar_month_subtree]" time="1.012" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_attendance_today]" time="0.463" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[unified_pending_approvals]" time="0.480" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_unread_count]" time="0.484" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_mute_preferences]" time="0.520" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_permissions]" time="0.464" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_roles]" time="0.509" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_default_list]" time="0.470" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_default]" time="0.452" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_master_option_list]" time="0.449" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_master_option_dependent_list]" time="0.437" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ip_address_list]" time="0.514" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_source_list]" time="0.465" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_work_mode_list]" time="0.459" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_policy_list]" time="0.457" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_break_policy_list]" time="0.510" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_shift_list]" time="0.470" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_salary_structure_list]" time="0.540" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[salary_structure_meta]" time="0.445" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_group_list]" time="0.469" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_group_meta]" time="0.448" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_rule_list]" time="0.486" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_rule_meta]" time="0.532" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_list]" time="0.474" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_meta]" time="0.463" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_range_list]" time="0.482" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_cost_center_list]" time="0.473" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_job_title_list]" time="0.510" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_sub_function_list]" time="0.525" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_function_list]" time="0.455" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_grade_list]" time="0.492" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_work_location_list]" time="0.471" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_geo_zone_list]" time="0.468" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_leave_approval]" time="0.487" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_optional_holiday]" time="0.469" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_leave_approval_2]" time="0.496" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_holiday_group]" time="0.445"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_holiday_group', 'action': 'Fetch Holiday Group', 'method': 'GET', 'path': '/api/admin/holiday-groups/{uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[my_team_manager_direct_reports]" time="0.502" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[organisation_chart_flat_list]" time="0.474" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[organisation_chart_nested_tree]" time="0.477" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_dashboard]" time="0.516" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_roster_full_subtree]" time="0.474" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pending_leave_requests_mine_to_approve]" time="0.499" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_leave_calendar_month_subtree]" time="0.436" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_leave_balance]" time="0.497" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_attendance_calendar_month_subtree]" time="0.978" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_attendance_today]" time="0.457" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[unified_pending_approvals]" time="0.494" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_unread_count]" time="0.453" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_mute_preferences]" time="0.520" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_permissions]" time="0.418" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_roles]" time="0.476" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_default_list]" time="0.465" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_default]" time="0.447" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_master_option_list]" time="0.469" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_master_option_dependent_list]" time="0.423" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ip_address_list]" time="0.475" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_source_list]" time="0.457" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_work_mode_list]" time="0.489" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_attendance_policy_list]" time="0.440" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_break_policy_list]" time="0.451" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_shift_list]" time="0.444" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_salary_structure_list]" time="0.505" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[salary_structure_meta]" time="0.474" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_group_list]" time="0.490" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_group_meta]" time="0.467" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_rule_list]" time="0.528" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_rule_meta]" time="0.491" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_component_list]" time="0.528" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[pay_component_meta]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_range_list]" time="0.472" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_cost_center_list]" time="0.478" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_job_title_list]" time="0.454" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_sub_function_list]" time="0.502" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_function_list]" time="0.536" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_pay_grade_list]" time="0.587" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_work_location_list]" time="0.573" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_geo_zone_list]" time="0.547" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_leave_approval]" time="0.596" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_optional_holiday]" time="0.449" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_leave_approval_2]" time="0.506" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_holiday_group]" time="0.459"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_holiday_group', 'action': 'Fetch Holiday Group', 'method': 'GET', 'path': '/api/admin/holiday-groups/{uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -778,12 +778,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"%7Buuid%7D\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_financial_year]" time="0.482" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_active_year]" time="0.500" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_leave_policy_assignemnt_list]" time="0.570" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_leave_group]" time="0.454" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[show_by_code]" time="0.477" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_legal_entity_list]" time="0.501" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hierarchy_level]" time="0.475"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_hierarchy_level', 'action': 'Fetch Hierarchy Level', 'method': 'GET', 'path': '/api/admin/hierarchy-levels/{uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_financial_year]" time="0.454" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_active_year]" time="0.456" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_leave_policy_assignemnt_list]" time="0.550" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_leave_group]" time="0.501" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[show_by_code]" time="0.490" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_legal_entity_list]" time="0.498" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_hierarchy_level]" time="0.458"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_hierarchy_level', 'action': 'Fetch Hierarchy Level', 'method': 'GET', 'path': '/api/admin/hierarchy-levels/{uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -934,12 +934,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"%7Buuid%7D\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_workflows]" time="0.565" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[admin_show_tickets]" time="0.528" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[admin_show_tickets_comments]" time="0.476"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'admin_show_tickets_comments', 'action': 'Admin Show Tickets Comments', 'method': 'GET', 'path': '/api/admin/ticketing/tickets/{uuid}/comments', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_workflows]" time="0.506" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[admin_show_tickets]" time="0.512" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[admin_show_tickets_comments]" time="0.488"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;%7Buuid%7D\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'admin_show_tickets_comments', 'action': 'Admin Show Tickets Comments', 'method': 'GET', 'path': '/api/admin/ticketing/tickets/{uuid}/comments', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1090,12 +1090,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"%7Buuid%7D\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[cancel_tickets]" time="0.485"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'cancel_tickets', 'action': 'Cancel Tickets', 'method': 'GET', 'path': '/api/admin/ticketing/tickets/{uuid}/cancel', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[cancel_tickets]" time="0.482"><failure message="AssertionError: Expected 200, got 404: {&quot;error&quot;:&quot;Route not found!&quot;}&#10;assert False">endpoint = {'name': 'cancel_tickets', 'action': 'Cancel Tickets', 'method': 'GET', 'path': '/api/admin/ticketing/tickets/{uuid}/cancel', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1246,12 +1246,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 404: {"error":"Route not found!"}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_document_list_copy]" time="0.560" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_form_schema]" time="0.439" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_meta_data]" time="0.646" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_attendance_policy_history]" time="0.492"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_attendance_policy_history', 'action': 'Fetch Employee Attendance Policy History', 'method': 'GET', 'path': '/api/hr/employees/{uuid}/attendance-config/history', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_document_list_copy]" time="0.536" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_form_schema]" time="0.443" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_meta_data]" time="0.470" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_attendance_policy_history]" time="0.483"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_attendance_policy_history', 'action': 'Fetch Employee Attendance Policy History', 'method': 'GET', 'path': '/api/hr/employees/{uuid}/attendance-config/history', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1402,12 +1402,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee not found","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_attendance_day_override]" time="0.512"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_attendance_day_override', 'action': 'Fetch Employee Attendance Day Override', 'method': 'GET', 'path': '/api/hr/employees/{employeeUuid}/attendance-override/2026-05-12', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_attendance_day_override]" time="0.476"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_attendance_day_override', 'action': 'Fetch Employee Attendance Day Override', 'method': 'GET', 'path': '/api/hr/employees/{employeeUuid}/attendance-override/2026-05-12', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1558,12 +1558,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee not found","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_direct_reportees]" time="0.563"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_direct_reportees', 'action': 'Fetch Direct Reportees', 'method': 'GET', 'path': '/api/hr/users/{uuid}/direct-reports', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_direct_reportees]" time="0.474"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_direct_reportees', 'action': 'Fetch Direct Reportees', 'method': 'GET', 'path': '/api/hr/users/{uuid}/direct-reports', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1714,12 +1714,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee not found.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_reporting_team]" time="0.514"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_reporting_team', 'action': 'Fetch Reporting Team', 'method': 'GET', 'path': '/api/hr/users/{uuid}/team', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_reporting_team]" time="0.494"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_reporting_team', 'action': 'Fetch Reporting Team', 'method': 'GET', 'path': '/api/hr/users/{uuid}/team', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -1870,12 +1870,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee not found.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_reporting_chain]" time="0.491"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_reporting_chain', 'action': 'Fetch Reporting Chain', 'method': 'GET', 'path': '/api/hr/users/{uuid}/reporting-chain', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_reporting_chain]" time="0.505"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee not found.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_reporting_chain', 'action': 'Fetch Reporting Chain', 'method': 'GET', 'path': '/api/hr/users/{uuid}/reporting-chain', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2026,12 +2026,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee not found.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_group]" time="0.611"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Assignment not found for this employee.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_group', 'action': 'Fetch Employee Group', 'method': 'GET', 'path': '/api/hr/employee-holiday-group-assignments/{uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_group]" time="0.511"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Assignment not found for this employee.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_group', 'action': 'Fetch Employee Group', 'method': 'GET', 'path': '/api/hr/employee-holiday-group-assignments/{uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2182,12 +2182,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Assignment not found for this employee.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_week_off]" time="0.430"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;No active assignment found for this employee.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_week_off', 'action': 'Fetch Employee Week Off', 'method': 'GET', 'path': '/api/hr/employee-weekly-off-assignment/{uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_week_off]" time="0.471"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;No active assignment found for this employee.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'fetch_employee_week_off', 'action': 'Fetch Employee Week Off', 'method': 'GET', 'path': '/api/hr/employee-weekly-off-assignment/{uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2338,12 +2338,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"No active assignment found for this employee.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_code_setting]" time="0.563" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_app_timezone]" time="0.574" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ui_color]" time="0.526" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_probation_notice]" time="0.523" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_runs]" time="0.567" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_all_events]" time="0.480" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_delivery_logs_no_filters]" time="0.530" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_announcement_by_uuid]" time="0.880" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_config_history]" time="0.806" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_current_config]" time="0.523" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_pf_config]" time="0.511" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_gratuity_config]" time="0.526" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_esi_config]" time="0.528" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_pt_slabs]" time="0.668" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_lwf_configs]" time="0.567" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_statutory]" time="0.905" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_config]" time="0.612" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_tax_declaration]" time="0.942"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_tax_declaration', 'action': 'Get Employee Tax Declaration', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_employee_code_setting]" time="0.544" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_app_timezone]" time="0.512" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_ui_color]" time="0.527" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[fetch_probation_notice]" time="0.536" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_runs]" time="0.514" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_all_events]" time="0.535" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_delivery_logs_no_filters]" time="0.549" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_announcement_by_uuid]" time="0.851" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_config_history]" time="0.812" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_current_config]" time="0.484" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_pf_config]" time="0.578" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_gratuity_config]" time="0.490" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_esi_config]" time="0.522" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_pt_slabs]" time="0.482" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_lwf_configs]" time="0.613" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_statutory]" time="0.845" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_config]" time="0.518" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_tax_declaration]" time="0.769"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_tax_declaration', 'action': 'Get Employee Tax Declaration', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2494,12 +2494,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_proof_documents_for_employee]" time="0.565"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_tax_proof_documents_for_employee', 'action': 'Get Tax Proof Documents for Employee', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}/documents', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_proof_documents_for_employee]" time="0.513"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_tax_proof_documents_for_employee', 'action': 'Get Tax Proof Documents for Employee', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}/documents', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2650,12 +2650,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_windows]" time="0.544"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_tax_windows', 'action': 'Get Tax Windows', 'method': 'GET', 'path_template': '/api/admin/payroll/tax-windows/{legal_entity_uuid}/{financial_year}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_tax_windows]" time="0.519"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_tax_windows', 'action': 'Get Tax Windows', 'method': 'GET', 'path_template': '/api/admin/payroll/tax-windows/{legal_entity_uuid}/{financial_year}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2806,12 +2806,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_perquisites]" time="0.537"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_perquisites', 'action': 'Get Employee Perquisites', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/perquisites/{financial_year}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_perquisites]" time="0.605"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_perquisites', 'action': 'Get Employee Perquisites', 'method': 'GET', 'path_template': '/api/admin/employees/{employee_uuid}/perquisites/{financial_year}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -2962,12 +2962,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_calendars_by_year_optional]" time="0.572" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_run]" time="0.886" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_variable_inputs_for_run]" time="0.599" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employees_in_run]" time="0.517" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_payroll_in_run]" time="0.565"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee payroll record not found for this run.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_payroll_in_run', 'action': 'Get Employee Payroll in Run', 'method': 'GET', 'path_template': '/api/admin/payroll/runs/{run_uuid}/employees/{employee_uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_calendars_by_year_optional]" time="0.550" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_run]" time="0.797" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_variable_inputs_for_run]" time="0.536" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employees_in_run]" time="0.572" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_employee_payroll_in_run]" time="0.510"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Employee payroll record not found for this run.&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_employee_payroll_in_run', 'action': 'Get Employee Payroll in Run', 'method': 'GET', 'path_template': '/api/admin/payroll/runs/{run_uuid}/employees/{employee_uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -3118,12 +3118,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"Employee payroll record not found for this run.","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[payroll_register]" time="0.573" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[bank_export_csv]" time="0.509" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[statutory_register]" time="0.530" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employee_loans]" time="0.678" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employee_fnf_settlements]" time="0.592" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_payslip]" time="0.555"><failure message="Failed: ID resolution failed: Source endpoint /api/hr/payslips for 'payslip_uuid' returned no records (empty list) — can't extract an ID to test against.">endpoint = {'name': 'get_my_payslip', 'action': 'Get My Payslip', 'method': 'GET', 'path_template': '/api/hr/payslips/{payslip_uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[payroll_register]" time="0.559" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[bank_export_csv]" time="0.580" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[statutory_register]" time="0.538" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employee_loans]" time="0.570" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[list_employee_fnf_settlements]" time="0.529" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_payslip]" time="0.550"><failure message="Failed: ID resolution failed: Source endpoint /api/hr/payslips for 'payslip_uuid' returned no records (empty list) — can't extract an ID to test against.">endpoint = {'name': 'get_my_payslip', 'action': 'Get My Payslip', 'method': 'GET', 'path_template': '/api/hr/payslips/{payslip_uuid}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -3200,7 +3200,7 @@ utils\health_id_resolver.py:113: in resolve_all
                ^^^^^^^^^^^^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;, var_name = 'payslip_uuid'
+self = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;, var_name = 'payslip_uuid'
 
     def resolve(self, var_name: str) -&gt; str:
         if var_name in self._cache:
@@ -3276,11 +3276,11 @@ utils\health_id_resolver.py:93: IdResolutionError
 During handling of the above exception, another exception occurred:
 
 endpoint = {'name': 'get_my_payslip', 'action': 'Get My Payslip', 'method': 'GET', 'path_template': '/api/hr/payslips/{payslip_uuid}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -3371,12 +3371,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 &gt;               pytest.fail(error_msg)
 E               Failed: ID resolution failed: Source endpoint /api/hr/payslips for 'payslip_uuid' returned no records (empty list) — can't extract an ID to test against.
 
-test\health\test_api_health.py:103: Failed</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_declaration]" time="0.479"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_my_declaration', 'action': 'Get My Declaration', 'method': 'GET', 'path_template': '/api/hr/tax-declaration/{financial_year}', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:103: Failed</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_declaration]" time="0.550"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_my_declaration', 'action': 'Get My Declaration', 'method': 'GET', 'path_template': '/api/hr/tax-declaration/{financial_year}', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -3527,12 +3527,12 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_proof_documents]" time="0.537"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_my_proof_documents', 'action': 'Get My Proof Documents', 'method': 'GET', 'path_template': '/api/hr/tax-declaration/{financial_year}/documents', ...}
-health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000218320E8AD0&gt;
-health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000218320E8830&gt;
-failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000218320E96A0&gt;
-token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000218320E8980&gt;}
-id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000218320E8EC0&gt;
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_my_proof_documents]" time="0.553"><failure message="AssertionError: Expected 200, got 500: {&quot;status&quot;:&quot;error&quot;,&quot;message&quot;:&quot;SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \&quot;2027-28\&quot;\nCONTEXT:  unnamed portal parameter $1 = '...'&quot;,&quot;errors&quot;:[]}&#10;assert False">endpoint = {'name': 'get_my_proof_documents', 'action': 'Get My Proof Documents', 'method': 'GET', 'path_template': '/api/hr/tax-declaration/{financial_year}/documents', ...}
+health_client = &lt;conftest.health_client.&lt;locals&gt;.HealthClient object at 0x00000223D9D08AD0&gt;
+health_reporter = &lt;utils.health_reporter.HealthReporter object at 0x00000223D9D08830&gt;
+failure_logger = &lt;utils.health_failure_logger.HealthFailureLogger object at 0x00000223D9D096A0&gt;
+token_managers = {'employee': &lt;api_framework.auth.health_token_manager.HealthTokenManager object at 0x00000223D9D08980&gt;}
+id_resolver = &lt;utils.health_id_resolver.HealthIdResolver object at 0x00000223D9D08EC0&gt;
 base_url = 'https://injin-dev.injtechnologies.com'
 
     @pytest.mark.parametrize("endpoint", ENDPOINTS, ids=[e["name"] for e in ENDPOINTS])
@@ -3683,4 +3683,4 @@ base_url = 'https://injin-dev.injtechnologies.com'
 E       AssertionError: Expected 200, got 500: {"status":"error","message":"SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type uuid: \"2027-28\"\nCONTEXT:  unnamed portal parameter $1 = '...'","errors":[]}
 E       assert False
 
-test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[direct_reports_depth_1]" time="0.570" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[full_team_all_depths]" time="0.587" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[reporting_chain_upward]" time="0.594" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[managers_by_level_direct_l2_l3]" time="0.936" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[manager_history]" time="0.837" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_member_profile]" time="1.619" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_event_detail_rules_templates]" time="3.248" /></testsuite></testsuites>
+test\health\test_api_health.py:162: AssertionError</failure></testcase><testcase classname="test.health.test_api_health" name="test_endpoint_health[direct_reports_depth_1]" time="0.528" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[full_team_all_depths]" time="0.570" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[reporting_chain_upward]" time="0.561" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[managers_by_level_direct_l2_l3]" time="0.533" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[manager_history]" time="0.565" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[team_member_profile]" time="0.933" /><testcase classname="test.health.test_api_health" name="test_endpoint_health[get_event_detail_rules_templates]" time="3.663" /></testsuite></testsuites>
