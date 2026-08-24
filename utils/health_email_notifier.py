@@ -2,19 +2,16 @@
 HRMS API Health Suite
 Resend Email Notification / Executive Dashboard
 
-Purpose:
-    Sends a professional HTML API health dashboard through Resend.
+Sends:
+    1. HTML health dashboard
+    2. Excel health report
+    3. summary.json
 
-Designed to work with the existing HealthReporter structure:
-
-    reporter.summary
-    reporter.results
-    report_path
-
-No SMTP is used.
-Resend HTTPS API is used instead.
+No SMTP.
+No n8n.
+Uses Resend HTTPS API.
 """
-import base64
+
 import os
 import html
 from datetime import datetime
@@ -28,31 +25,24 @@ import resend
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
-# IMPORTANT:
-# Keep onboarding@resend.dev if you are currently using the
-# Resend test sender.
-#
-# Once your organization verifies a domain, change this to:
-# QA Health Monitor <qa-health@yourcompany.com>
-#
 FROM_EMAIL = os.getenv(
     "HEALTH_MAIL_FROM",
-    "HRMS API Health <onboarding@resend.dev>"
+    "HRMS API Health <onboarding@resend.dev>",
 )
 
 TO_EMAIL = os.getenv(
     "HEALTH_MAIL_TO",
-    ""
+    "",
 )
 
 ENVIRONMENT = os.getenv(
     "HEALTH_ENVIRONMENT",
-    "Development"
+    "Development",
 )
 
 BASE_URL = os.getenv(
     "BASE_URL",
-    ""
+    "",
 )
 
 
@@ -61,9 +51,6 @@ BASE_URL = os.getenv(
 # ============================================================
 
 def _safe(value):
-    """
-    Safely escape values before inserting them into HTML.
-    """
     if value is None:
         return ""
 
@@ -71,23 +58,14 @@ def _safe(value):
 
 
 def _status_color(passed):
-    """
-    Returns a color suitable for email rendering.
-    """
     return "#16a34a" if passed else "#dc2626"
 
 
 def _status_label(passed):
-    """
-    Human readable health status.
-    """
     return "HEALTHY" if passed else "FAILED"
 
 
 def _format_duration(value):
-    """
-    Formats response time.
-    """
     if value is None:
         return "N/A"
 
@@ -98,9 +76,6 @@ def _format_duration(value):
 
 
 def _format_status(value):
-    """
-    Formats HTTP status.
-    """
     if value is None:
         return "NO RESPONSE"
 
@@ -108,26 +83,26 @@ def _format_status(value):
 
 
 def _get_health_percentage(summary):
-    """
-    Returns the overall health percentage.
-    """
     total = summary.get("total", 0)
     passed = summary.get("passed", 0)
 
     if total == 0:
         return 0
 
-    return round((passed / total) * 100, 1)
+    return round(
+        (passed / total) * 100,
+        1,
+    )
 
 
 def _overall_status(summary):
-    """
-    Determines overall dashboard state.
-    """
 
     total = summary.get("total", 0)
     passed = summary.get("passed", 0)
-    critical_failed = summary.get("critical_failed", [])
+    critical_failed = summary.get(
+        "critical_failed",
+        [],
+    )
 
     if total == 0:
         return {
@@ -158,9 +133,6 @@ def _overall_status(summary):
 
 
 def _progress_bar(percentage):
-    """
-    Creates a simple email-safe progress bar.
-    """
 
     if percentage >= 95:
         color = "#16a34a"
@@ -193,14 +165,14 @@ def _progress_bar(percentage):
 # ============================================================
 
 def _build_critical_failures(summary):
-    """
-    Builds the critical failure section.
-    """
 
-    critical_failures = summary.get("critical_failed", [])
+    critical_failures = summary.get(
+        "critical_failed",
+        [],
+    )
 
     if not critical_failures:
-        return f"""
+        return """
         <div style="
             background:#f0fdf4;
             border:1px solid #bbf7d0;
@@ -238,7 +210,6 @@ def _build_critical_failures(summary):
             margin-bottom:10px;
             border-radius:5px;
         ">
-
             <div style="
                 font-size:15px;
                 font-weight:700;
@@ -254,14 +225,11 @@ def _build_critical_failures(summary):
             ">
                 CRITICAL API
             </div>
-
         </div>
         """
 
     return f"""
-    <div style="
-        margin-bottom:20px;
-    ">
+    <div style="margin-bottom:20px;">
 
         <div style="
             font-size:18px;
@@ -283,11 +251,6 @@ def _build_critical_failures(summary):
 # ============================================================
 
 def _build_failure_details(results):
-    """
-    Builds detailed failure cards.
-
-    This is the most important section for QA/developer triage.
-    """
 
     failures = [
         result
@@ -296,7 +259,6 @@ def _build_failure_details(results):
     ]
 
     if not failures:
-
         return """
         <div style="
             background:#f0fdf4;
@@ -305,7 +267,6 @@ def _build_failure_details(results):
             padding:18px;
             margin-bottom:20px;
         ">
-
             <div style="
                 font-size:16px;
                 font-weight:700;
@@ -321,7 +282,6 @@ def _build_failure_details(results):
             ">
                 All monitored APIs returned their expected status codes.
             </div>
-
         </div>
         """
 
@@ -329,23 +289,59 @@ def _build_failure_details(results):
 
     for result in failures:
 
-        name = _safe(result.get("name", "Unknown API"))
-        action = _safe(result.get("action", name))
-        method = _safe(result.get("method", ""))
-        endpoint = _safe(result.get("endpoint", ""))
-        actual_status = _format_status(result.get("status_code"))
-        expected_status = _safe(result.get("expected_status", ""))
-        duration = _format_duration(result.get("elapsed_ms"))
-        sla = _format_duration(result.get("sla_ms"))
+        name = _safe(
+            result.get(
+                "name",
+                "Unknown API",
+            )
+        )
+
+        action = _safe(
+            result.get(
+                "action",
+                name,
+            )
+        )
+
+        method = _safe(
+            result.get("method", "")
+        )
+
+        endpoint = _safe(
+            result.get("endpoint", "")
+        )
+
+        actual_status = _format_status(
+            result.get("status_code")
+        )
+
+        expected_status = _safe(
+            result.get("expected_status", "")
+        )
+
+        duration = _format_duration(
+            result.get("elapsed_ms")
+        )
+
+        sla = _format_duration(
+            result.get("sla_ms")
+        )
+
         api_message = _safe(
-            result.get("api_message", "API request failed")
+            result.get(
+                "api_message",
+                "API request failed",
+            )
         )
 
         error = _safe(
             result.get("error", "")
         )
 
-        critical = result.get("critical", False)
+        critical = result.get(
+            "critical",
+            False,
+        )
 
         critical_badge = ""
 
@@ -366,7 +362,6 @@ def _build_failure_details(results):
             """
 
         cards += f"""
-
         <div style="
             background:#ffffff;
             border:1px solid #fecaca;
@@ -376,41 +371,31 @@ def _build_failure_details(results):
             overflow:hidden;
         ">
 
-            <!-- HEADER -->
-
             <div style="
                 background:#fef2f2;
                 padding:13px 16px;
             ">
-
                 <div style="
                     font-size:16px;
                     font-weight:700;
                     color:#991b1b;
                 ">
-
                     🔴 {_safe(action)}
-
                     {critical_badge}
-
                 </div>
-
             </div>
 
+            <div style="padding:16px;">
 
-            <!-- DETAILS -->
-
-            <div style="
-                padding:16px;
-            ">
-
-                <table width="100%"
-                       cellpadding="0"
-                       cellspacing="0"
-                       style="
-                           font-size:13px;
-                           border-collapse:collapse;
-                       ">
+                <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    style="
+                        font-size:13px;
+                        border-collapse:collapse;
+                    "
+                >
 
                     <tr>
                         <td style="
@@ -427,10 +412,10 @@ def _build_failure_details(results):
                             color:#0f172a;
                             font-family:monospace;
                         ">
-                            {_safe(method)} {_safe(endpoint)}
+                            {_safe(method)}
+                            {_safe(endpoint)}
                         </td>
                     </tr>
-
 
                     <tr>
                         <td style="
@@ -446,10 +431,9 @@ def _build_failure_details(results):
                             color:#16a34a;
                             font-weight:700;
                         ">
-                            {_safe(expected_status)}
+                            {expected_status}
                         </td>
                     </tr>
-
 
                     <tr>
                         <td style="
@@ -469,7 +453,6 @@ def _build_failure_details(results):
                         </td>
                     </tr>
 
-
                     <tr>
                         <td style="
                             padding:6px 0;
@@ -487,7 +470,6 @@ def _build_failure_details(results):
                         </td>
                     </tr>
 
-
                     <tr>
                         <td style="
                             padding:6px 0;
@@ -504,7 +486,6 @@ def _build_failure_details(results):
                             {sla}
                         </td>
                     </tr>
-
 
                     <tr>
                         <td style="
@@ -524,9 +505,6 @@ def _build_failure_details(results):
                     </tr>
 
                 </table>
-
-
-                <!-- DIAGNOSTIC -->
 
                 <div style="
                     margin-top:15px;
@@ -560,7 +538,6 @@ def _build_failure_details(results):
             </div>
 
         </div>
-
         """
 
     return f"""
@@ -582,13 +559,10 @@ def _build_failure_details(results):
 
 
 # ============================================================
-# API SUMMARY TABLE
+# API SUMMARY
 # ============================================================
 
 def _build_api_summary(results):
-    """
-    Builds compact endpoint health overview.
-    """
 
     if not results:
         return ""
@@ -597,23 +571,41 @@ def _build_api_summary(results):
 
     for result in results:
 
-        passed = result.get("passed", False)
+        passed = result.get(
+            "passed",
+            False,
+        )
 
-        status_color = _status_color(passed)
+        status_color = _status_color(
+            passed
+        )
 
-        status_text = _status_label(passed)
+        status_text = _status_label(
+            passed
+        )
 
         action = _safe(
             result.get(
                 "action",
-                result.get("name", "Unknown")
+                result.get(
+                    "name",
+                    "Unknown",
+                ),
             )
         )
 
-        method = _safe(result.get("method", ""))
+        method = _safe(
+            result.get(
+                "method",
+                "",
+            )
+        )
 
         endpoint = _safe(
-            result.get("endpoint", "")
+            result.get(
+                "endpoint",
+                "",
+            )
         )
 
         status = _format_status(
@@ -625,7 +617,6 @@ def _build_api_summary(results):
         )
 
         rows += f"""
-
         <tr>
 
             <td style="
@@ -679,11 +670,9 @@ def _build_api_summary(results):
             </td>
 
         </tr>
-
         """
 
     return f"""
-
     <div style="margin-top:25px;">
 
         <div style="
@@ -701,14 +690,16 @@ def _build_api_summary(results):
             border-radius:8px;
         ">
 
-            <table width="100%"
-                   cellpadding="0"
-                   cellspacing="0"
-                   style="
-                       border-collapse:collapse;
-                       font-family:Arial,sans-serif;
-                       font-size:12px;
-                   ">
+            <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                    border-collapse:collapse;
+                    font-family:Arial,sans-serif;
+                    font-size:12px;
+                "
+            >
 
                 <thead>
 
@@ -745,9 +736,7 @@ def _build_api_summary(results):
                 </thead>
 
                 <tbody>
-
                     {rows}
-
                 </tbody>
 
             </table>
@@ -755,70 +744,56 @@ def _build_api_summary(results):
         </div>
 
     </div>
-
     """
 
 
 # ============================================================
-# COMPLETE EMAIL HTML
+# COMPLETE EMAIL
 # ============================================================
 
-def build_health_email(summary, results):
-    """
-    Generates the complete HTML email.
-    """
+def build_health_email(
+    summary,
+    results,
+):
 
     total = summary.get("total", 0)
-
     passed = summary.get("passed", 0)
-
     failed = summary.get("failed", 0)
 
     sla_breaches = summary.get(
         "sla_breaches",
-        []
+        [],
     )
 
     critical_failures = summary.get(
         "critical_failed",
-        []
+        [],
     )
 
-    percentage = _get_health_percentage(summary)
+    percentage = _get_health_percentage(
+        summary
+    )
 
-    overall = _overall_status(summary)
+    overall = _overall_status(
+        summary
+    )
 
     run_time = summary.get(
         "run_time",
-        datetime.now().isoformat(timespec="seconds")
+        datetime.now().isoformat(
+            timespec="seconds"
+        ),
     )
 
-    # --------------------------------------------------------
-    # Email subject
-    # --------------------------------------------------------
-
-    subject_status = overall["label"]
-
-    # --------------------------------------------------------
-    # HTML
-    # --------------------------------------------------------
-
-    html_body = f"""
-
+    return f"""
 <!DOCTYPE html>
 
 <html>
 
 <head>
-
-<meta charset="UTF-8">
-
-<title>
-HRMS API Health Monitor
-</title>
-
+    <meta charset="UTF-8">
+    <title>HRMS API Health Monitor</title>
 </head>
-
 
 <body style="
     margin:0;
@@ -827,7 +802,6 @@ HRMS API Health Monitor
     font-family:Arial,Helvetica,sans-serif;
     color:#0f172a;
 ">
-
 
 <table width="100%"
        cellpadding="0"
@@ -841,7 +815,6 @@ HRMS API Health Monitor
 
 <td align="center">
 
-
 <table width="900"
        cellpadding="0"
        cellspacing="0"
@@ -851,13 +824,9 @@ HRMS API Health Monitor
            background:#ffffff;
            border-radius:12px;
            overflow:hidden;
-           box-shadow:0 2px 10px rgba(0,0,0,0.08);
        ">
 
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
+<!-- HEADER -->
 
 <tr>
 
@@ -887,16 +856,13 @@ HRMS API Health Monitor
 </tr>
 
 
-<!-- =====================================================
-     STATUS
-===================================================== -->
+<!-- STATUS -->
 
 <tr>
 
 <td style="
     padding:25px 30px 15px 30px;
 ">
-
 
 <div style="
     background:{overall["color"]}15;
@@ -911,13 +877,9 @@ HRMS API Health Monitor
         font-weight:800;
         color:{overall["color"]};
     ">
-
         {overall["emoji"]}
-
         {percentage}%
-
     </div>
-
 
     <div style="
         margin-top:5px;
@@ -926,25 +888,19 @@ HRMS API Health Monitor
         color:{overall["color"]};
         letter-spacing:0.5px;
     ">
-
-        {subject_status}
-
+        {overall["label"]}
     </div>
-
 
     {_progress_bar(percentage)}
 
 </div>
-
 
 </td>
 
 </tr>
 
 
-<!-- =====================================================
-     METRICS
-===================================================== -->
+<!-- METRICS -->
 
 <tr>
 
@@ -952,16 +908,11 @@ HRMS API Health Monitor
     padding:5px 30px 20px 30px;
 ">
 
-
 <table width="100%"
        cellpadding="0"
        cellspacing="8">
 
-
 <tr>
-
-
-<!-- TOTAL -->
 
 <td width="25%"
     style="
@@ -974,7 +925,6 @@ HRMS API Health Monitor
     <div style="
         font-size:28px;
         font-weight:800;
-        color:#0f172a;
     ">
         {total}
     </div>
@@ -989,8 +939,6 @@ HRMS API Health Monitor
 
 </td>
 
-
-<!-- HEALTHY -->
 
 <td width="25%"
     style="
@@ -1019,8 +967,6 @@ HRMS API Health Monitor
 </td>
 
 
-<!-- FAILED -->
-
 <td width="25%"
     style="
         background:#fef2f2;
@@ -1048,8 +994,6 @@ HRMS API Health Monitor
 </td>
 
 
-<!-- SLA -->
-
 <td width="25%"
     style="
         background:#fffbeb;
@@ -1076,7 +1020,6 @@ HRMS API Health Monitor
 
 </td>
 
-
 </tr>
 
 </table>
@@ -1086,9 +1029,7 @@ HRMS API Health Monitor
 </tr>
 
 
-<!-- =====================================================
-     RUN INFORMATION
-===================================================== -->
+<!-- RUN INFORMATION -->
 
 <tr>
 
@@ -1096,98 +1037,83 @@ HRMS API Health Monitor
     padding:0 30px 20px 30px;
 ">
 
-
 <div style="
     background:#f8fafc;
     border-radius:8px;
     padding:16px;
 ">
 
-    <div style="
-        font-size:15px;
-        font-weight:700;
-        margin-bottom:10px;
-    ">
-        📋 Run Information
-    </div>
+<div style="
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:10px;
+">
+    📋 Run Information
+</div>
 
+<table width="100%"
+       cellpadding="4"
+       cellspacing="0"
+       style="font-size:13px;">
 
-    <table width="100%"
-           cellpadding="4"
-           cellspacing="0"
-           style="
-               font-size:13px;
-           ">
+<tr>
 
-        <tr>
+<td style="
+    color:#64748b;
+    width:140px;
+">
+    Environment
+</td>
 
-            <td style="
-                color:#64748b;
-                width:140px;
-            ">
-                Environment
-            </td>
+<td style="font-weight:700;">
+    {_safe(ENVIRONMENT)}
+</td>
 
-            <td style="
-                font-weight:700;
-            ">
-                {_safe(ENVIRONMENT)}
-            </td>
+</tr>
 
-        </tr>
+<tr>
 
+<td style="color:#64748b;">
+    Run Time
+</td>
 
-        <tr>
+<td>
+    {_safe(run_time)}
+</td>
 
-            <td style="
-                color:#64748b;
-            ">
-                Run Time
-            </td>
+</tr>
 
-            <td>
-                {_safe(run_time)}
-            </td>
+<tr>
 
-        </tr>
+<td style="color:#64748b;">
+    Critical Failures
+</td>
 
+<td style="
+    font-weight:700;
+    color:{'#dc2626' if critical_failures else '#16a34a'};
+">
+    {len(critical_failures)}
+</td>
 
-        <tr>
+</tr>
 
-            <td style="
-                color:#64748b;
-            ">
-                Critical Failures
-            </td>
+<tr>
 
-            <td style="
-                font-weight:700;
-                color:{'#dc2626' if critical_failures else '#16a34a'};
-            ">
-                {len(critical_failures)}
-            </td>
+<td style="color:#64748b;">
+    SLA Breaches
+</td>
 
-        </tr>
+<td style="
+    font-weight:700;
+    color:{'#d97706' if sla_breaches else '#16a34a'};
+">
+    {len(sla_breaches)}
+</td>
 
+</tr>
 
-        <tr>
-
-            <td style="
-                color:#64748b;
-            ">
-                SLA Breaches
-            </td>
-
-            <td style="
-                font-weight:700;
-                color:{'#d97706' if sla_breaches else '#16a34a'};
-            ">
-                {len(sla_breaches)}
-            </td>
-
-        </tr>
-
-    </table>
+</table>
 
 </div>
 
@@ -1196,60 +1122,46 @@ HRMS API Health Monitor
 </tr>
 
 
-<!-- =====================================================
-     CRITICAL FAILURES
-===================================================== -->
+<!-- CRITICAL FAILURES -->
 
 <tr>
 
-<td style="
-    padding:0 30px;
-">
+<td style="padding:0 30px;">
 
-    {_build_critical_failures(summary)}
+{_build_critical_failures(summary)}
 
 </td>
 
 </tr>
 
 
-<!-- =====================================================
-     FAILURE DETAILS
-===================================================== -->
+<!-- FAILURE DETAILS -->
 
 <tr>
 
-<td style="
-    padding:0 30px;
-">
+<td style="padding:0 30px;">
 
-    {_build_failure_details(results)}
+{_build_failure_details(results)}
 
 </td>
 
 </tr>
 
 
-<!-- =====================================================
-     API OVERVIEW
-===================================================== -->
+<!-- API OVERVIEW -->
 
 <tr>
 
-<td style="
-    padding:0 30px 30px 30px;
-">
+<td style="padding:0 30px 30px 30px;">
 
-    {_build_api_summary(results)}
+{_build_api_summary(results)}
 
 </td>
 
 </tr>
 
 
-<!-- =====================================================
-     FOOTER
-===================================================== -->
+<!-- FOOTER -->
 
 <tr>
 
@@ -1259,36 +1171,33 @@ HRMS API Health Monitor
     text-align:center;
 ">
 
-    <div style="
-        color:#ffffff;
-        font-size:13px;
-        font-weight:700;
-    ">
-        HRMS API Health Suite
-    </div>
+<div style="
+    color:#ffffff;
+    font-size:13px;
+    font-weight:700;
+">
+    HRMS API Health Suite
+</div>
 
+<div style="
+    color:#94a3b8;
+    font-size:11px;
+    margin-top:6px;
+">
+    Automated monitoring • API availability • Response time • SLA
+</div>
 
-    <div style="
-        color:#94a3b8;
-        font-size:11px;
-        margin-top:6px;
-    ">
-        Automated monitoring • API availability • Response time • SLA
-    </div>
-
-
-    <div style="
-        color:#64748b;
-        font-size:10px;
-        margin-top:10px;
-    ">
-        This is an automated health monitoring notification.
-    </div>
+<div style="
+    color:#64748b;
+    font-size:10px;
+    margin-top:10px;
+">
+    This is an automated health monitoring notification.
+</div>
 
 </td>
 
 </tr>
-
 
 </table>
 
@@ -1297,57 +1206,106 @@ HRMS API Health Monitor
 </tr>
 
 </table>
-
 
 </body>
 
 </html>
-
 """
 
-    return html_body
+
+
+# ============================================================
+# ATTACHMENT
+# ============================================================
+
+def _prepare_attachment(
+    file_path: str | None,
+    label: str,
+):
+    """
+    Prepare a Resend attachment.
+
+    IMPORTANT:
+    We deliberately use the local file path instead of manually
+    Base64 encoding the file.
+
+    This allows the Resend SDK to handle the attachment.
+    """
+
+    if not file_path:
+
+        print(
+            f"[health-suite] WARNING: "
+            f"No {label} path was received."
+        )
+
+        return None
+
+    absolute_path = os.path.abspath(
+        file_path
+    )
+
+    if not os.path.isfile(
+        absolute_path
+    ):
+
+        print(
+            f"[health-suite] WARNING: "
+            f"{label} does not exist: "
+            f"{absolute_path}"
+        )
+
+        return None
+
+    try:
+
+        file_size = os.path.getsize(
+            absolute_path
+        )
+
+        filename = os.path.basename(
+            absolute_path
+        )
+
+        print(
+            f"[health-suite] Preparing "
+            f"{label} attachment..."
+        )
+
+        print(
+            f"[health-suite] {label} path: "
+            f"{absolute_path}"
+        )
+
+        print(
+            f"[health-suite] {label} filename: "
+            f"{filename}"
+        )
+
+        print(
+            f"[health-suite] {label} size: "
+            f"{file_size} bytes"
+        )
+
+        return {
+            "path": absolute_path,
+            "filename": filename,
+        }
+
+    except Exception as exc:
+
+        print(
+            f"[health-suite] WARNING: "
+            f"Failed to prepare {label}: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
+        return None
 
 
 # ============================================================
 # SEND EMAIL
 # ============================================================
-
-def _prepare_attachment(file_path: str, label: str) -> dict | None:
-    """
-    Reads a local file and returns a Resend-compatible attachment dict.
-    Returns None (and logs a warning) if the file is missing or unreadable.
-    Never raises — attachment failures must never break the email send.
-    """
-    if not file_path:
-        print(f"[health-suite] WARNING: No {label} path was received.")
-        return None
-
-    if not os.path.isfile(file_path):
-        print(f"[health-suite] WARNING: {label} does not exist: {file_path}")
-        return None
-
-    try:
-        print(f"[health-suite] Preparing {label} attachment...")
-        print(f"[health-suite] {label} path: {file_path}")
-
-        with open(file_path, "rb") as f:
-            file_bytes = f.read()
-
-        encoded = base64.b64encode(file_bytes).decode("utf-8")
-
-        print(f"[health-suite] {label} attachment prepared successfully.")
-        print(f"[health-suite] Attachment filename: {os.path.basename(file_path)}")
-        print(f"[health-suite] Attachment size: {len(file_bytes)} bytes")
-
-        return {
-            "filename": os.path.basename(file_path),
-            "content": encoded,
-        }
-
-    except Exception as e:
-        print(f"[health-suite] WARNING: Failed to prepare {label} attachment: {e}")
-        return None
-
 
 def send_health_email(
     summary,
@@ -1356,40 +1314,28 @@ def send_health_email(
     report_path=None,
     summary_path=None,
 ):
-    """
-    Sends the health dashboard through Resend.
-
-    Parameters:
-        summary:
-            reporter.summary dictionary
-
-        results:
-            reporter.results list
-
-        environment:
-            Environment name shown in the email.
-
-        report_path:
-            Optional Excel report generated by HealthReporter.
-
-        summary_path:
-            Optional JSON summary generated by HealthReporter.
-    """
 
     if not RESEND_API_KEY:
         raise RuntimeError(
-            "RESEND_API_KEY environment variable is not configured."
+            "RESEND_API_KEY environment variable "
+            "is not configured."
         )
 
     if not TO_EMAIL:
         raise RuntimeError(
-            "HEALTH_MAIL_TO environment variable is not configured."
+            "HEALTH_MAIL_TO environment variable "
+            "is not configured."
         )
 
     resend.api_key = RESEND_API_KEY
 
-    percentage = _get_health_percentage(summary)
-    overall = _overall_status(summary)
+    percentage = _get_health_percentage(
+        summary
+    )
+
+    overall = _overall_status(
+        summary
+    )
 
     subject = (
         f"{overall['emoji']} "
@@ -1411,49 +1357,105 @@ def send_health_email(
     }
 
     # ========================================================
-    # ATTACHMENTS (Excel report + JSON summary)
+    # ATTACHMENTS
     # ========================================================
+
     attachments = []
 
-    excel_attachment = _prepare_attachment(report_path, "Excel report")
-    if excel_attachment:
-        attachments.append(excel_attachment)
+    # Excel
+    excel_attachment = _prepare_attachment(
+        report_path,
+        "Excel report",
+    )
 
-    json_attachment = _prepare_attachment(summary_path, "JSON summary")
+    if excel_attachment:
+        attachments.append(
+            excel_attachment
+        )
+
+    # JSON
+    json_attachment = _prepare_attachment(
+        summary_path,
+        "JSON summary",
+    )
+
     if json_attachment:
-        attachments.append(json_attachment)
+        attachments.append(
+            json_attachment
+        )
 
     if attachments:
+
         params["attachments"] = attachments
 
+        print(
+            "[health-suite] "
+            f"Total attachments: "
+            f"{len(attachments)}"
+        )
+
+        for attachment in attachments:
+            print(
+                "[health-suite] "
+                f"Attachment: "
+                f"{attachment.get('filename')}"
+            )
+
+    else:
+
+        print(
+            "[health-suite] WARNING: "
+            "No attachments were prepared."
+        )
+
     # ========================================================
-    # SEND EMAIL
+    # SEND
     # ========================================================
-    print("[health-suite] Sending health dashboard email...")
 
-    response = resend.Emails.send(params)
+    print(
+        "[health-suite] "
+        "Sending health dashboard email..."
+    )
 
-    print("[health-suite] Resend email sent successfully.")
-    print(f"[health-suite] Resend response: {response}")
+    try:
 
-    return response
+        response = resend.Emails.send(
+            params
+        )
+
+        print(
+            "[health-suite] "
+            "Resend email sent successfully."
+        )
+
+        print(
+            f"[health-suite] "
+            f"Resend response: {response}"
+        )
+
+        return response
+
+    except Exception as exc:
+
+        print(
+            "[health-suite] "
+            f"Resend email failed: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
+        raise
+
+
+# ============================================================
+# COMPATIBILITY WRAPPER
+# ============================================================
 
 def notify_resend(
     summary,
     results,
-    report_path=None
+    report_path=None,
+    summary_path=None,
 ):
-    """
-    Compatibility wrapper.
-
-    Your pytest fixture can simply call:
-
-        notify_resend(
-            summary=summary,
-            results=reporter.results,
-            report_path=report_path
-        )
-    """
 
     try:
 
@@ -1461,101 +1463,15 @@ def notify_resend(
             summary=summary,
             results=results,
             report_path=report_path,
+            summary_path=summary_path,
         )
 
     except Exception as exc:
 
         print(
-            f"[health-suite] Resend notification failed: "
+            "[health-suite] "
+            f"Resend notification failed: "
             f"{type(exc).__name__}: {exc}"
         )
 
         return None
-
-
-# ============================================================
-# OPTIONAL MANUAL TEST
-# ============================================================
-
-if __name__ == "__main__":
-
-    """
-    This block allows you to test the email independently.
-
-    Example:
-
-        python utils/health_resend_notifier.py
-    """
-
-    demo_results = [
-
-        {
-            "name": "login",
-            "action": "User Login / Authentication",
-            "method": "POST",
-            "endpoint": "/api/auth/login",
-            "status_code": 200,
-            "expected_status": 200,
-            "passed": True,
-            "elapsed_ms": 421.4,
-            "sla_ms": 1500,
-            "api_message": "Login successful",
-            "error": "",
-            "critical": True,
-        },
-
-        {
-            "name": "tickets",
-            "action": "Fetch Tickets",
-            "method": "GET",
-            "endpoint": "/api/ticketing/tickets",
-            "status_code": 404,
-            "expected_status": 200,
-            "passed": False,
-            "elapsed_ms": 312.6,
-            "sla_ms": 2000,
-            "api_message": "Route not found",
-            "error": 'Expected 200, got 404: {"error":"Route not found!"}',
-            "critical": False,
-        },
-
-    ]
-
-
-    demo_summary = {
-
-        "total": 2,
-
-        "passed": 1,
-
-        "failed": 1,
-
-        "pass_rate": 50.0,
-
-        "critical_failed": [],
-
-        "sla_breaches": [],
-
-        "failed_endpoints": [
-            {
-                "name": "tickets",
-                "action": "Fetch Tickets",
-                "status_code": 404,
-                "expected_status": 200,
-                "error": 'Route not found',
-                "api_message": "Route not found",
-            }
-        ],
-
-        "run_time": datetime.now().isoformat(
-            timespec="seconds"
-        ),
-
-    }
-
-
-    notify_resend(
-        summary=demo_summary,
-        results=demo_results,
-        report_path=None,
-    )
