@@ -27,6 +27,24 @@ HEADER_FONT = Font(color="FFFFFF", bold=True)
 
 MASKED_HEADER_KEYS = ("authorization", "cookie", "set-cookie")
 
+import re
+
+_ILLEGAL_CHARACTERS_RE = re.compile(
+    r'[\000-\010]|[\013-\014]|[\016-\037]'
+)
+
+def _sanitize_for_excel(value):
+    """
+    Strip control characters openpyxl refuses to write into a cell
+    (commonly present in raw backend error dumps / stack traces).
+    Leaves non-string values (numbers, None) untouched aside from
+    turning None into an empty string for display purposes.
+    """
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        return value
+    return _ILLEGAL_CHARACTERS_RE.sub("", value)
 
 def _mask_headers(headers: dict) -> dict:
     masked = {}
@@ -147,7 +165,7 @@ class HealthReporter:
         ]
         for i, (label, value) in enumerate(rows, start=1):
             ws.cell(row=i, column=1, value=label).font = Font(bold=True)
-            ws.cell(row=i, column=2, value=value)
+            ws.cell(row=i, column=2, value=_sanitize_for_excel(value))
         ws.column_dimensions["A"].width = 22
         ws.column_dimensions["B"].width = 70
 
@@ -169,11 +187,23 @@ class HealthReporter:
         for r in self.results:
             row_idx = wd.max_row + 1
             wd.append([
-                r["candidate_name"], r["candidate_email"], r["action"], r["method"],
-                r["endpoint"], r["status_code"], r["expected_status"], r["elapsed_ms"],
-                r["sla_ms"], r["sla_status"], r["api_message"],
-                _pretty(r["request_headers"]), _pretty(r["request_payload"]),
-                _pretty(r["response_body"]), r["screenshot"], r["error"], r["timestamp"],
+                _sanitize_for_excel(r["candidate_name"]),
+                _sanitize_for_excel(r["candidate_email"]),
+                _sanitize_for_excel(r["action"]),
+                _sanitize_for_excel(r["method"]),
+                _sanitize_for_excel(r["endpoint"]),
+                r["status_code"],
+                r["expected_status"],
+                r["elapsed_ms"],
+                r["sla_ms"],
+                _sanitize_for_excel(r["sla_status"]),
+                _sanitize_for_excel(r["api_message"]),
+                _sanitize_for_excel(_pretty(r["request_headers"])),
+                _sanitize_for_excel(_pretty(r["request_payload"])),
+                _sanitize_for_excel(_pretty(r["response_body"])),
+                _sanitize_for_excel(r["screenshot"]),
+                _sanitize_for_excel(r["error"]),
+                _sanitize_for_excel(r["timestamp"]),
             ])
             pass_fill = PASS_FILL if r["passed"] else FAIL_FILL
             for col in range(1, len(headers) + 1):
@@ -183,22 +213,21 @@ class HealthReporter:
                 wd.cell(row=row_idx, column=10).fill = SLA_WARN_FILL
 
         widths = {"A": 18, "B": 24, "C": 26, "D": 8, "E": 32, "F": 11, "G": 13,
-                  "H": 13, "I": 10, "J": 13, "K": 30, "L": 34, "M": 34, "N": 40,
-                  "O": 20, "P": 40, "Q": 20}
+                "H": 13, "I": 10, "J": 13, "K": 30, "L": 34, "M": 34, "N": 40,
+                "O": 20, "P": 40, "Q": 20}
         for col_letter, width in widths.items():
             wd.column_dimensions[col_letter].width = width
 
         out_path = os.path.join(self.run_folder, "api_health_report.xlsx")
         wb.save(out_path)
         return out_path
-
-    def write_summary_json(self) -> str:
-        """
-        Writes a compact JSON summary (not the full per-row detail) —
-        this is what n8n's HTTP Request node will actually parse to decide
-        pass/fail branching and compose the notification message.
-        """
-        out_path = os.path.join(self.run_folder, "summary.json")
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(self.summary, f, indent=2)
-        return out_path
+def write_summary_json(self) -> str:
+    """
+    Writes a compact JSON summary (not the full per-row detail) —
+    this is what n8n's HTTP Request node will actually parse to decide
+    pass/fail branching and compose the notification message.
+    """
+    out_path = os.path.join(self.run_folder, "summary.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(self.summary, f, indent=2)
+    return out_path

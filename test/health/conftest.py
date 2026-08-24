@@ -107,31 +107,17 @@ def health_reporter(health_run_folder):
     # ---------------------------------------------------------
 
     try:
-
         report_path = reporter.write_excel()
-
-        summary_path = reporter.write_summary_json()
-
-        print(
-            f"\n[health-suite] Report written to: "
-            f"{report_path}"
-        )
-
-        print(
-            f"[health-suite] Summary JSON written to: "
-            f"{summary_path}"
-        )
-
+        print(f"[health-suite] Excel report written: {report_path}")
     except Exception as e:
-
-        print(
-            f"[health-suite] ERROR generating reports: {e}"
-        )
-
-        # Do not stop the teardown here.
-        # We still want the summary/email attempt.
-
+        print(f"[health-suite] Excel generation failed: {e}")
         report_path = None
+
+    try:
+        summary_path = reporter.write_summary_json()
+        print(f"[health-suite] JSON summary written: {summary_path}")
+    except Exception as e:
+        print(f"[health-suite] JSON generation failed: {e}")
         summary_path = None
 
     # ---------------------------------------------------------
