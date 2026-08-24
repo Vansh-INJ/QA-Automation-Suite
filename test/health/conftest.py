@@ -54,7 +54,7 @@ def base_url() -> str:
     """
 
     url = os.getenv(
-        "BASE_URL",
+        "HEALTH_BASE_URL",
         "https://injin-dev.injtechnologies.com",
     )
 
@@ -154,14 +154,9 @@ def health_reporter(health_run_folder):
     # ---------------------------------------------------------
 
     try:
-
         send_health_email(
             summary=summary,
-            results=reporter.results,   
-            environment=os.getenv(
-                "HEALTH_ENVIRONMENT",
-                "Development",
-            ),
+            results=reporter.results,
             report_path=report_path,
             summary_path=summary_path,
         )
@@ -172,7 +167,6 @@ def health_reporter(health_run_folder):
         )
 
     except Exception as e:
-
         # VERY IMPORTANT:
         #
         # Email failure must NEVER make the health suite
@@ -182,7 +176,6 @@ def health_reporter(health_run_folder):
             "[health-suite] "
             f"Failed to send health dashboard email: {e}"
         )
-
 
 # ============================================================
 # TOKEN MANAGERS

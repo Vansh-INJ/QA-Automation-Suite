@@ -754,8 +754,8 @@ def _build_api_summary(results):
 def build_health_email(
     summary,
     results,
+    environment=ENVIRONMENT,
 ):
-
     total = summary.get("total", 0)
     passed = summary.get("passed", 0)
     failed = summary.get("failed", 0)
@@ -770,13 +770,9 @@ def build_health_email(
         [],
     )
 
-    percentage = _get_health_percentage(
-        summary
-    )
+    percentage = _get_health_percentage(summary)
 
-    overall = _overall_status(
-        summary
-    )
+    overall = _overall_status(summary)
 
     run_time = summary.get(
         "run_time",
@@ -787,9 +783,7 @@ def build_health_email(
 
     return f"""
 <!DOCTYPE html>
-
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>HRMS API Health Monitor</title>
@@ -812,7 +806,6 @@ def build_health_email(
        ">
 
 <tr>
-
 <td align="center">
 
 <table width="900"
@@ -829,7 +822,6 @@ def build_health_email(
 <!-- HEADER -->
 
 <tr>
-
 <td style="
     background:#0f172a;
     padding:25px 30px;
@@ -852,14 +844,12 @@ def build_health_email(
     </div>
 
 </td>
-
 </tr>
 
 
 <!-- STATUS -->
 
 <tr>
-
 <td style="
     padding:25px 30px 15px 30px;
 ">
@@ -896,14 +886,12 @@ def build_health_email(
 </div>
 
 </td>
-
 </tr>
 
 
 <!-- METRICS -->
 
 <tr>
-
 <td style="
     padding:5px 30px 20px 30px;
 ">
@@ -1021,18 +1009,15 @@ def build_health_email(
 </td>
 
 </tr>
-
 </table>
 
 </td>
-
 </tr>
 
 
 <!-- RUN INFORMATION -->
 
 <tr>
-
 <td style="
     padding:0 30px 20px 30px;
 ">
@@ -1057,7 +1042,6 @@ def build_health_email(
        style="font-size:13px;">
 
 <tr>
-
 <td style="
     color:#64748b;
     width:140px;
@@ -1066,13 +1050,12 @@ def build_health_email(
 </td>
 
 <td style="font-weight:700;">
-    {_safe(ENVIRONMENT)}
+    {_safe(environment)}
 </td>
-
 </tr>
 
-<tr>
 
+<tr>
 <td style="color:#64748b;">
     Run Time
 </td>
@@ -1080,11 +1063,10 @@ def build_health_email(
 <td>
     {_safe(run_time)}
 </td>
-
 </tr>
 
-<tr>
 
+<tr>
 <td style="color:#64748b;">
     Critical Failures
 </td>
@@ -1095,11 +1077,10 @@ def build_health_email(
 ">
     {len(critical_failures)}
 </td>
-
 </tr>
 
-<tr>
 
+<tr>
 <td style="color:#64748b;">
     SLA Breaches
 </td>
@@ -1110,7 +1091,6 @@ def build_health_email(
 ">
     {len(sla_breaches)}
 </td>
-
 </tr>
 
 </table>
@@ -1118,53 +1098,39 @@ def build_health_email(
 </div>
 
 </td>
-
 </tr>
 
 
 <!-- CRITICAL FAILURES -->
 
 <tr>
-
 <td style="padding:0 30px;">
-
-{_build_critical_failures(summary)}
-
+    {_build_critical_failures(summary)}
 </td>
-
 </tr>
 
 
 <!-- FAILURE DETAILS -->
 
 <tr>
-
 <td style="padding:0 30px;">
-
-{_build_failure_details(results)}
-
+    {_build_failure_details(results)}
 </td>
-
 </tr>
 
 
 <!-- API OVERVIEW -->
 
 <tr>
-
 <td style="padding:0 30px 30px 30px;">
-
-{_build_api_summary(results)}
-
+    {_build_api_summary(results)}
 </td>
-
 </tr>
 
 
 <!-- FOOTER -->
 
 <tr>
-
 <td style="
     background:#0f172a;
     padding:20px 30px;
@@ -1196,110 +1162,61 @@ def build_health_email(
 </div>
 
 </td>
-
 </tr>
 
 </table>
 
 </td>
-
 </tr>
 
 </table>
 
 </body>
-
 </html>
 """
-
-
 
 # ============================================================
 # ATTACHMENT
 # ============================================================
 
-def _prepare_attachment(
-    file_path: str | None,
-    label: str,
-):
+import base64
+
+def _prepare_attachment(file_path: str | None, label: str):
     """
-    Prepare a Resend attachment.
-
-    IMPORTANT:
-    We deliberately use the local file path instead of manually
-    Base64 encoding the file.
-
-    This allows the Resend SDK to handle the attachment.
+    Reads a local file and returns a Resend-compatible attachment dict
+    using base64-encoded content. Resend's `path` field expects a public
+    URL, not a local filesystem path — so for runner-generated files
+    (Excel/JSON), base64 content is the only format that works.
     """
-
     if not file_path:
-
-        print(
-            f"[health-suite] WARNING: "
-            f"No {label} path was received."
-        )
-
+        print(f"[health-suite] WARNING: No {label} path was received.")
         return None
 
-    absolute_path = os.path.abspath(
-        file_path
-    )
+    absolute_path = os.path.abspath(file_path)
 
-    if not os.path.isfile(
-        absolute_path
-    ):
-
-        print(
-            f"[health-suite] WARNING: "
-            f"{label} does not exist: "
-            f"{absolute_path}"
-        )
-
+    if not os.path.isfile(absolute_path):
+        print(f"[health-suite] WARNING: {label} does not exist: {absolute_path}")
         return None
 
     try:
+        with open(absolute_path, "rb") as f:
+            file_bytes = f.read()
 
-        file_size = os.path.getsize(
-            absolute_path
-        )
+        encoded = base64.b64encode(file_bytes).decode("utf-8")
+        filename = os.path.basename(absolute_path)
 
-        filename = os.path.basename(
-            absolute_path
-        )
-
-        print(
-            f"[health-suite] Preparing "
-            f"{label} attachment..."
-        )
-
-        print(
-            f"[health-suite] {label} path: "
-            f"{absolute_path}"
-        )
-
-        print(
-            f"[health-suite] {label} filename: "
-            f"{filename}"
-        )
-
-        print(
-            f"[health-suite] {label} size: "
-            f"{file_size} bytes"
-        )
+        print(f"[health-suite] Preparing {label} attachment...")
+        print(f"[health-suite] {label} path: {absolute_path}")
+        print(f"[health-suite] {label} filename: {filename}")
+        print(f"[health-suite] {label} size: {len(file_bytes)} bytes")
 
         return {
-            "path": absolute_path,
             "filename": filename,
+            "content": encoded,
         }
 
     except Exception as exc:
-
-        print(
-            f"[health-suite] WARNING: "
-            f"Failed to prepare {label}: "
-            f"{type(exc).__name__}: {exc}"
-        )
-
+        print(f"[health-suite] WARNING: Failed to prepare {label}: {type(exc).__name__}: {exc}")
         return None
 
 
@@ -1310,11 +1227,9 @@ def _prepare_attachment(
 def send_health_email(
     summary,
     results,
-    environment="Development",
     report_path=None,
     summary_path=None,
 ):
-
     if not RESEND_API_KEY:
         raise RuntimeError(
             "RESEND_API_KEY environment variable "
@@ -1329,13 +1244,8 @@ def send_health_email(
 
     resend.api_key = RESEND_API_KEY
 
-    percentage = _get_health_percentage(
-        summary
-    )
-
-    overall = _overall_status(
-        summary
-    )
+    percentage = _get_health_percentage(summary)
+    overall = _overall_status(summary)
 
     subject = (
         f"{overall['emoji']} "
@@ -1347,6 +1257,7 @@ def send_health_email(
     html_body = build_health_email(
         summary=summary,
         results=results,
+        environment=ENVIRONMENT,
     )
 
     params = {
@@ -1369,9 +1280,7 @@ def send_health_email(
     )
 
     if excel_attachment:
-        attachments.append(
-            excel_attachment
-        )
+        attachments.append(excel_attachment)
 
     # JSON
     json_attachment = _prepare_attachment(
@@ -1380,12 +1289,9 @@ def send_health_email(
     )
 
     if json_attachment:
-        attachments.append(
-            json_attachment
-        )
+        attachments.append(json_attachment)
 
     if attachments:
-
         params["attachments"] = attachments
 
         print(
@@ -1402,7 +1308,6 @@ def send_health_email(
             )
 
     else:
-
         print(
             "[health-suite] WARNING: "
             "No attachments were prepared."
@@ -1418,10 +1323,7 @@ def send_health_email(
     )
 
     try:
-
-        response = resend.Emails.send(
-            params
-        )
+        response = resend.Emails.send(params)
 
         print(
             "[health-suite] "
@@ -1436,29 +1338,21 @@ def send_health_email(
         return response
 
     except Exception as exc:
-
         print(
             "[health-suite] "
             f"Resend email failed: "
             f"{type(exc).__name__}: {exc}"
         )
-
         raise
-
-
 # ============================================================
 # COMPATIBILITY WRAPPER
-# ============================================================
-
 def notify_resend(
     summary,
     results,
     report_path=None,
     summary_path=None,
 ):
-
     try:
-
         return send_health_email(
             summary=summary,
             results=results,
@@ -1467,7 +1361,6 @@ def notify_resend(
         )
 
     except Exception as exc:
-
         print(
             "[health-suite] "
             f"Resend notification failed: "
