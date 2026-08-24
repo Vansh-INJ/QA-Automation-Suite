@@ -1,15 +1,31 @@
-name: API Health Check (5x Daily)
+name: API Health Check (20x Daily)
 
 on:
   schedule:
-    # 5 runs/day, spread across working hours. All times UTC — adjust to
-    # your actual preferred IST times: subtract 5:30 from IST to get UTC.
-    - cron: '0 3 * * *'    # 08:30 IST
-    - cron: '0 6 * * *'    # 11:30 IST
-    - cron: '0 9 * * *'    # 14:30 IST
-    - cron: '0 12 * * *'   # 17:30 IST
-    - cron: '0 15 * * *'   # 20:30 IST
-  workflow_dispatch: {}    # manual trigger anytime from the Actions tab
+    # 20 runs/day, approximately every 72 minutes.
+    # All times are UTC.
+    - cron: '0 0 * * *'     # 05:30 IST
+    - cron: '12 1 * * *'    # 06:42 IST
+    - cron: '24 2 * * *'    # 07:54 IST
+    - cron: '36 3 * * *'    # 09:06 IST
+    - cron: '48 4 * * *'    # 10:18 IST
+    - cron: '0 6 * * *'     # 11:30 IST
+    - cron: '12 7 * * *'    # 12:42 IST
+    - cron: '24 8 * * *'    # 13:54 IST
+    - cron: '36 9 * * *'    # 15:06 IST
+    - cron: '48 10 * * *'   # 16:18 IST
+    - cron: '0 12 * * *'    # 17:30 IST
+    - cron: '12 16 * * *'   # 18:42 IST
+    - cron: '24 14 * * *'   # 19:54 IST
+    - cron: '36 15 * * *'   # 21:06 IST
+    - cron: '48 16 * * *'   # 22:18 IST
+    - cron: '0 18 * * *'    # 23:30 IST
+    - cron: '12 19 * * *'   # 00:42 IST
+    - cron: '24 20 * * *'   # 01:54 IST
+    - cron: '36 21 * * *'   # 03:06 IST
+    - cron: '48 22 * * *'   # 04:18 IST
+
+  workflow_dispatch: {}
 
 jobs:
   health-check:
@@ -41,7 +57,7 @@ jobs:
           HEALTH_MAIL_TO: ${{ secrets.HEALTH_MAIL_TO }}
         run: |
           pytest test/health -q --junitxml=junit-health.xml
-        continue-on-error: true   # don't block artifact upload if tests fail
+        continue-on-error: true
 
       - name: Upload report + failure logs as artifact
         if: always()
