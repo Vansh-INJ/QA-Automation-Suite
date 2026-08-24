@@ -224,8 +224,8 @@ class HealthReporter:
 def write_summary_json(self) -> str:
     """
     Writes a compact JSON summary (not the full per-row detail) —
-    this is what n8n's HTTP Request node will actually parse to decide
-    pass/fail branching and compose the notification message.
+    used as the machine-readable monitoring contract, and attached
+    to the health dashboard email alongside the Excel report.
     """
     out_path = os.path.join(self.run_folder, "summary.json")
     with open(out_path, "w", encoding="utf-8") as f:
