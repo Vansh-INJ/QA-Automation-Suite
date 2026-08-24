@@ -32,7 +32,7 @@ jobs:
 
       - name: Run API Health Suite (auto-emails dashboard)
         env:
-          BASE_URL: ${{ secrets.HEALTH_BASE_URL }}
+          HEALTH_BASE_URL: ${{ secrets.HEALTH_BASE_URL }}
           HEALTH_USER_USERNAME: ${{ secrets.HEALTH_USER_USERNAME }}
           HEALTH_USER_PASSWORD: ${{ secrets.HEALTH_USER_PASSWORD }}
           EMAIL_PROVIDER: "resend"

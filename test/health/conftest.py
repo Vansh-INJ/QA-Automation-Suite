@@ -171,7 +171,13 @@ def health_reporter(health_run_folder):
 
         send_health_email(
             summary=summary,
-            results=reporter.results,
+            results=reporter.results,   
+            environment=os.getenv(
+                "HEALTH_ENVIRONMENT",
+                "Development",
+            ),
+            report_path=report_path,
+            summary_path=summary_path,
         )
 
         print(

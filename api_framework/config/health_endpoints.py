@@ -79,11 +79,7 @@ RESOLVER_CONFIG = {
     },
     "financial_year": {
         "source_path": "/api/admin/financial-years",
-        "fields": [
-            "financial_year",
-            "year",
-            "label"
-        ]
+        "fields": ["fy_code", "uuid", "id"],  # match actual response
     },
     "legal_entity_uuid": {
         "source_path": "/api/admin/legal-entities",
