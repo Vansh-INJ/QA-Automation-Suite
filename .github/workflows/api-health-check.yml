@@ -67,5 +67,6 @@ jobs:
           path: |
             junit-health.xml
             **/api_health_report.xlsx
+            **/summary.json
             **/api_failures/**
           retention-days: 30
