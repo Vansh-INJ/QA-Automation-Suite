@@ -273,7 +273,7 @@ class OnboardingApprovalPage:
         today = datetime.now().strftime("%Y-%m-%d")
 
         self.page.goto(
-            f"https://injin.injtechnologies.com/hr/users/onboarding?limit=100&join_date={today}"
+            f"https://injin-dev.injtechnologies.com/hr/users/onboarding?limit=100&join_date={today}"
         )
 
         self.page.wait_for_load_state(

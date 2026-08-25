@@ -305,7 +305,7 @@ class OnboardingPage(BasePage):
     def open(self):
 
         target_url = (
-            "https://injin.injtechnologies.com/hr/users/onboarding"
+            "https://injin-dev.injtechnologies.com/hr/users/onboarding"
         )
 
         self.page.goto(
@@ -335,7 +335,7 @@ class OnboardingPage(BasePage):
     def open_employee_onboarding_modal(self):
 
         target_url = (
-            "https://injin.injtechnologies.com/hr/users/onboarding"
+            "https://injin-dev.injtechnologies.com/hr/users/onboarding"
         )
 
         for attempt in range(5):

@@ -7,14 +7,14 @@ def run():
         page = browser.new_page()
         
         # Login
-        page.goto("https://injin.injtechnologies.com/login")
+        page.goto("https://injin-dev.injtechnologies.com/login")
         page.get_by_role("button", name="Fill Super Admin Credentials", exact=True).click()
         time.sleep(1)
         page.get_by_role("button", name="Login", exact=True).click()
         page.wait_for_load_state("networkidle")
         
         # Onboarding
-        page.goto("https://injin.injtechnologies.com/hr/users/onboarding")
+        page.goto("https://injin-dev.injtechnologies.com/hr/users/onboarding")
         page.get_by_role("button", name="Employee Onboarding").click()
         
         time.sleep(2)

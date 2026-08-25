@@ -171,7 +171,7 @@ class AddEmployeePage:
 
     def open(self):
         self.page.goto(
-            "https://injin.injtechnologies.com/hr/users/add",
+            "https://injin-dev.injtechnologies.com/hr/users/add",
             wait_until="networkidle"
         )
 

@@ -2,7 +2,7 @@ import os
 from playwright.sync_api import sync_playwright
 
 def run():
-    invite_link = "https://injin.injtechnologies.com/onboarding/d34118ae-aa86-444f-82c5-32a310c357e5?token=5b0e94e5fc617384b4b1f5d9cebccb3ee2c61ee6c3c9155632a17dddf596c656"
+    invite_link = "https://injin-dev.injtechnologies.com/onboarding/d34118ae-aa86-444f-82c5-32a310c357e5?token=5b0e94e5fc617384b4b1f5d9cebccb3ee2c61ee6c3c9155632a17dddf596c656"
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

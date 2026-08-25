@@ -1,15 +1,40 @@
 """
 Central registry of endpoints monitored by the daily API Health Suite.
 
+v8: adds 4 new endpoints (see "NEW IN v8" below), fixes the financial_year
+resolver to return a UUID instead of a human-readable fy_code (backend
+expects a UUID -- this was the root cause of 5 pre-existing tax-endpoint
+failures), and scaffolds AUTH_PROFILES for HR/Admin/Finance role-based
+testing.
+
+IMPORTANT -- CURRENT STATE OF ROLE-BASED TESTING:
+As of this version, the credential in use (HEALTH_USER_USERNAME /
+HEALTH_USER_PASSWORD) has access across ALL roles, so every endpoint
+below still uses "employee" as its auth_profile. The hr/admin/finance
+profiles are scaffolded below (env var names reserved) but NOT YET
+assigned to endpoints, because doing so with a shared super-account
+would not actually test role boundaries -- it would just be cosmetic.
+
+Once real role-scoped credentials are issued:
+  1. Set HEALTH_HR_USERNAME / HEALTH_HR_PASSWORD (and admin/finance
+     equivalents) as GitHub secrets + workflow env vars.
+  2. Go through ENDPOINTS below and reassign "auth_profile" per endpoint
+     to whichever role actually owns/uses that API in production
+     (e.g. /api/admin/payroll/* -> "finance" or "admin",
+     /api/hr/* management endpoints -> "hr", /api/me/* -> "employee").
+  3. Only then will failures here reflect real "can an HR/Admin/Finance
+     user do their job" answers -- which is the whole point of this
+     suite ahead of client-facing use.
+
 v7: expanded from the INJIN HRMS Postman collection (421 total requests
 reviewed). Three groups below:
-  1. ORIGINAL 10 — the hand-built starting set (unchanged)
-  2. CLEAN ADDITIONS — safe GET reads, no dynamic ID needed
-  3. RESOLVABLE ADDITIONS — need a real record ID first; resolved at
+  1. ORIGINAL 10 -- the hand-built starting set (unchanged)
+  2. CLEAN ADDITIONS -- safe GET reads, no dynamic ID needed
+  3. RESOLVABLE ADDITIONS -- need a real record ID first; resolved at
      runtime by calling a 'source' list endpoint and extracting an ID
      (see RESOLVER_CONFIG and utils/health_id_resolver.py)
 
-38 endpoints from the Postman collection are DELIBERATELY EXCLUDED —
+38 endpoints from the Postman collection are DELIBERATELY EXCLUDED --
 see postman_excluded_needs_review.xlsx for the list and why each needs
 your input before it can be added safely.
 """
@@ -33,10 +58,32 @@ def notifications_params():
     return {"page": 1, "per_page": 10, "unread_only": "false"}
 
 
+# ---------------------------------------------------------------------------
+# AUTH_PROFILES: one entry per distinct role that can log in.
+#
+# "employee" is the only profile currently backed by real, distinct
+# credentials -- see module docstring above. hr/admin/finance are
+# scaffolded so they're ready to activate the moment role-scoped
+# credentials are issued; until then, do NOT assign endpoints to them,
+# since the underlying account is identical to "employee" today and
+# would give a false sense of role-based coverage.
+# ---------------------------------------------------------------------------
 AUTH_PROFILES = {
     "employee": {
         "username_env": "HEALTH_USER_USERNAME",
         "password_env": "HEALTH_USER_PASSWORD",
+    },
+    "hr": {
+        "username_env": "HEALTH_HR_USERNAME",
+        "password_env": "HEALTH_HR_PASSWORD",
+    },
+    "admin": {
+        "username_env": "HEALTH_ADMIN_USERNAME",
+        "password_env": "HEALTH_ADMIN_PASSWORD",
+    },
+    "finance": {
+        "username_env": "HEALTH_FINANCE_USERNAME",
+        "password_env": "HEALTH_FINANCE_PASSWORD",
     },
 }
 
@@ -45,7 +92,7 @@ DEFAULT_SLA_MS = 2000
 # ---------------------------------------------------------------------------
 # RESOLVER_CONFIG: for RESOLVABLE ADDITIONS below. Each key is a path
 # variable name; 'source_path' is a GET endpoint (already in this registry)
-# that returns a list — we take the FIRST item and try each field name in
+# that returns a list -- we take the FIRST item and try each field name in
 # 'fields' (in order) until one exists in that item, and use its value.
 #
 # IMPORTANT: 'fields' are best-guess field names. After your first real run,
@@ -78,8 +125,12 @@ RESOLVER_CONFIG = {
         ]
     },
     "financial_year": {
+        # FIX (v8): backend expects a UUID for this path variable, not the
+        # human-readable fy_code (e.g. "2027-28") -- that was causing
+        # "invalid input syntax for type uuid" 500s on every tax-related
+        # endpoint that resolves financial_year. uuid now tried first.
         "source_path": "/api/admin/financial-years",
-        "fields": ["fy_code", "uuid", "id"],  # match actual response
+        "fields": ["uuid", "id", "fy_code"],
     },
     "legal_entity_uuid": {
         "source_path": "/api/admin/legal-entities",
@@ -119,20 +170,24 @@ RESOLVER_CONFIG = {
 
 ENDPOINTS = [
     # =========================================================================
-    # ORIGINAL 10 — hand-built starting set
+    # ORIGINAL 10 -- hand-built starting set
     # =========================================================================
     {
         "name": "login",
+        "module": "Authentication",
+        "submodule": "Login",
         "action": "User Login / Authentication",
         "method": "POST",
         "path": "/api/auth/login",
-        "auth_profile": "None",
+        "is_login": True,
         "expected_status": 200,
         "critical": True,
         "sla_ms": 1500,
     },
     {
         "name": "me",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": "Fetch Logged-in User Profile",
         "method": "GET",
         "path": "/api/me",
@@ -143,6 +198,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_user_details",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": "Fetch Extended User Details",
         "method": "GET",
         "path": "/api/me/getUserDetails",
@@ -153,6 +210,8 @@ ENDPOINTS = [
     },
     {
         "name": "employee_leave_policy",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": "Fetch Leave Policy",
         "method": "GET",
         "path": "/api/me/employee-leave-policy",
@@ -163,6 +222,8 @@ ENDPOINTS = [
     },
     {
         "name": "employee_holiday_policy",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": "Fetch Holiday Policy",
         "method": "GET",
         "path": "/api/me/employee-holiday-policy",
@@ -173,6 +234,8 @@ ENDPOINTS = [
     },
     {
         "name": "attendance_monthly",
+        "module": "Employee Self-Service",
+        "submodule": "Attendance",
         "action": "Fetch Monthly Attendance",
         "method": "GET",
         "path": "/api/me/attendance",
@@ -184,6 +247,8 @@ ENDPOINTS = [
     },
     {
         "name": "leave_requests",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": "Fetch Leave Requests",
         "method": "GET",
         "path": "/api/me/leave-requests",
@@ -195,6 +260,8 @@ ENDPOINTS = [
     },
     {
         "name": "ticketing_tickets",
+        "module": "Ticketing",
+        "submodule": "My Tickets",
         "action": "Fetch Support Tickets",
         "method": "GET",
         "path": "/api/me/ticketing/tickets",
@@ -206,6 +273,8 @@ ENDPOINTS = [
     },
     {
         "name": "notifications",
+        "module": "Employee Self-Service",
+        "submodule": "Notifications",
         "action": "Fetch Notifications",
         "method": "GET",
         "path": "/api/me/notifications",
@@ -217,6 +286,8 @@ ENDPOINTS = [
     },
     {
         "name": "hr_payslips",
+        "module": "Employee Self-Service",
+        "submodule": "Payslips",
         "action": "Fetch Payslips",
         "method": "GET",
         "path": "/api/hr/payslips",
@@ -232,6 +303,8 @@ ENDPOINTS = [
     # =========================================================================
     {
         "name": "login_pm",
+        "module": "Authentication",
+        "submodule": "Login",
         "action": 'User Login / Authentication',
         "method": "POST",
         "path": '/api/auth/login',
@@ -242,6 +315,8 @@ ENDPOINTS = [
     },
     {
         "name": "me_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": 'Fetch Logged-in User Profile',
         "method": "GET",
         "path": '/api/me',
@@ -252,6 +327,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_user_details_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": 'Fetch Extended User Details',
         "method": "GET",
         "path": '/api/me/getUserDetails',
@@ -262,6 +339,8 @@ ENDPOINTS = [
     },
     {
         "name": "employee_leave_policy_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": 'Fetch Leave Policy',
         "method": "GET",
         "path": '/api/me/employee-leave-policy',
@@ -272,6 +351,8 @@ ENDPOINTS = [
     },
     {
         "name": "employee_holiday_policy_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": 'Fetch Holiday Policy',
         "method": "GET",
         "path": '/api/me/employee-holiday-policy',
@@ -282,6 +363,8 @@ ENDPOINTS = [
     },
     {
         "name": "attendance_monthly_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Attendance",
         "action": 'Fetch Monthly Attendance',
         "method": "GET",
         "path": '/api/me/attendance',
@@ -292,6 +375,8 @@ ENDPOINTS = [
     },
     {
         "name": "leave_requests_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": 'Fetch Leave Requests',
         "method": "GET",
         "path": '/api/me/leave-requests',
@@ -302,6 +387,8 @@ ENDPOINTS = [
     },
     {
         "name": "ticketing_tickets_pm",
+        "module": "Ticketing",
+        "submodule": "My Tickets",
         "action": 'Fetch Support Tickets',
         "method": "GET",
         "path": '/api/me/ticketing/tickets',
@@ -312,6 +399,8 @@ ENDPOINTS = [
     },
     {
         "name": "notifications_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Notifications",
         "action": 'Fetch Notifications',
         "method": "GET",
         "path": '/api/me/notifications',
@@ -322,6 +411,8 @@ ENDPOINTS = [
     },
     {
         "name": "hr_payslips_pm",
+        "module": "Employee Self-Service",
+        "submodule": "Payslips",
         "action": 'Fetch Payslips',
         "method": "GET",
         "path": '/api/hr/payslips',
@@ -332,6 +423,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_ticket_types",
+        "module": "Ticketing",
+        "submodule": "Ticket Types",
         "action": 'Fetch Ticket Types',
         "method": "GET",
         "path": '/admin/ticketing/ticket-types',
@@ -342,6 +435,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_invite_list",
+        "module": "HR Management",
+        "submodule": "Onboarding",
         "action": 'Fetch Invite List',
         "method": "GET",
         "path": '/api/hr/offers',
@@ -352,6 +447,8 @@ ENDPOINTS = [
     },
     {
         "name": "onboarding_approved",
+        "module": "HR Management",
+        "submodule": "Onboarding",
         "action": 'Onboarding Approved',
         "method": "GET",
         "path": '/api/hr/onboarding-approved',
@@ -362,6 +459,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_users_list",
+        "module": "HR Management",
+        "submodule": "Users",
         "action": 'Fetch Users List',
         "method": "GET",
         "path": '/api/hr/users',
@@ -372,6 +471,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_user_detail_by_user",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": 'Fetch User Detail By User',
         "method": "GET",
         "path": '/api/me/users',
@@ -382,6 +483,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_attendance_summary",
+        "module": "HR Management",
+        "submodule": "Attendance",
         "action": 'Fetch Attendance Summary',
         "method": "GET",
         "path": '/api/hr/attendance/',
@@ -392,6 +495,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_full_manager_list",
+        "module": "HR Management",
+        "submodule": "Users",
         "action": 'Fetch Full Manager List',
         "method": "GET",
         "path": '/api/hr/users/managers-list',
@@ -402,6 +507,8 @@ ENDPOINTS = [
     },
     {
         "name": "metrics",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Metrics',
         "method": "GET",
         "path": '/api/hr/dashboard/metrics',
@@ -412,6 +519,8 @@ ENDPOINTS = [
     },
     {
         "name": "workforce_snapshot",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Workforce Snapshot',
         "method": "GET",
         "path": '/api/hr/dashboard/workforce-snapshot',
@@ -422,6 +531,8 @@ ENDPOINTS = [
     },
     {
         "name": "attendance_overview",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Attendance Overview',
         "method": "GET",
         "path": '/api/hr/dashboard/attendance-overview',
@@ -432,6 +543,8 @@ ENDPOINTS = [
     },
     {
         "name": "pending_approvals",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Pending Approvals',
         "method": "GET",
         "path": '/api/hr/dashboard/pending-approvals',
@@ -442,6 +555,8 @@ ENDPOINTS = [
     },
     {
         "name": "recent_joiners",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Recent Joiners',
         "method": "GET",
         "path": '/api/hr/dashboard/recent-joiners',
@@ -452,6 +567,8 @@ ENDPOINTS = [
     },
     {
         "name": "today_onboarding",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Today Onboarding',
         "method": "GET",
         "path": '/api/hr/dashboard/today-onboarding',
@@ -462,6 +579,8 @@ ENDPOINTS = [
     },
     {
         "name": "celebrations",
+        "module": "HR Management",
+        "submodule": "Dashboard",
         "action": 'Celebrations',
         "method": "GET",
         "path": '/api/hr/dashboard/celebrations',
@@ -472,6 +591,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_announcements_hr_admin",
+        "module": "HR Management",
+        "submodule": "Announcements",
         "action": 'List Announcements (HR admin)',
         "method": "GET",
         "path": '/api/hr/announcements',
@@ -482,6 +603,8 @@ ENDPOINTS = [
     },
     {
         "name": "my_announcements_feed_employee",
+        "module": "Employee Self-Service",
+        "submodule": "Announcements",
         "action": 'My Announcements Feed (Employee)',
         "method": "GET",
         "path": '/api/me/announcements',
@@ -492,6 +615,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_templates",
+        "module": "HR Management",
+        "submodule": "Announcements",
         "action": 'List Templates',
         "method": "GET",
         "path": '/api/hr/announcement-templates',
@@ -502,6 +627,8 @@ ENDPOINTS = [
     },
     {
         "name": "self_permissions",
+        "module": "Employee Self-Service",
+        "submodule": "Profile",
         "action": 'Self Permissions',
         "method": "GET",
         "path": '/api/me/permissions',
@@ -512,6 +639,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_user_attendance_config",
+        "module": "Employee Self-Service",
+        "submodule": "Attendance",
         "action": 'Fetch User Attendance Config',
         "method": "GET",
         "path": '/api/me/attendance-config',
@@ -522,6 +651,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_hr_level_employee_leave_policy",
+        "module": "HR Management",
+        "submodule": "Leave",
         "action": 'Fetch Hr Level Employee Leave Policy',
         "method": "GET",
         "path": '/api/hr/hr-employee-leave-policy',
@@ -532,6 +663,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_all_employee_applied_leave",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
         "action": 'Fetch All Employee Applied Leave',
         "method": "GET",
         "path": '/api/me/fetch-all-applied-leave',
@@ -542,6 +675,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_hr_level_applied_leave",
+        "module": "HR Management",
+        "submodule": "Leave",
         "action": 'Fetch Hr Level Applied Leave',
         "method": "GET",
         "path": '/api/hr/fetch-all-applied-leave',
@@ -552,6 +687,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_tickets",
+        "module": "Ticketing",
+        "submodule": "Tickets",
         "action": 'Fetch Tickets',
         "method": "GET",
         "path": '/api/ticketing/tickets',
@@ -562,6 +699,8 @@ ENDPOINTS = [
     },
     {
         "name": "upcoming_events",
+        "module": "Employee Self-Service",
+        "submodule": "Dashboard",
         "action": 'Upcoming Events',
         "method": "GET",
         "path": '/api/me/dashboard/upcoming-events',
@@ -572,6 +711,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pending_tickets",
+        "module": "Ticketing",
+        "submodule": "Pending Approvals",
         "action": 'Fetch Pending Tickets',
         "method": "GET",
         "path": '/api/ticketing/pending-approvals',
@@ -582,6 +723,8 @@ ENDPOINTS = [
     },
     {
         "name": "my_team_manager_direct_reports",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'My Team (Manager + Direct Reports)',
         "method": "GET",
         "path": '/api/me/team',
@@ -592,6 +735,8 @@ ENDPOINTS = [
     },
     {
         "name": "organisation_chart_flat_list",
+        "module": "Employee Self-Service",
+        "submodule": "Org Chart",
         "action": 'Organisation Chart (Flat List)',
         "method": "GET",
         "path": '/api/me/organisation',
@@ -602,6 +747,8 @@ ENDPOINTS = [
     },
     {
         "name": "organisation_chart_nested_tree",
+        "module": "Employee Self-Service",
+        "submodule": "Org Chart",
         "action": 'Organisation Chart (Nested Tree)',
         "method": "GET",
         "path": '/api/me/organisation/tree',
@@ -612,6 +759,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_dashboard",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Dashboard',
         "method": "GET",
         "path": '/api/me/team/dashboard',
@@ -622,6 +771,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_roster_full_subtree",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Roster (Full Subtree)',
         "method": "GET",
         "path": '/api/me/team/roster',
@@ -632,6 +783,8 @@ ENDPOINTS = [
     },
     {
         "name": "pending_leave_requests_mine_to_approve",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Pending Leave Requests (Mine to Approve)',
         "method": "GET",
         "path": '/api/me/team/leave-requests',
@@ -642,6 +795,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_leave_calendar_month_subtree",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Leave Calendar (Month, Subtree)',
         "method": "GET",
         "path": '/api/me/team/leave-calendar',
@@ -652,6 +807,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_leave_balance",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Leave Balance',
         "method": "GET",
         "path": '/api/me/team/leave-balance',
@@ -662,6 +819,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_attendance_calendar_month_subtree",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Attendance Calendar (Month, Subtree)',
         "method": "GET",
         "path": '/api/me/team/attendance',
@@ -672,7 +831,9 @@ ENDPOINTS = [
     },
     {
         "name": "team_attendance_today",
-        "action": 'Team Attendance — Today',
+        "module": "Employee Self-Service",
+        "submodule": "Team",
+        "action": 'Team Attendance -- Today',
         "method": "GET",
         "path": '/api/me/team/attendance/today',
         "auth_profile": "employee",
@@ -682,6 +843,8 @@ ENDPOINTS = [
     },
     {
         "name": "unified_pending_approvals",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Unified Pending Approvals',
         "method": "GET",
         "path": '/api/me/team/approvals',
@@ -692,6 +855,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_unread_count",
+        "module": "Employee Self-Service",
+        "submodule": "Notifications",
         "action": 'Get Unread Count',
         "method": "GET",
         "path": '/api/me/notifications/unread-count',
@@ -702,6 +867,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_my_mute_preferences",
+        "module": "Employee Self-Service",
+        "submodule": "Notifications",
         "action": 'Get My Mute Preferences',
         "method": "GET",
         "path": '/api/me/notification-preferences',
@@ -712,6 +879,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_permissions",
+        "module": "RBAC & Settings",
+        "submodule": "Permissions",
         "action": 'Fetch Permissions',
         "method": "GET",
         "path": '/api/admin/permissions/matrix',
@@ -723,6 +892,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_roles",
+        "module": "RBAC & Settings",
+        "submodule": "Roles",
         "action": 'Fetch Roles',
         "method": "GET",
         "path": '/api/admin/roles',
@@ -734,6 +905,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_attendance_default_list",
+        "module": "Master Data",
+        "submodule": "Attendance Default",
         "action": 'Fetch Attendance Default List',
         "method": "GET",
         "path": '/api/admin/attendance-defaults',
@@ -745,6 +918,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_attendance_default",
+        "module": "Master Data",
+        "submodule": "Attendance Default",
         "action": 'Fetch Attendance Default',
         "method": "GET",
         "path": '/api/admin/attendance-defaults/current',
@@ -756,6 +931,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_master_option_list",
+        "module": "Master Data",
+        "submodule": "Master Options",
         "action": 'Fetch Master Option List',
         "method": "GET",
         "path": '/api/admin/master-options/meta',
@@ -767,6 +944,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_master_option_dependent_list",
+        "module": "Master Data",
+        "submodule": "Master Options",
         "action": 'Fetch Master Option Dependent List',
         "method": "GET",
         "path": '/api/admin/master-options/mode_type',
@@ -778,6 +957,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_ip_address_list",
+        "module": "Master Data",
+        "submodule": "IP Address",
         "action": 'Fetch IP Address List',
         "method": "GET",
         "path": '/api/admin/ip-addresses',
@@ -789,6 +970,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_attendance_source_list",
+        "module": "Master Data",
+        "submodule": "Attendance Source",
         "action": 'Fetch  Attendance Source List',
         "method": "GET",
         "path": '/api/admin/attendance-source',
@@ -800,6 +983,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_work_mode_list",
+        "module": "Master Data",
+        "submodule": "Work Mode",
         "action": 'Fetch  Work Mode List',
         "method": "GET",
         "path": '/api/admin/work-mode',
@@ -811,6 +996,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_attendance_policy_list",
+        "module": "Master Data",
+        "submodule": "Attendance Policy",
         "action": 'Fetch  Attendance Policy List',
         "method": "GET",
         "path": '/api/admin/attendance-policy',
@@ -822,6 +1009,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_break_policy_list",
+        "module": "Master Data",
+        "submodule": "Break Policy",
         "action": 'Fetch  Break Policy List',
         "method": "GET",
         "path": '/api/admin/break-policy',
@@ -833,6 +1022,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_shift_list",
+        "module": "Master Data",
+        "submodule": "Shifts",
         "action": 'Fetch Shift List',
         "method": "GET",
         "path": '/api/admin/shifts',
@@ -844,6 +1035,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_salary_structure_list",
+        "module": "Master Data",
+        "submodule": "Salary Structure",
         "action": 'Fetch Salary Structure List',
         "method": "GET",
         "path": '/api/admin/salary-structures',
@@ -855,6 +1048,8 @@ ENDPOINTS = [
     },
     {
         "name": "salary_structure_meta",
+        "module": "Master Data",
+        "submodule": "Salary Structure",
         "action": 'Salary Structure Meta',
         "method": "GET",
         "path": '/api/admin/salary-structures/meta',
@@ -866,6 +1061,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pay_component_group_list",
+        "module": "Master Data",
+        "submodule": "Pay Component Group",
         "action": 'Fetch Pay Component Group List',
         "method": "GET",
         "path": '/api/admin/pay-component-groups',
@@ -877,6 +1074,8 @@ ENDPOINTS = [
     },
     {
         "name": "pay_component_group_meta",
+        "module": "Master Data",
+        "submodule": "Pay Component Group",
         "action": 'Pay Component Group Meta',
         "method": "GET",
         "path": '/api/admin/pay-component-groups/meta',
@@ -888,6 +1087,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pay_component_rule_list",
+        "module": "Master Data",
+        "submodule": "Pay Component Rules",
         "action": 'Fetch Pay Component Rule List',
         "method": "GET",
         "path": '/api/admin/pay-component-rules',
@@ -899,6 +1100,8 @@ ENDPOINTS = [
     },
     {
         "name": "pay_component_rule_meta",
+        "module": "Master Data",
+        "submodule": "Pay Component Rules",
         "action": 'Pay Component Rule Meta',
         "method": "GET",
         "path": '/api/admin/pay-component-rules/meta',
@@ -910,6 +1113,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pay_component_list",
+        "module": "Master Data",
+        "submodule": "Pay Components",
         "action": 'Fetch Pay Component List',
         "method": "GET",
         "path": '/api/admin/pay-components',
@@ -921,6 +1126,8 @@ ENDPOINTS = [
     },
     {
         "name": "pay_component_meta",
+        "module": "Master Data",
+        "submodule": "Pay Components",
         "action": 'Pay Component Meta',
         "method": "GET",
         "path": '/api/admin/pay-components/meta',
@@ -932,6 +1139,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pay_range_list",
+        "module": "Master Data",
+        "submodule": "Pay Range",
         "action": 'Fetch Pay Range List',
         "method": "GET",
         "path": '/api/admin/pay-ranges',
@@ -943,6 +1152,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_cost_center_list",
+        "module": "Master Data",
+        "submodule": "Cost Center",
         "action": 'Fetch Cost Center List',
         "method": "GET",
         "path": '/api/admin/cost-centers',
@@ -954,6 +1165,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_job_title_list",
+        "module": "Master Data",
+        "submodule": "Job Title",
         "action": 'Fetch Job Title List',
         "method": "GET",
         "path": '/api/admin/job-titles',
@@ -965,6 +1178,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_sub_function_list",
+        "module": "Master Data",
+        "submodule": "Sub Function",
         "action": 'Fetch Sub Function List',
         "method": "GET",
         "path": '/api/admin/sub-functions',
@@ -976,6 +1191,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_function_list",
+        "module": "Master Data",
+        "submodule": "Function",
         "action": 'Fetch Function List',
         "method": "GET",
         "path": '/api/admin/functions',
@@ -987,6 +1204,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_pay_grade_list",
+        "module": "Master Data",
+        "submodule": "Pay Grade",
         "action": 'Fetch Pay Grade List',
         "method": "GET",
         "path": '/api/admin/pay-grades',
@@ -998,6 +1217,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_work_location_list",
+        "module": "Master Data",
+        "submodule": "Work Location",
         "action": 'Fetch Work Location List',
         "method": "GET",
         "path": '/api/admin/work-locations',
@@ -1009,6 +1230,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_geo_zone_list",
+        "module": "Master Data",
+        "submodule": "Geo Zones",
         "action": 'Fetch Geo Zone List',
         "method": "GET",
         "path": '/api/admin/geozones',
@@ -1020,6 +1243,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_leave_approval",
+        "module": "Master Data",
+        "submodule": "Comp Off Requests",
         "action": 'Fetch Employee Leave Approval',
         "method": "GET",
         "path": '/api/admin/comp-off-requests',
@@ -1031,6 +1256,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_optional_holiday",
+        "module": "Master Data",
+        "submodule": "Optional Holiday",
         "action": 'Fetch Optional Holiday',
         "method": "GET",
         "path": '/api/admin/optional-holiday-selections',
@@ -1042,6 +1269,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_leave_approval_2",
+        "module": "Master Data",
+        "submodule": "Leave Approval Workflow",
         "action": 'Fetch Employee Leave Approval',
         "method": "GET",
         "path": '/api/admin/leave-approval-workflows',
@@ -1053,6 +1282,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_holiday_group",
+        "module": "Master Data",
+        "submodule": "Holiday Group",
         "action": 'Fetch Holiday Group',
         "method": "GET",
         "path": '/api/admin/holiday-groups/{uuid}',
@@ -1064,6 +1295,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_financial_year",
+        "module": "Master Data",
+        "submodule": "Financial Year",
         "action": 'Fetch Financial Year',
         "method": "GET",
         "path": '/api/admin/financial-years',
@@ -1075,6 +1308,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_active_year",
+        "module": "Master Data",
+        "submodule": "Financial Year",
         "action": 'Get Active Year',
         "method": "GET",
         "path": '/api/admin/financial-years/active',
@@ -1086,6 +1321,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_leave_policy_assignemnt_list",
+        "module": "Master Data",
+        "submodule": "Leave Balance Ledger",
         "action": 'Fetch Leave Policy Assignemnt List',
         "method": "GET",
         "path": '/api/admin/leave-balance-ledger',
@@ -1097,6 +1334,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_leave_group",
+        "module": "Master Data",
+        "submodule": "Leave Policy Group",
         "action": 'Fetch Leave Group',
         "method": "GET",
         "path": '/api/admin/policy-groups',
@@ -1108,6 +1347,8 @@ ENDPOINTS = [
     },
     {
         "name": "show_by_code",
+        "module": "Master Data",
+        "submodule": "Leave Types",
         "action": 'Show By Code',
         "method": "GET",
         "path": '/api/admin/leave-types/code/CL',
@@ -1119,6 +1360,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_legal_entity_list",
+        "module": "Master Data",
+        "submodule": "Legal Entity",
         "action": 'Fetch Legal Entity List',
         "method": "GET",
         "path": '/api/admin/legal-entities',
@@ -1130,6 +1373,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_hierarchy_level",
+        "module": "Master Data",
+        "submodule": "Hierarchy Levels",
         "action": 'Fetch Hierarchy Level',
         "method": "GET",
         "path": '/api/admin/hierarchy-levels/{uuid}',
@@ -1141,6 +1386,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_workflows",
+        "module": "Ticketing",
+        "submodule": "Workflows",
         "action": 'Fetch Workflows',
         "method": "GET",
         "path": '/api/admin/ticketing/workflows',
@@ -1152,6 +1399,8 @@ ENDPOINTS = [
     },
     {
         "name": "admin_show_tickets",
+        "module": "Ticketing",
+        "submodule": "Admin Tickets",
         "action": 'Admin Show Tickets',
         "method": "GET",
         "path": '/api/admin/ticketing/tickets',
@@ -1163,6 +1412,8 @@ ENDPOINTS = [
     },
     {
         "name": "admin_show_tickets_comments",
+        "module": "Ticketing",
+        "submodule": "Admin Tickets",
         "action": 'Admin Show Tickets Comments',
         "method": "GET",
         "path": '/api/admin/ticketing/tickets/{uuid}/comments',
@@ -1174,6 +1425,8 @@ ENDPOINTS = [
     },
     {
         "name": "cancel_tickets",
+        "module": "Ticketing",
+        "submodule": "Admin Tickets",
         "action": 'Cancel Tickets',
         "method": "GET",
         "path": '/api/admin/ticketing/tickets/{uuid}/cancel',
@@ -1185,6 +1438,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_document_list_copy",
+        "module": "Onboarding",
+        "submodule": "Document Types",
         "action": 'Fetch Document List Copy',
         "method": "GET",
         "path": '/api/onboarding/meta/document-types',
@@ -1196,6 +1451,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_form_schema",
+        "module": "Onboarding",
+        "submodule": "Form Schema",
         "action": 'Fetch Form Schema',
         "method": "GET",
         "path": '/api/onboarding/meta/form-schema',
@@ -1207,6 +1464,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_meta_data",
+        "module": "Onboarding",
+        "submodule": "Meta",
         "action": 'Fetch Meta Data',
         "method": "GET",
         "path": '/api/onboarding/meta',
@@ -1218,6 +1477,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_attendance_policy_history",
+        "module": "HR Management",
+        "submodule": "Attendance",
         "action": 'Fetch Employee Attendance Policy History',
         "method": "GET",
         "path": '/api/hr/employees/{uuid}/attendance-config/history',
@@ -1229,6 +1490,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_attendance_day_override",
+        "module": "HR Management",
+        "submodule": "Attendance",
         "action": 'Fetch Employee Attendance Day Override',
         "method": "GET",
         "path": '/api/hr/employees/{employeeUuid}/attendance-override/2026-05-12',
@@ -1240,6 +1503,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_direct_reportees",
+        "module": "HR Management",
+        "submodule": "Reporting Manager",
         "action": 'Fetch Direct Reportees',
         "method": "GET",
         "path": '/api/hr/users/{uuid}/direct-reports',
@@ -1251,6 +1516,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_reporting_team",
+        "module": "HR Management",
+        "submodule": "Reporting Manager",
         "action": 'Fetch Reporting Team',
         "method": "GET",
         "path": '/api/hr/users/{uuid}/team',
@@ -1262,6 +1529,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_reporting_chain",
+        "module": "HR Management",
+        "submodule": "Reporting Manager",
         "action": 'Fetch Reporting Chain',
         "method": "GET",
         "path": '/api/hr/users/{uuid}/reporting-chain',
@@ -1273,6 +1542,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_group",
+        "module": "HR Management",
+        "submodule": "Holiday",
         "action": 'Fetch Employee Group',
         "method": "GET",
         "path": '/api/hr/employee-holiday-group-assignments/{uuid}',
@@ -1284,6 +1555,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_week_off",
+        "module": "HR Management",
+        "submodule": "Weekly Off",
         "action": 'Fetch Employee Week Off',
         "method": "GET",
         "path": '/api/hr/employee-weekly-off-assignment/{uuid}',
@@ -1295,6 +1568,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_employee_code_setting",
+        "module": "RBAC & Settings",
+        "submodule": "Employee Code",
         "action": 'Fetch Employee Code Setting',
         "method": "GET",
         "path": '/api/admin/settings/employee-code',
@@ -1306,6 +1581,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_app_timezone",
+        "module": "RBAC & Settings",
+        "submodule": "Timezone",
         "action": 'Fetch App Timezone',
         "method": "GET",
         "path": '/api/admin/settings/timezone',
@@ -1317,6 +1594,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_ui_color",
+        "module": "RBAC & Settings",
+        "submodule": "UI Color",
         "action": 'Fetch UI Color',
         "method": "GET",
         "path": '/api/admin/settings/ui-color',
@@ -1328,6 +1607,8 @@ ENDPOINTS = [
     },
     {
         "name": "fetch_probation_notice",
+        "module": "RBAC & Settings",
+        "submodule": "HR Defaults",
         "action": 'Fetch Probation & Notice',
         "method": "GET",
         "path": '/api/admin/settings/hr-defaults',
@@ -1339,6 +1620,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_runs",
+        "module": "Payroll",
+        "submodule": "Payroll Runs",
         "action": 'List Runs',
         "method": "GET",
         "path": '/api/admin/payroll/runs',
@@ -1350,6 +1633,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_all_events",
+        "module": "Notifications",
+        "submodule": "Events",
         "action": 'List All Events',
         "method": "GET",
         "path": '/api/admin/notifications/events',
@@ -1357,10 +1642,12 @@ ENDPOINTS = [
         "expected_status": 200,
         "critical": False,
         "sla_ms": 2000,
-        # source: Notifications / 1. Admin — Events
+        # source: Notifications / 1. Admin -- Events
     },
     {
         "name": "list_delivery_logs_no_filters",
+        "module": "Notifications",
+        "submodule": "Delivery Logs",
         "action": 'List Delivery Logs (no filters)',
         "method": "GET",
         "path": '/api/admin/notifications/logs',
@@ -1368,7 +1655,7 @@ ENDPOINTS = [
         "expected_status": 200,
         "critical": False,
         "sla_ms": 2000,
-        # source: Notifications / 4. Admin — Delivery Logs
+        # source: Notifications / 4. Admin -- Delivery Logs
     },
     # =========================================================================
     # RESOLVABLE ADDITIONS (34 endpoints)
@@ -1377,6 +1664,8 @@ ENDPOINTS = [
     # =========================================================================
     {
         "name": "get_announcement_by_uuid",
+        "module": "HR Management",
+        "submodule": "Announcements",
         "action": 'Get Announcement by UUID',
         "method": "GET",
         "path_template": '/api/hr/announcements/{announcement_uuid}',
@@ -1389,6 +1678,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_config_history",
+        "module": "Payroll",
+        "submodule": "Config",
         "action": 'Get Config History',
         "method": "GET",
         "path_template": '/api/admin/payroll/config/{legal_entity_uuid}',
@@ -1401,6 +1692,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_current_config",
+        "module": "Payroll",
+        "submodule": "Config",
         "action": 'Get Current Config',
         "method": "GET",
         "path_template": '/api/admin/payroll/config/{legal_entity_uuid}/current',
@@ -1413,6 +1706,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_pf_config",
+        "module": "Payroll",
+        "submodule": "PF Config",
         "action": 'Get PF Config',
         "method": "GET",
         "path_template": '/api/admin/payroll/pf-config/{legal_entity_uuid}',
@@ -1425,6 +1720,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_gratuity_config",
+        "module": "Payroll",
+        "submodule": "Gratuity Config",
         "action": 'Get Gratuity Config',
         "method": "GET",
         "path_template": '/api/admin/payroll/gratuity-config/{legal_entity_uuid}',
@@ -1437,6 +1734,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_esi_config",
+        "module": "Payroll",
+        "submodule": "ESI Config",
         "action": 'Get ESI Config',
         "method": "GET",
         "path_template": '/api/admin/payroll/esi-config/{legal_entity_uuid}',
@@ -1449,6 +1748,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_pt_slabs",
+        "module": "Payroll",
+        "submodule": "PT Slabs",
         "action": 'Get PT Slabs',
         "method": "GET",
         "path_template": '/api/admin/payroll/pt-slabs/{legal_entity_uuid}',
@@ -1461,6 +1762,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_lwf_configs",
+        "module": "Payroll",
+        "submodule": "LWF Config",
         "action": 'Get LWF Configs',
         "method": "GET",
         "path_template": '/api/admin/payroll/lwf-configs/{legal_entity_uuid}',
@@ -1473,6 +1776,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_employee_statutory",
+        "module": "Payroll",
+        "submodule": "Employee Statutory",
         "action": 'Get Employee Statutory',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/statutory',
@@ -1485,6 +1790,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_tax_config",
+        "module": "Payroll",
+        "submodule": "Tax Config",
         "action": 'Get Tax Config',
         "method": "GET",
         "path_template": '/api/admin/payroll/tax-config/{legal_entity_uuid}',
@@ -1497,6 +1804,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_employee_tax_declaration",
+        "module": "Payroll",
+        "submodule": "Tax Declaration",
         "action": 'Get Employee Tax Declaration',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}',
@@ -1509,6 +1818,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_tax_proof_documents_for_employee",
+        "module": "Payroll",
+        "submodule": "Tax Declaration",
         "action": 'Get Tax Proof Documents for Employee',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/tax-declaration/{financial_year}/documents',
@@ -1521,6 +1832,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_tax_windows",
+        "module": "Payroll",
+        "submodule": "Tax Config",
         "action": 'Get Tax Windows',
         "method": "GET",
         "path_template": '/api/admin/payroll/tax-windows/{legal_entity_uuid}/{financial_year}',
@@ -1533,6 +1846,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_employee_perquisites",
+        "module": "Payroll",
+        "submodule": "Perquisites",
         "action": 'Get Employee Perquisites',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/perquisites/{financial_year}',
@@ -1545,6 +1860,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_calendars_by_year_optional",
+        "module": "Payroll",
+        "submodule": "Payroll Calendar",
         "action": 'Get Calendars (by year, optional)',
         "method": "GET",
         "path_template": '/api/admin/payroll/calendars/{legal_entity_uuid}',
@@ -1557,6 +1874,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_run",
+        "module": "Payroll",
+        "submodule": "Payroll Runs",
         "action": 'Get Run',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}',
@@ -1569,6 +1888,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_variable_inputs_for_run",
+        "module": "Payroll",
+        "submodule": "Variable Inputs",
         "action": 'List Variable Inputs for Run',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/variable-inputs',
@@ -1581,6 +1902,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_employees_in_run",
+        "module": "Payroll",
+        "submodule": "Employee Payroll",
         "action": 'List Employees in Run',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/employees',
@@ -1593,6 +1916,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_employee_payroll_in_run",
+        "module": "Payroll",
+        "submodule": "Employee Payroll",
         "action": 'Get Employee Payroll in Run',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/employees/{employee_uuid}',
@@ -1605,6 +1930,8 @@ ENDPOINTS = [
     },
     {
         "name": "payroll_register",
+        "module": "Payroll",
+        "submodule": "Reports",
         "action": 'Payroll Register',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/register',
@@ -1617,6 +1944,8 @@ ENDPOINTS = [
     },
     {
         "name": "bank_export_csv",
+        "module": "Payroll",
+        "submodule": "Reports",
         "action": 'Bank Export (CSV)',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/bank-export',
@@ -1629,6 +1958,8 @@ ENDPOINTS = [
     },
     {
         "name": "statutory_register",
+        "module": "Payroll",
+        "submodule": "Reports",
         "action": 'Statutory Register',
         "method": "GET",
         "path_template": '/api/admin/payroll/runs/{run_uuid}/statutory-register',
@@ -1641,6 +1972,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_employee_loans",
+        "module": "Payroll",
+        "submodule": "Loans & Advances",
         "action": 'List Employee Loans',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/loans',
@@ -1653,6 +1986,8 @@ ENDPOINTS = [
     },
     {
         "name": "list_employee_fnf_settlements",
+        "module": "Payroll",
+        "submodule": "Full & Final Settlement",
         "action": 'List Employee FnF Settlements',
         "method": "GET",
         "path_template": '/api/admin/employees/{employee_uuid}/fnf',
@@ -1665,6 +2000,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_my_payslip",
+        "module": "Payroll",
+        "submodule": "Payslips",
         "action": 'Get My Payslip',
         "method": "GET",
         "path_template": '/api/hr/payslips/{payslip_uuid}',
@@ -1677,6 +2014,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_my_declaration",
+        "module": "Payroll",
+        "submodule": "Tax Declaration",
         "action": 'Get My Declaration',
         "method": "GET",
         "path_template": '/api/hr/tax-declaration/{financial_year}',
@@ -1689,6 +2028,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_my_proof_documents",
+        "module": "Payroll",
+        "submodule": "Tax Declaration",
         "action": 'Get My Proof Documents',
         "method": "GET",
         "path_template": '/api/hr/tax-declaration/{financial_year}/documents',
@@ -1701,6 +2042,8 @@ ENDPOINTS = [
     },
     {
         "name": "direct_reports_depth_1",
+        "module": "Org Hierarchy",
+        "submodule": "Reporting Hierarchy",
         "action": 'Direct Reports (Depth 1)',
         "method": "GET",
         "path_template": '/api/hr/users/{employee_uuid}/direct-reports',
@@ -1713,6 +2056,8 @@ ENDPOINTS = [
     },
     {
         "name": "full_team_all_depths",
+        "module": "Org Hierarchy",
+        "submodule": "Reporting Hierarchy",
         "action": 'Full Team (All Depths)',
         "method": "GET",
         "path_template": '/api/hr/users/{employee_uuid}/team',
@@ -1725,6 +2070,8 @@ ENDPOINTS = [
     },
     {
         "name": "reporting_chain_upward",
+        "module": "Org Hierarchy",
+        "submodule": "Reporting Hierarchy",
         "action": 'Reporting Chain (Upward)',
         "method": "GET",
         "path_template": '/api/hr/users/{employee_uuid}/reporting-chain',
@@ -1737,6 +2084,8 @@ ENDPOINTS = [
     },
     {
         "name": "managers_by_level_direct_l2_l3",
+        "module": "Org Hierarchy",
+        "submodule": "Reporting Hierarchy",
         "action": 'Managers By Level (Direct / L2 / L3)',
         "method": "GET",
         "path_template": '/api/hr/users/{employee_uuid}/managers',
@@ -1749,6 +2098,8 @@ ENDPOINTS = [
     },
     {
         "name": "manager_history",
+        "module": "Org Hierarchy",
+        "submodule": "Reporting Hierarchy",
         "action": 'Manager History',
         "method": "GET",
         "path_template": '/api/hr/users/{employee_uuid}/manager-history',
@@ -1761,6 +2112,8 @@ ENDPOINTS = [
     },
     {
         "name": "team_member_profile",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
         "action": 'Team Member Profile',
         "method": "GET",
         "path_template": '/api/me/team/roster/{member_uuid}',
@@ -1773,6 +2126,8 @@ ENDPOINTS = [
     },
     {
         "name": "get_event_detail_rules_templates",
+        "module": "Notifications",
+        "submodule": "Events",
         "action": 'Get Event Detail (Rules + Templates)',
         "method": "GET",
         "path_template": '/api/admin/notifications/events/{event_uuid}',
@@ -1781,6 +2136,389 @@ ENDPOINTS = [
         "expected_status": 200,
         "critical": False,
         "sla_ms": 2000,
-        # source: Notifications / 1. Admin — Events
+        # source: Notifications / 1. Admin -- Events
+    },
+    # =========================================================================
+    # NEW IN v8 -- added from gap analysis against the full 421-request
+    # Postman collection. All four reuse resolvers that already exist and
+    # are already working (employee_uuid, financial_year), so no new
+    # RESOLVER_CONFIG entries were needed.
+    # =========================================================================
+    {
+        "name": "get_user_detail_by_id",
+        "module": "HR Management",
+        "submodule": "Employees",
+        "action": 'Fetch User Detail',
+        "method": "GET",
+        "path_template": '/api/hr/users/{employee_uuid}',
+        "resolve_vars": ['employee_uuid'],
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+        # source: Human Resources / Employees
+    },
+    {
+        "name": "fetch_employee_attendance_config",
+        "module": "HR Management",
+        "submodule": "Attendance",
+        "action": 'Fetch Employee Attendance Policy',
+        "method": "GET",
+        "path_template": '/api/hr/employees/{employee_uuid}/attendance-config',
+        "resolve_vars": ['employee_uuid'],
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+        # source: Human Resources / Attendance
+    },
+    {
+        "name": "fetch_employee_detailed_attendance",
+        "module": "HR Management",
+        "submodule": "Attendance",
+        "action": 'Fetch Detailed Attendance',
+        "method": "GET",
+        "path_template": '/api/hr/employees/{employee_uuid}/attendance',
+        "resolve_vars": ['employee_uuid'],
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 2000,
+        # source: Human Resources / Attendance
+    },
+    {
+        "name": "get_financial_year_by_id",
+        "module": "Master Data",
+        "submodule": "Financial Year",
+        "action": 'Show Financial Year By UUID',
+        "method": "GET",
+        "path_template": '/api/admin/financial-years/{financial_year}',
+        "resolve_vars": ['financial_year'],
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+        # source: Master Data / Financial Year Master
+    },
+
+        # ---- User / Team module ----
+    {
+        "name": "leave_balances",
+        "module": "Employee Self-Service",
+        "submodule": "Leave",
+        "action": "Fetch Leave Balances",
+        "method": "GET",
+        "path": "/api/me/leave-balances",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "team_users_list",
+        "module": "Employee Self-Service",
+        "submodule": "Team",
+        "action": "Fetch Team Users",
+        "method": "GET",
+        "path": "/api/me/team/users",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "attendance_today",
+        "module": "Employee Self-Service",
+        "submodule": "Attendance",
+        "action": "Fetch Today's Attendance",
+        "method": "GET",
+        "path": "/api/me/attendance/today",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": True,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "offboarding_case",
+        "module": "Offboarding",
+        "submodule": "My Offboarding",
+        "action": "Fetch Offboarding Case",
+        "method": "GET",
+        "path": "/api/me/offboarding/case",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "offboarding_exit_survey",
+        "module": "Offboarding",
+        "submodule": "My Offboarding",
+        "action": "Fetch Exit Survey",
+        "method": "GET",
+        "path": "/api/me/offboarding/exit-survey",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "workflow_pending_approvals",
+        "module": "Employee Self-Service",
+        "submodule": "Workflow",
+        "action": "Fetch Workflow Pending Approvals",
+        "method": "GET",
+        "path": "/api/me/workflow/pending-approvals",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "offboarding_clearance_queue",
+        "module": "Offboarding",
+        "submodule": "My Offboarding",
+        "action": "Fetch Clearance Queue",
+        "method": "GET",
+        "path": "/api/me/offboarding/clearance-queue",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+
+    # ---- Admin module ----
+    {
+        "name": "admin_dashboard",
+        "module": "RBAC & Settings",
+        "submodule": "Dashboard",
+        "action": "Fetch Admin Dashboard",
+        "method": "GET",
+        "path": "/api/admin/dashboard",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": True,
+        "sla_ms": 2000,
+    },
+    {
+        "name": "fetch_role_permissions",
+        "module": "RBAC & Settings",
+        "submodule": "Roles",
+        "action": "Fetch Role Permissions",
+        "method": "GET",
+        "path_template": "/api/admin/roles/{role_uuid}/permissions",
+        "resolve_vars": ["role_uuid"],
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_hierarchy_levels_list",
+        "module": "Master Data",
+        "submodule": "Hierarchy Levels",
+        "action": "Fetch Hierarchy Levels List",
+        "method": "GET",
+        "path": "/api/admin/hierarchy-levels",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_weekly_offs_list",
+        "module": "Master Data",
+        "submodule": "Weekly Off",
+        "action": "Fetch Weekly Offs List",
+        "method": "GET",
+        "path": "/api/admin/weekly-offs",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_leave_types_list",
+        "module": "Master Data",
+        "submodule": "Leave Types",
+        "action": "Fetch Leave Types List",
+        "method": "GET",
+        "path": "/api/admin/leave-types",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_leave_policies_list",
+        "module": "Master Data",
+        "submodule": "Leave Policy",
+        "action": "Fetch Leave Policies List",
+        "method": "GET",
+        "path": "/api/admin/leave-policies",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_holiday_groups_list",
+        "module": "Master Data",
+        "submodule": "Holiday Group",
+        "action": "Fetch Holiday Groups List",
+        "method": "GET",
+        "path": "/api/admin/holiday-groups",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_leave_defaults",
+        "module": "Master Data",
+        "submodule": "Leave Defaults",
+        "action": "Fetch Leave Defaults",
+        "method": "GET",
+        "path": "/api/admin/leave-defaults",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_holiday_list",
+        "module": "Master Data",
+        "submodule": "Holiday",
+        "action": "Fetch Holiday List",
+        "method": "GET",
+        "path": "/api/admin/holiday",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_ticket_types_fixed",
+        "module": "Ticketing",
+        "submodule": "Ticket Types",
+        "action": "Fetch Ticket Types",
+        "method": "GET",
+        "path": "/api/admin/ticketing/ticket-types",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 2000,
+    },
+    {
+        "name": "fetch_workflow_definitions",
+        "module": "Ticketing",
+        "submodule": "Workflows",
+        "action": "Fetch Workflow Definitions",
+        "method": "GET",
+        "path": "/api/admin/workflows/definitions",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 2000,
+    },
+    {
+        "name": "fetch_clearance_templates",
+        "module": "Offboarding",
+        "submodule": "Admin Offboarding",
+        "action": "Fetch Clearance Templates",
+        "method": "GET",
+        "path": "/api/admin/offboarding/clearance-templates",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_exit_survey_schema",
+        "module": "Offboarding",
+        "submodule": "Admin Offboarding",
+        "action": "Fetch Exit Survey Schema",
+        "method": "GET",
+        "path": "/api/admin/offboarding/exit-survey-schema",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_master_option_timezone",
+        "module": "RBAC & Settings",
+        "submodule": "Timezone",
+        "action": "Fetch Master Option Timezone",
+        "method": "GET",
+        "path": "/api/admin/master-options/timezone",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+
+    # ---- HR module ----
+    {
+        "name": "hr_offboarding_cases",
+        "module": "HR Management",
+        "submodule": "Offboarding",
+        "action": "Fetch Offboarding Cases",
+        "method": "GET",
+        "path": "/api/hr/offboarding/cases",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_emp_code_strategy",
+        "module": "RBAC & Settings",
+        "submodule": "Employee Code",
+        "action": "Fetch Employee Code Strategy",
+        "method": "GET",
+        "path": "/api/admin/master-options/emp_code_strategy",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_emp_code_sequence_key",
+        "module": "RBAC & Settings",
+        "submodule": "Employee Code",
+        "action": "Fetch Employee Code Sequence Key",
+        "method": "GET",
+        "path": "/api/admin/master-options/emp_code_sequence_key",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+    {
+        "name": "fetch_emp_code_random_type",
+        "module": "RBAC & Settings",
+        "submodule": "Employee Code",
+        "action": "Fetch Employee Code Random Type",
+        "method": "GET",
+        "path": "/api/admin/master-options/emp_code_random_type",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
+    },
+
+    # ---- Admin module (2nd batch) ----
+    {
+        "name": "fetch_master_option_payroll_loan_type",
+        "module": "Master Data",
+        "submodule": "Master Options",
+        "action": "Fetch Master Option Payroll Loan Type",
+        "method": "GET",
+        "path": "/api/admin/master-options/payroll_loan_type",
+        "auth_profile": "employee",
+        "expected_status": 200,
+        "critical": False,
+        "sla_ms": 1500,
     },
 ]

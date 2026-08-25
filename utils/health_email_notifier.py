@@ -12,8 +12,10 @@ No n8n.
 Uses Resend HTTPS API.
 """
 
-import os
+import base64
 import html
+import os
+from collections import OrderedDict
 from datetime import datetime
 
 import resend
@@ -89,16 +91,13 @@ def _get_health_percentage(summary):
     if total == 0:
         return 0
 
-    return round(
-        (passed / total) * 100,
-        1,
-    )
+    return round((passed / total) * 100, 1)
 
 
 def _overall_status(summary):
-
     total = summary.get("total", 0)
     passed = summary.get("passed", 0)
+
     critical_failed = summary.get(
         "critical_failed",
         [],
@@ -133,7 +132,6 @@ def _overall_status(summary):
 
 
 def _progress_bar(percentage):
-
     if percentage >= 95:
         color = "#16a34a"
     elif percentage >= 80:
@@ -165,7 +163,6 @@ def _progress_bar(percentage):
 # ============================================================
 
 def _build_critical_failures(summary):
-
     critical_failures = summary.get(
         "critical_failed",
         [],
@@ -201,7 +198,6 @@ def _build_critical_failures(summary):
     rows = ""
 
     for failure in critical_failures:
-
         rows += f"""
         <div style="
             background:#fef2f2;
@@ -230,7 +226,6 @@ def _build_critical_failures(summary):
 
     return f"""
     <div style="margin-bottom:20px;">
-
         <div style="
             font-size:18px;
             font-weight:700;
@@ -241,7 +236,6 @@ def _build_critical_failures(summary):
         </div>
 
         {rows}
-
     </div>
     """
 
@@ -251,7 +245,6 @@ def _build_critical_failures(summary):
 # ============================================================
 
 def _build_failure_details(results):
-
     failures = [
         result
         for result in results
@@ -289,17 +282,10 @@ def _build_failure_details(results):
 
     for result in failures:
 
-        name = _safe(
-            result.get(
-                "name",
-                "Unknown API",
-            )
-        )
-
         action = _safe(
             result.get(
                 "action",
-                name,
+                result.get("name", "Unknown API"),
             )
         )
 
@@ -380,7 +366,7 @@ def _build_failure_details(results):
                     font-weight:700;
                     color:#991b1b;
                 ">
-                    🔴 {_safe(action)}
+                    🔴 {action}
                     {critical_badge}
                 </div>
             </div>
@@ -536,7 +522,6 @@ def _build_failure_details(results):
                 </div>
 
             </div>
-
         </div>
         """
 
@@ -559,121 +544,330 @@ def _build_failure_details(results):
 
 
 # ============================================================
-# API SUMMARY
+# MODULE CATEGORISATION
 # ============================================================
 
-def _build_api_summary(results):
+_MODULE_ORDER = [
+    "Authentication",
+    "Employee Self-Service",
+    "HR Management",
+    "Onboarding",
+    "Payroll",
+    "Ticketing",
+    "Notifications",
+    "Org Hierarchy",
+    "RBAC & Settings",
+    "Master Data",
+]
+
+_MODULE_EMOJI = {
+    "Authentication": "🔐",
+    "Employee Self-Service": "👤",
+    "HR Management": "🏢",
+    "Onboarding": "📋",
+    "Payroll": "💰",
+    "Ticketing": "🎫",
+    "Notifications": "🔔",
+    "Org Hierarchy": "🌳",
+    "RBAC & Settings": "⚙️",
+    "Master Data": "🗂️",
+}
+
+
+# ============================================================
+# PATH BASED MODULE FALLBACK
+# ============================================================
+
+_PATH_MODULE_RULES = [
+
+    ("/api/auth/", "Authentication", "Login"),
+
+    ("/api/me/team", "Employee Self-Service", "Team"),
+    ("/api/me/organisation", "Employee Self-Service", "Org Chart"),
+    ("/api/me/notifications", "Employee Self-Service", "Notifications"),
+    ("/api/me/notification", "Employee Self-Service", "Notifications"),
+    ("/api/me/announcements", "Employee Self-Service", "Announcements"),
+    ("/api/me/dashboard", "Employee Self-Service", "Dashboard"),
+    ("/api/me/leave", "Employee Self-Service", "Leave"),
+    ("/api/me/fetch-all", "Employee Self-Service", "Leave"),
+    ("/api/me/attendance", "Employee Self-Service", "Attendance"),
+    ("/api/me/users", "Employee Self-Service", "Profile"),
+    ("/api/me/permissions", "Employee Self-Service", "Profile"),
+    ("/api/me/payslips", "Employee Self-Service", "Payslips"),
+    ("/api/me/", "Employee Self-Service", "Profile"),
+
+    ("/api/hr/dashboard", "HR Management", "Dashboard"),
+    ("/api/hr/users", "HR Management", "Users"),
+    ("/api/hr/attendance", "HR Management", "Attendance"),
+    ("/api/hr/employees", "HR Management", "Attendance"),
+    ("/api/hr/leave", "HR Management", "Leave"),
+    ("/api/hr/fetch-all", "HR Management", "Leave"),
+    ("/api/hr/hr-employee", "HR Management", "Leave"),
+    ("/api/hr/announcements", "HR Management", "Announcements"),
+    ("/api/hr/announcement", "HR Management", "Announcements"),
+    ("/api/hr/offers", "HR Management", "Onboarding"),
+    ("/api/hr/onboarding", "HR Management", "Onboarding"),
+    ("/api/hr/employee-holiday", "HR Management", "Holiday"),
+    ("/api/hr/employee-weekly", "HR Management", "Weekly Off"),
+    ("/api/hr/payslips", "Employee Self-Service", "Payslips"),
+    ("/api/hr/", "HR Management", "Users"),
+
+    ("/api/onboarding/", "Onboarding", "Meta"),
+
+    ("/api/admin/payroll/pf", "Payroll", "PF Config"),
+    ("/api/admin/payroll/esi", "Payroll", "ESI Config"),
+    ("/api/admin/payroll/pt", "Payroll", "PT Slabs"),
+    ("/api/admin/payroll/lwf", "Payroll", "LWF Config"),
+    ("/api/admin/payroll/grat", "Payroll", "Gratuity Config"),
+    ("/api/admin/payroll/tax", "Payroll", "Tax Config"),
+    ("/api/admin/payroll/cal", "Payroll", "Payroll Calendar"),
+    ("/api/admin/payroll/runs", "Payroll", "Payroll Runs"),
+    ("/api/admin/payroll/conf", "Payroll", "Config"),
+    ("/api/admin/payroll/", "Payroll", "Payroll Runs"),
+
+    ("/api/admin/employees", "Payroll", "Employee Statutory"),
+
+    ("/api/admin/salary", "Master Data", "Salary Structure"),
+    ("/api/admin/pay-component", "Master Data", "Pay Components"),
+    ("/api/admin/pay-range", "Master Data", "Pay Range"),
+    ("/api/admin/pay-grade", "Master Data", "Pay Grade"),
+    ("/api/admin/cost-center", "Master Data", "Cost Center"),
+    ("/api/admin/job-title", "Master Data", "Job Title"),
+    ("/api/admin/sub-function", "Master Data", "Sub Function"),
+    ("/api/admin/functions", "Master Data", "Function"),
+    ("/api/admin/work-location", "Master Data", "Work Location"),
+    ("/api/admin/geozones", "Master Data", "Geo Zones"),
+    ("/api/admin/legal-entit", "Master Data", "Legal Entity"),
+    ("/api/admin/hierarchy", "Master Data", "Hierarchy Levels"),
+    ("/api/admin/attendance-de", "Master Data", "Attendance Default"),
+    ("/api/admin/attendance-so", "Master Data", "Attendance Source"),
+    ("/api/admin/attendance-po", "Master Data", "Attendance Policy"),
+    ("/api/admin/attendance", "Master Data", "Attendance Default"),
+    ("/api/admin/break-policy", "Master Data", "Break Policy"),
+    ("/api/admin/shifts", "Master Data", "Shifts"),
+    ("/api/admin/work-mode", "Master Data", "Work Mode"),
+    ("/api/admin/ip-address", "Master Data", "IP Address"),
+    ("/api/admin/master-option", "Master Data", "Master Options"),
+    ("/api/admin/financial-year", "Master Data", "Financial Year"),
+    ("/api/admin/comp-off", "Master Data", "Comp Off Requests"),
+    ("/api/admin/optional-holi", "Master Data", "Optional Holiday"),
+    ("/api/admin/leave-approval", "Master Data", "Leave Approval Workflow"),
+    ("/api/admin/holiday-group", "Master Data", "Holiday Group"),
+    ("/api/admin/leave-balance", "Master Data", "Leave Balance Ledger"),
+    ("/api/admin/policy-group", "Master Data", "Leave Policy Group"),
+    ("/api/admin/leave-types", "Master Data", "Leave Types"),
+
+    ("/api/admin/ticketing/wor", "Ticketing", "Workflows"),
+    ("/api/admin/ticketing/", "Ticketing", "Admin Tickets"),
+
+    ("/api/admin/notifications", "Notifications", "Events"),
+
+    ("/api/admin/permissions", "RBAC & Settings", "Permissions"),
+    ("/api/admin/roles", "RBAC & Settings", "Roles"),
+    ("/api/admin/settings/emp", "RBAC & Settings", "Employee Code"),
+    ("/api/admin/settings/time", "RBAC & Settings", "Timezone"),
+    ("/api/admin/settings/ui", "RBAC & Settings", "UI Color"),
+    ("/api/admin/settings/hr", "RBAC & Settings", "HR Defaults"),
+
+    ("/api/ticketing/pending", "Ticketing", "Pending Approvals"),
+    ("/api/ticketing/", "Ticketing", "Tickets"),
+    ("/admin/ticketing/", "Ticketing", "Ticket Types"),
+
+    ("/api/hr/tax-declaration", "Payroll", "Tax Declaration"),
+]
+
+
+def _infer_module_submodule(result):
+    """
+    Return (module, submodule) for a result dict.
+
+    Priority:
+        1. module/submodule explicitly supplied by runner
+        2. endpoint/path based fallback
+        3. Other / Uncategorised
+    """
+
+    module = result.get("module")
+    submodule = result.get("submodule")
+
+    if module and submodule:
+        return module, submodule
+
+    path = result.get(
+        "endpoint",
+        result.get("path", ""),
+    )
+
+    for prefix, mod, sub in _PATH_MODULE_RULES:
+        if path.startswith(prefix):
+            return mod, sub
+
+    return "Other", "Uncategorised"
+
+
+def _group_results(results):
+    """
+    Returns:
+
+        OrderedDict(
+            {
+                module: {
+                    submodule: [result, ...]
+                }
+            }
+        )
+
+    Modules are displayed in _MODULE_ORDER.
+    Unknown modules are appended at the end.
+    """
+
+    grouped = {}
+
+    for result in results:
+        module, submodule = _infer_module_submodule(result)
+
+        grouped.setdefault(
+            module,
+            {},
+        ).setdefault(
+            submodule,
+            [],
+        ).append(result)
+
+    ordered = OrderedDict()
+
+    for module in _MODULE_ORDER:
+        if module in grouped:
+            ordered[module] = grouped.pop(module)
+
+    for module, submodules in grouped.items():
+        ordered[module] = submodules
+
+    return ordered
+
+
+# ============================================================
+# MODULE STAT GRID
+# ============================================================
+
+def _build_module_stat_grid(results):
+    """
+    Compact per-module summary table.
+    """
 
     if not results:
         return ""
 
+    grouped = _group_results(results)
+
     rows = ""
 
-    for result in results:
+    for module, submodules in grouped.items():
 
-        passed = result.get(
-            "passed",
-            False,
+        all_in_module = [
+            result
+            for sub in submodules.values()
+            for result in sub
+        ]
+
+        total = len(all_in_module)
+
+        passed = sum(
+            1
+            for result in all_in_module
+            if result.get("passed", False)
         )
 
-        status_color = _status_color(
-            passed
+        failed = total - passed
+
+        percentage = (
+            round((passed / total) * 100, 1)
+            if total
+            else 0
         )
 
-        status_text = _status_label(
-            passed
+        emoji = _MODULE_EMOJI.get(
+            module,
+            "📦",
         )
 
-        action = _safe(
-            result.get(
-                "action",
-                result.get(
-                    "name",
-                    "Unknown",
-                ),
-            )
-        )
+        if percentage >= 95:
+            pill_bg = "#dcfce7"
+            pill_col = "#16a34a"
+            pill_text = f"{percentage}% ✅"
 
-        method = _safe(
-            result.get(
-                "method",
-                "",
-            )
-        )
+        elif percentage >= 75:
+            pill_bg = "#fef9c3"
+            pill_col = "#b45309"
+            pill_text = f"{percentage}% ⚠️"
 
-        endpoint = _safe(
-            result.get(
-                "endpoint",
-                "",
-            )
-        )
-
-        status = _format_status(
-            result.get("status_code")
-        )
-
-        duration = _format_duration(
-            result.get("elapsed_ms")
-        )
+        else:
+            pill_bg = "#fee2e2"
+            pill_col = "#dc2626"
+            pill_text = f"{percentage}% ❌"
 
         rows += f"""
-        <tr>
+        <tr style="border-bottom:1px solid #e2e8f0;">
 
             <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
+                padding:10px 12px;
                 font-weight:600;
+                font-size:13px;
             ">
-                {action}
+                {emoji} {_safe(module)}
             </td>
 
             <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
-                font-family:monospace;
-                font-size:11px;
-            ">
-                {method}
-            </td>
-
-            <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
-                font-family:monospace;
-                font-size:11px;
-            ">
-                {endpoint}
-            </td>
-
-            <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
+                padding:10px 12px;
+                text-align:center;
+                font-size:13px;
+                color:#16a34a;
                 font-weight:700;
             ">
-                {status}
+                {passed}
             </td>
 
             <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
-            ">
-                {duration}
-            </td>
-
-            <td style="
-                padding:9px;
-                border-bottom:1px solid #e2e8f0;
-                color:{status_color};
+                padding:10px 12px;
+                text-align:center;
+                font-size:13px;
+                color:{'#dc2626' if failed else '#94a3b8'};
                 font-weight:700;
             ">
-                {status_text}
+                {failed}
+            </td>
+
+            <td style="
+                padding:10px 12px;
+                text-align:center;
+                font-size:13px;
+                color:#64748b;
+            ">
+                {total}
+            </td>
+
+            <td style="padding:10px 12px;">
+
+                <span style="
+                    display:inline-block;
+                    background:{pill_bg};
+                    color:{pill_col};
+                    border-radius:12px;
+                    padding:3px 10px;
+                    font-size:11px;
+                    font-weight:700;
+                    white-space:nowrap;
+                ">
+                    {pill_text}
+                </span>
+
             </td>
 
         </tr>
         """
 
     return f"""
-    <div style="margin-top:25px;">
+    <div style="margin-bottom:24px;">
 
         <div style="
             font-size:18px;
@@ -681,13 +875,13 @@ def _build_api_summary(results):
             color:#0f172a;
             margin-bottom:12px;
         ">
-            📊 API Health Overview
+            🗺️ Module Health Summary
         </div>
 
         <div style="
-            overflow-x:auto;
             border:1px solid #e2e8f0;
-            border-radius:8px;
+            border-radius:10px;
+            overflow:hidden;
         ">
 
             <table
@@ -697,37 +891,65 @@ def _build_api_summary(results):
                 style="
                     border-collapse:collapse;
                     font-family:Arial,sans-serif;
-                    font-size:12px;
                 "
             >
 
                 <thead>
 
-                    <tr style="
-                        background:#f1f5f9;
-                    ">
+                    <tr style="background:#f1f5f9;">
 
-                        <th align="left" style="padding:10px;">
-                            API
+                        <th
+                            align="left"
+                            style="
+                                padding:10px 12px;
+                                font-size:12px;
+                                color:#475569;
+                            "
+                        >
+                            Module
                         </th>
 
-                        <th align="left" style="padding:10px;">
-                            Method
+                        <th
+                            align="center"
+                            style="
+                                padding:10px 12px;
+                                font-size:12px;
+                                color:#16a34a;
+                            "
+                        >
+                            Passed
                         </th>
 
-                        <th align="left" style="padding:10px;">
-                            Endpoint
+                        <th
+                            align="center"
+                            style="
+                                padding:10px 12px;
+                                font-size:12px;
+                                color:#dc2626;
+                            "
+                        >
+                            Failed
                         </th>
 
-                        <th align="left" style="padding:10px;">
-                            Status
+                        <th
+                            align="center"
+                            style="
+                                padding:10px 12px;
+                                font-size:12px;
+                                color:#64748b;
+                            "
+                        >
+                            Total
                         </th>
 
-                        <th align="left" style="padding:10px;">
-                            Time
-                        </th>
-
-                        <th align="left" style="padding:10px;">
+                        <th
+                            align="left"
+                            style="
+                                padding:10px 12px;
+                                font-size:12px;
+                                color:#475569;
+                            "
+                        >
                             Health
                         </th>
 
@@ -742,6 +964,562 @@ def _build_api_summary(results):
             </table>
 
         </div>
+    </div>
+    """
+
+
+# ============================================================
+# CATEGORISED API DETAIL
+# ============================================================
+
+def _build_categorized_summary(results):
+    """
+    Renders module cards with submodule endpoint breakdown.
+    """
+
+    if not results:
+        return ""
+
+    grouped = _group_results(results)
+
+    module_cards = ""
+
+    for module, submodules in grouped.items():
+
+        all_in_module = [
+            result
+            for sub in submodules.values()
+            for result in sub
+        ]
+
+        total_module = len(all_in_module)
+
+        passed_module = sum(
+            1
+            for result in all_in_module
+            if result.get("passed", False)
+        )
+
+        failed_module = total_module - passed_module
+
+        emoji = _MODULE_EMOJI.get(
+            module,
+            "📦",
+        )
+
+        if failed_module == 0:
+            header_bg = "#f0fdf4"
+            header_border = "#86efac"
+            header_color = "#166534"
+            stat_pill_bg = "#dcfce7"
+            stat_pill_color = "#16a34a"
+
+        elif failed_module < total_module * 0.3:
+            header_bg = "#fffbeb"
+            header_border = "#fde68a"
+            header_color = "#92400e"
+            stat_pill_bg = "#fef3c7"
+            stat_pill_color = "#b45309"
+
+        else:
+            header_bg = "#fef2f2"
+            header_border = "#fca5a5"
+            header_color = "#991b1b"
+            stat_pill_bg = "#fee2e2"
+            stat_pill_color = "#dc2626"
+
+        submodule_sections = ""
+
+        for submodule, sub_results in sorted(
+            submodules.items()
+        ):
+
+            sub_total = len(sub_results)
+
+            sub_passed = sum(
+                1
+                for result in sub_results
+                if result.get("passed", False)
+            )
+
+            sub_failed = sub_total - sub_passed
+
+            sub_color = (
+                "#16a34a"
+                if sub_failed == 0
+                else "#dc2626"
+            )
+
+            endpoint_rows = ""
+
+            for result in sub_results:
+
+                passed = result.get(
+                    "passed",
+                    False,
+                )
+
+                status_color = _status_color(
+                    passed
+                )
+
+                status_label = _status_label(
+                    passed
+                )
+
+                action = _safe(
+                    result.get(
+                        "action",
+                        result.get(
+                            "name",
+                            "Unknown",
+                        ),
+                    )
+                )
+
+                method = _safe(
+                    result.get("method", "")
+                )
+
+                endpoint_url = _safe(
+                    result.get("endpoint", "")
+                )
+
+                status_code = _format_status(
+                    result.get("status_code")
+                )
+
+                duration = _format_duration(
+                    result.get("elapsed_ms")
+                )
+
+                sla_ms = result.get("sla_ms")
+
+                elapsed_ms = result.get(
+                    "elapsed_ms"
+                )
+
+                sla_breach = (
+                    sla_ms is not None
+                    and elapsed_ms is not None
+                    and elapsed_ms > sla_ms
+                )
+
+                critical = result.get(
+                    "critical",
+                    False,
+                )
+
+                critical_badge = ""
+
+                if critical:
+                    critical_badge = """
+                    <span style="
+                        display:inline-block;
+                        background:#dc2626;
+                        color:#fff;
+                        font-size:9px;
+                        font-weight:700;
+                        padding:1px 6px;
+                        border-radius:8px;
+                        margin-left:5px;
+                        vertical-align:middle;
+                    ">
+                        CRITICAL
+                    </span>
+                    """
+
+                sla_badge = ""
+
+                if sla_breach:
+                    sla_badge = """
+                    <span style="
+                        display:inline-block;
+                        background:#fef3c7;
+                        color:#92400e;
+                        font-size:9px;
+                        font-weight:700;
+                        padding:1px 6px;
+                        border-radius:8px;
+                        margin-left:4px;
+                        vertical-align:middle;
+                    ">
+                        SLA BREACH
+                    </span>
+                    """
+
+                endpoint_rows += f"""
+                <tr style="
+                    background:
+                    {'#fef2f2' if not passed else '#ffffff'};
+                ">
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-size:12px;
+                        font-weight:600;
+                        color:#0f172a;
+                    ">
+                        {action}
+                        {critical_badge}
+                    </td>
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-family:monospace;
+                        font-size:10px;
+                        color:#475569;
+                    ">
+                        <span style="
+                            background:#e0f2fe;
+                            color:#0369a1;
+                            padding:1px 6px;
+                            border-radius:4px;
+                            font-weight:700;
+                        ">
+                            {method}
+                        </span>
+                    </td>
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-family:monospace;
+                        font-size:10px;
+                        color:#64748b;
+                        word-break:break-all;
+                    ">
+                        {endpoint_url}
+                    </td>
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-size:11px;
+                        font-weight:700;
+                        color:#475569;
+                        text-align:center;
+                    ">
+                        {status_code}
+                    </td>
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-size:11px;
+                        color:#64748b;
+                        white-space:nowrap;
+                    ">
+                        {duration}
+                        {sla_badge}
+                    </td>
+
+                    <td style="
+                        padding:8px 10px;
+                        border-bottom:1px solid #f1f5f9;
+                        font-size:11px;
+                        font-weight:700;
+                        color:{status_color};
+                        white-space:nowrap;
+                    ">
+                        {status_label}
+                    </td>
+
+                </tr>
+                """
+
+            submodule_sections += f"""
+            <div style="margin-bottom:6px;">
+
+                <div style="
+                    background:#f8fafc;
+                    border-left:4px solid {sub_color};
+                    padding:8px 14px;
+                ">
+
+                    <span style="
+                        font-size:12px;
+                        font-weight:700;
+                        color:#334155;
+                    ">
+                        ↳ {_safe(submodule)}
+                    </span>
+
+                    <span style="
+                        font-size:11px;
+                        color:#64748b;
+                        margin-left:10px;
+                    ">
+                        {sub_passed}/{sub_total}
+                        {
+                            '✅'
+                            if sub_failed == 0
+                            else f'— {sub_failed} failed ❌'
+                        }
+                    </span>
+
+                </div>
+
+                <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    style="
+                        border-collapse:collapse;
+                        font-family:Arial,sans-serif;
+                    "
+                >
+
+                    <thead>
+
+                        <tr style="
+                            background:#f8fafc;
+                            border-bottom:1px solid #e2e8f0;
+                        ">
+
+                            <th
+                                align="left"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                API
+                            </th>
+
+                            <th
+                                align="left"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                Method
+                            </th>
+
+                            <th
+                                align="left"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                Endpoint
+                            </th>
+
+                            <th
+                                align="center"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                HTTP
+                            </th>
+
+                            <th
+                                align="left"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                Time
+                            </th>
+
+                            <th
+                                align="left"
+                                style="
+                                    padding:6px 10px;
+                                    font-size:10px;
+                                    color:#94a3b8;
+                                "
+                            >
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        {endpoint_rows}
+                    </tbody>
+
+                </table>
+
+            </div>
+            """
+
+        module_cards += f"""
+        <div style="
+            border:1px solid {header_border};
+            border-radius:10px;
+            margin-bottom:20px;
+            overflow:hidden;
+        ">
+
+            <div style="
+                background:{header_bg};
+                padding:14px 18px;
+                border-bottom:1px solid {header_border};
+            ">
+
+                <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                >
+
+                    <tr>
+
+                        <td>
+
+                            <div style="
+                                font-size:16px;
+                                font-weight:700;
+                                color:{header_color};
+                            ">
+                                {emoji} {_safe(module)}
+                            </div>
+
+                            <div style="
+                                font-size:11px;
+                                color:#64748b;
+                                margin-top:3px;
+                            ">
+                                {len(submodules)}
+                                submodule
+                                {
+                                    's'
+                                    if len(submodules) != 1
+                                    else ''
+                                }
+                                ·
+                                {total_module}
+                                endpoint
+                                {
+                                    's'
+                                    if total_module != 1
+                                    else ''
+                                }
+                            </div>
+
+                        </td>
+
+                        <td align="right">
+
+                            <span style="
+                                display:inline-block;
+                                background:{stat_pill_bg};
+                                color:{stat_pill_color};
+                                border-radius:14px;
+                                padding:4px 14px;
+                                font-size:13px;
+                                font-weight:700;
+                                white-space:nowrap;
+                            ">
+
+                                {passed_module}/{total_module}
+                                passed
+
+                                {
+                                    '✅'
+                                    if failed_module == 0
+                                    else f' · {failed_module} ❌'
+                                }
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <div style="padding:14px 18px;">
+                {submodule_sections}
+            </div>
+
+        </div>
+        """
+
+    return f"""
+    <div style="margin-top:25px;">
+
+        <div style="
+            font-size:18px;
+            font-weight:700;
+            color:#0f172a;
+            margin-bottom:14px;
+        ">
+            📊 API Health — Module Breakdown
+        </div>
+
+        {module_cards}
+
+    </div>
+    """
+
+
+# ============================================================
+# API OVERVIEW SUMMARY
+# ============================================================
+
+def _build_api_summary(results):
+    """
+    Renders the complete API Overview section.
+    """
+
+    if not results:
+        return """
+        <div style="
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:8px;
+            padding:20px;
+            text-align:center;
+            color:#64748b;
+            font-size:14px;
+        ">
+            No API results available.
+        </div>
+        """
+
+    stat_grid = _build_module_stat_grid(
+        results
+    )
+
+    categorized_detail = _build_categorized_summary(
+        results
+    )
+
+    return f"""
+    <div style="margin-bottom:20px;">
+
+        <div style="
+            font-size:20px;
+            font-weight:700;
+            color:#0f172a;
+            margin-bottom:16px;
+            border-bottom:2px solid #e2e8f0;
+            padding-bottom:10px;
+        ">
+            📡 API Overview
+        </div>
+
+        {stat_grid}
+
+        {categorized_detail}
 
     </div>
     """
@@ -770,9 +1548,13 @@ def build_health_email(
         [],
     )
 
-    percentage = _get_health_percentage(summary)
+    percentage = _get_health_percentage(
+        summary
+    )
 
-    overall = _overall_status(summary)
+    overall = _overall_status(
+        summary
+    )
 
     run_time = summary.get(
         "run_time",
@@ -783,10 +1565,17 @@ def build_health_email(
 
     return f"""
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
     <meta charset="UTF-8">
-    <title>HRMS API Health Monitor</title>
+
+    <title>
+        HRMS API Health Monitor
+    </title>
+
 </head>
 
 <body style="
@@ -797,31 +1586,39 @@ def build_health_email(
     color:#0f172a;
 ">
 
-<table width="100%"
-       cellpadding="0"
-       cellspacing="0"
-       style="
-           background:#f1f5f9;
-           padding:25px 10px;
-       ">
+<table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    style="
+        background:#f1f5f9;
+        padding:25px 10px;
+    "
+>
 
 <tr>
+
 <td align="center">
 
-<table width="900"
-       cellpadding="0"
-       cellspacing="0"
-       style="
-           max-width:900px;
-           width:100%;
-           background:#ffffff;
-           border-radius:12px;
-           overflow:hidden;
-       ">
+<table
+    width="900"
+    cellpadding="0"
+    cellspacing="0"
+    style="
+        max-width:900px;
+        width:100%;
+        background:#ffffff;
+        border-radius:12px;
+        overflow:hidden;
+    "
+>
 
-<!-- HEADER -->
+<!-- ======================================================
+     HEADER
+====================================================== -->
 
 <tr>
+
 <td style="
     background:#0f172a;
     padding:25px 30px;
@@ -844,12 +1641,16 @@ def build_health_email(
     </div>
 
 </td>
+
 </tr>
 
 
-<!-- STATUS -->
+<!-- ======================================================
+     STATUS
+====================================================== -->
 
 <tr>
+
 <td style="
     padding:25px 30px 15px 30px;
 ">
@@ -886,29 +1687,37 @@ def build_health_email(
 </div>
 
 </td>
+
 </tr>
 
 
-<!-- METRICS -->
+<!-- ======================================================
+     METRICS
+====================================================== -->
 
 <tr>
+
 <td style="
     padding:5px 30px 20px 30px;
 ">
 
-<table width="100%"
-       cellpadding="0"
-       cellspacing="8">
+<table
+    width="100%"
+    cellpadding="0"
+    cellspacing="8"
+>
 
 <tr>
 
-<td width="25%"
+<td
+    width="25%"
     style="
         background:#f8fafc;
         border-radius:8px;
         padding:18px;
         text-align:center;
-    ">
+    "
+>
 
     <div style="
         font-size:28px;
@@ -928,13 +1737,15 @@ def build_health_email(
 </td>
 
 
-<td width="25%"
+<td
+    width="25%"
     style="
         background:#f0fdf4;
         border-radius:8px;
         padding:18px;
         text-align:center;
-    ">
+    "
+>
 
     <div style="
         font-size:28px;
@@ -955,13 +1766,15 @@ def build_health_email(
 </td>
 
 
-<td width="25%"
+<td
+    width="25%"
     style="
         background:#fef2f2;
         border-radius:8px;
         padding:18px;
         text-align:center;
-    ">
+    "
+>
 
     <div style="
         font-size:28px;
@@ -982,13 +1795,15 @@ def build_health_email(
 </td>
 
 
-<td width="25%"
+<td
+    width="25%"
     style="
         background:#fffbeb;
         border-radius:8px;
         padding:18px;
         text-align:center;
-    ">
+    "
+>
 
     <div style="
         font-size:28px;
@@ -1009,15 +1824,20 @@ def build_health_email(
 </td>
 
 </tr>
+
 </table>
 
 </td>
+
 </tr>
 
 
-<!-- RUN INFORMATION -->
+<!-- ======================================================
+     RUN INFORMATION
+====================================================== -->
 
 <tr>
+
 <td style="
     padding:0 30px 20px 30px;
 ">
@@ -1036,12 +1856,15 @@ def build_health_email(
     📋 Run Information
 </div>
 
-<table width="100%"
-       cellpadding="4"
-       cellspacing="0"
-       style="font-size:13px;">
+<table
+    width="100%"
+    cellpadding="4"
+    cellspacing="0"
+    style="font-size:13px;"
+>
 
 <tr>
+
 <td style="
     color:#64748b;
     width:140px;
@@ -1052,10 +1875,12 @@ def build_health_email(
 <td style="font-weight:700;">
     {_safe(environment)}
 </td>
+
 </tr>
 
 
 <tr>
+
 <td style="color:#64748b;">
     Run Time
 </td>
@@ -1063,34 +1888,41 @@ def build_health_email(
 <td>
     {_safe(run_time)}
 </td>
+
 </tr>
 
 
 <tr>
+
 <td style="color:#64748b;">
     Critical Failures
 </td>
 
 <td style="
     font-weight:700;
-    color:{'#dc2626' if critical_failures else '#16a34a'};
+    color:
+    {'#dc2626' if critical_failures else '#16a34a'};
 ">
     {len(critical_failures)}
 </td>
+
 </tr>
 
 
 <tr>
+
 <td style="color:#64748b;">
     SLA Breaches
 </td>
 
 <td style="
     font-weight:700;
-    color:{'#d97706' if sla_breaches else '#16a34a'};
+    color:
+    {'#d97706' if sla_breaches else '#16a34a'};
 ">
     {len(sla_breaches)}
 </td>
+
 </tr>
 
 </table>
@@ -1098,39 +1930,61 @@ def build_health_email(
 </div>
 
 </td>
+
 </tr>
 
 
-<!-- CRITICAL FAILURES -->
+<!-- ======================================================
+     CRITICAL FAILURES
+====================================================== -->
 
 <tr>
+
 <td style="padding:0 30px;">
+
     {_build_critical_failures(summary)}
+
 </td>
+
 </tr>
 
 
-<!-- FAILURE DETAILS -->
+<!-- ======================================================
+     FAILURE DETAILS
+====================================================== -->
 
 <tr>
+
 <td style="padding:0 30px;">
+
     {_build_failure_details(results)}
+
 </td>
+
 </tr>
 
 
-<!-- API OVERVIEW -->
+<!-- ======================================================
+     API OVERVIEW
+====================================================== -->
 
 <tr>
+
 <td style="padding:0 30px 30px 30px;">
+
     {_build_api_summary(results)}
+
 </td>
+
 </tr>
 
 
-<!-- FOOTER -->
+<!-- ======================================================
+     FOOTER
+====================================================== -->
 
 <tr>
+
 <td style="
     background:#0f172a;
     padding:20px 30px;
@@ -1162,53 +2016,92 @@ def build_health_email(
 </div>
 
 </td>
+
 </tr>
+
 
 </table>
 
 </td>
+
 </tr>
 
 </table>
 
 </body>
+
 </html>
 """
+
 
 # ============================================================
 # ATTACHMENT
 # ============================================================
 
-import base64
+def _prepare_attachment(
+    file_path: str | None,
+    label: str,
+):
+    """
+    Reads a local file and returns a Resend-compatible
+    base64 attachment dictionary.
+    """
 
-def _prepare_attachment(file_path: str | None, label: str):
-    """
-    Reads a local file and returns a Resend-compatible attachment dict
-    using base64-encoded content. Resend's `path` field expects a public
-    URL, not a local filesystem path — so for runner-generated files
-    (Excel/JSON), base64 content is the only format that works.
-    """
     if not file_path:
-        print(f"[health-suite] WARNING: No {label} path was received.")
+        print(
+            f"[health-suite] WARNING: "
+            f"No {label} path was received."
+        )
         return None
 
-    absolute_path = os.path.abspath(file_path)
+    absolute_path = os.path.abspath(
+        file_path
+    )
 
     if not os.path.isfile(absolute_path):
-        print(f"[health-suite] WARNING: {label} does not exist: {absolute_path}")
+        print(
+            f"[health-suite] WARNING: "
+            f"{label} does not exist: "
+            f"{absolute_path}"
+        )
         return None
 
     try:
-        with open(absolute_path, "rb") as f:
-            file_bytes = f.read()
 
-        encoded = base64.b64encode(file_bytes).decode("utf-8")
-        filename = os.path.basename(absolute_path)
+        with open(
+            absolute_path,
+            "rb",
+        ) as file:
 
-        print(f"[health-suite] Preparing {label} attachment...")
-        print(f"[health-suite] {label} path: {absolute_path}")
-        print(f"[health-suite] {label} filename: {filename}")
-        print(f"[health-suite] {label} size: {len(file_bytes)} bytes")
+            file_bytes = file.read()
+
+        encoded = base64.b64encode(
+            file_bytes
+        ).decode("utf-8")
+
+        filename = os.path.basename(
+            absolute_path
+        )
+
+        print(
+            f"[health-suite] Preparing "
+            f"{label} attachment..."
+        )
+
+        print(
+            f"[health-suite] {label} path: "
+            f"{absolute_path}"
+        )
+
+        print(
+            f"[health-suite] {label} filename: "
+            f"{filename}"
+        )
+
+        print(
+            f"[health-suite] {label} size: "
+            f"{len(file_bytes)} bytes"
+        )
 
         return {
             "filename": filename,
@@ -1216,7 +2109,13 @@ def _prepare_attachment(file_path: str | None, label: str):
         }
 
     except Exception as exc:
-        print(f"[health-suite] WARNING: Failed to prepare {label}: {type(exc).__name__}: {exc}")
+
+        print(
+            f"[health-suite] WARNING: "
+            f"Failed to prepare {label}: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
         return None
 
 
@@ -1230,6 +2129,10 @@ def send_health_email(
     report_path=None,
     summary_path=None,
 ):
+    """
+    Send the HRMS API health dashboard using Resend.
+    """
+
     if not RESEND_API_KEY:
         raise RuntimeError(
             "RESEND_API_KEY environment variable "
@@ -1244,8 +2147,13 @@ def send_health_email(
 
     resend.api_key = RESEND_API_KEY
 
-    percentage = _get_health_percentage(summary)
-    overall = _overall_status(summary)
+    percentage = _get_health_percentage(
+        summary
+    )
+
+    overall = _overall_status(
+        summary
+    )
 
     subject = (
         f"{overall['emoji']} "
@@ -1273,25 +2181,30 @@ def send_health_email(
 
     attachments = []
 
-    # Excel
+    # Excel report
     excel_attachment = _prepare_attachment(
         report_path,
         "Excel report",
     )
 
     if excel_attachment:
-        attachments.append(excel_attachment)
+        attachments.append(
+            excel_attachment
+        )
 
-    # JSON
+    # JSON summary
     json_attachment = _prepare_attachment(
         summary_path,
         "JSON summary",
     )
 
     if json_attachment:
-        attachments.append(json_attachment)
+        attachments.append(
+            json_attachment
+        )
 
     if attachments:
+
         params["attachments"] = attachments
 
         print(
@@ -1308,6 +2221,7 @@ def send_health_email(
             )
 
     else:
+
         print(
             "[health-suite] WARNING: "
             "No attachments were prepared."
@@ -1323,7 +2237,10 @@ def send_health_email(
     )
 
     try:
-        response = resend.Emails.send(params)
+
+        response = resend.Emails.send(
+            params
+        )
 
         print(
             "[health-suite] "
@@ -1331,28 +2248,48 @@ def send_health_email(
         )
 
         print(
-            f"[health-suite] "
+            "[health-suite] "
             f"Resend response: {response}"
         )
 
         return response
 
     except Exception as exc:
+
         print(
             "[health-suite] "
             f"Resend email failed: "
             f"{type(exc).__name__}: {exc}"
         )
+
         raise
+
+
 # ============================================================
 # COMPATIBILITY WRAPPER
+# ============================================================
+
 def notify_resend(
     summary,
     results,
     report_path=None,
     summary_path=None,
 ):
+    """
+    Backward-compatible wrapper.
+
+    Existing callers can continue using:
+
+        notify_resend(
+            summary,
+            results,
+            report_path=...,
+            summary_path=...,
+        )
+    """
+
     try:
+
         return send_health_email(
             summary=summary,
             results=results,
@@ -1361,6 +2298,7 @@ def notify_resend(
         )
 
     except Exception as exc:
+
         print(
             "[health-suite] "
             f"Resend notification failed: "

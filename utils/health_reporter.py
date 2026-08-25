@@ -3,8 +3,8 @@ Reporting for the API Health Suite.
 
 Responsibilities:
 1. Store API health results.
-2. Generate Excel report.
-3. Generate machine-readable summary.json.
+2. Generate Excel report (with per-module breakdown).
+3. Generate machine-readable summary.json (with per-module breakdown).
 
 The JSON summary is intentionally compact and contains
 the overall execution summary rather than the complete
@@ -150,6 +150,8 @@ class HealthReporter:
         candidate_email: str = "",
         error: str = "",
         critical: bool = False,
+        module: str = "Uncategorized",
+        submodule: str = "",
     ):
         sla_status = "N/A"
 
@@ -163,6 +165,8 @@ class HealthReporter:
         self.results.append(
             {
                 "name": name,
+                "module": module or "Uncategorized",
+                "submodule": submodule or "",
                 "candidate_name": candidate_name or "N/A",
                 "candidate_email": candidate_email or "N/A",
                 "action": action,
@@ -221,6 +225,7 @@ class HealthReporter:
         failed_endpoints = [
             {
                 "name": result["name"],
+                "module": result["module"],
                 "action": result["action"],
                 "status_code": result["status_code"],
                 "expected_status": result["expected_status"],
@@ -247,6 +252,56 @@ class HealthReporter:
                 timespec="seconds"
             ),
         }
+
+    # =========================================================
+    # MODULE BREAKDOWN
+    # =========================================================
+
+    @property
+    def modules(self) -> dict:
+        """
+        Per-module breakdown: total/passed/failed/pass_rate/failed_apis.
+
+        Used for:
+          - the Excel "Module Summary" sheet
+          - the email dashboard's module table
+          - summary.json's "modules" section
+
+        This is what lets you filter the Details sheet or slice the
+        report by module and hand a clean, module-scoped view to the
+        developer who owns that module.
+        """
+        grouped: dict[str, dict] = {}
+
+        for result in self.results:
+            mod = result.get("module") or "Uncategorized"
+
+            grouped.setdefault(
+                mod,
+                {
+                    "total": 0,
+                    "passed": 0,
+                    "failed": 0,
+                    "failed_apis": [],
+                },
+            )
+
+            grouped[mod]["total"] += 1
+
+            if result["passed"]:
+                grouped[mod]["passed"] += 1
+            else:
+                grouped[mod]["failed"] += 1
+                grouped[mod]["failed_apis"].append(result["action"])
+
+        for mod, stats in grouped.items():
+            stats["pass_rate"] = (
+                round((stats["passed"] / stats["total"]) * 100, 1)
+                if stats["total"]
+                else 0
+            )
+
+        return grouped
 
     # =========================================================
     # EXCEL REPORT
@@ -305,12 +360,75 @@ class HealthReporter:
         ws.column_dimensions["B"].width = 70
 
         # -----------------------------------------------------
+        # MODULE SUMMARY SHEET
+        # -----------------------------------------------------
+
+        mod_ws = wb.create_sheet("Module Summary")
+
+        mod_headers = [
+            "Module",
+            "Total",
+            "Passed",
+            "Failed",
+            "Pass Rate",
+            "Failed APIs",
+        ]
+
+        mod_ws.append(mod_headers)
+
+        for column in range(1, len(mod_headers) + 1):
+            cell = mod_ws.cell(row=1, column=column)
+            cell.fill = HEADER_FILL
+            cell.font = HEADER_FONT
+            cell.alignment = Alignment(
+                horizontal="center",
+                vertical="center",
+            )
+
+        mod_ws.freeze_panes = "A2"
+
+        for module_name, stats in sorted(self.modules.items()):
+            row_index = mod_ws.max_row + 1
+
+            mod_ws.append(
+                [
+                    _sanitize_for_excel(module_name),
+                    stats["total"],
+                    stats["passed"],
+                    stats["failed"],
+                    f"{stats['pass_rate']}%",
+                    _sanitize_for_excel(
+                        ", ".join(stats["failed_apis"]) or "None"
+                    ),
+                ]
+            )
+
+            row_fill = PASS_FILL if stats["failed"] == 0 else FAIL_FILL
+
+            for column in range(1, len(mod_headers) + 1):
+                cell = mod_ws.cell(row=row_index, column=column)
+                cell.fill = row_fill
+                cell.alignment = Alignment(
+                    vertical="top",
+                    wrap_text=True,
+                )
+
+        mod_ws.column_dimensions["A"].width = 24
+        mod_ws.column_dimensions["B"].width = 10
+        mod_ws.column_dimensions["C"].width = 10
+        mod_ws.column_dimensions["D"].width = 10
+        mod_ws.column_dimensions["E"].width = 12
+        mod_ws.column_dimensions["F"].width = 70
+
+        # -----------------------------------------------------
         # DETAILS SHEET
         # -----------------------------------------------------
 
         details = wb.create_sheet("Details")
 
         headers = [
+            "Module",
+            "Submodule",
             "Candidate Name",
             "Candidate Email",
             "Action",
@@ -356,6 +474,8 @@ class HealthReporter:
 
             details.append(
                 [
+                    _sanitize_for_excel(result["module"]),
+                    _sanitize_for_excel(result["submodule"]),
                     _sanitize_for_excel(
                         result["candidate_name"]
                     ),
@@ -430,29 +550,33 @@ class HealthReporter:
                 )
 
             if result["sla_status"] == "SLA BREACH":
+                # SLA Status is now column 12 (Module + Submodule added
+                # two columns before it — was column 10 previously).
                 details.cell(
                     row=row_index,
-                    column=10,
+                    column=12,
                 ).fill = SLA_WARN_FILL
 
         widths = {
-            "A": 18,
-            "B": 24,
-            "C": 26,
-            "D": 8,
-            "E": 32,
-            "F": 11,
-            "G": 13,
-            "H": 13,
-            "I": 10,
-            "J": 13,
-            "K": 30,
-            "L": 34,
-            "M": 34,
-            "N": 40,
-            "O": 20,
-            "P": 40,
-            "Q": 20,
+            "A": 20,   # Module
+            "B": 22,   # Submodule
+            "C": 18,   # Candidate Name
+            "D": 24,   # Candidate Email
+            "E": 26,   # Action
+            "F": 8,    # Method
+            "G": 32,   # Endpoint
+            "H": 11,   # API Status
+            "I": 13,   # Expected Status
+            "J": 13,   # Duration (ms)
+            "K": 10,   # SLA (ms)
+            "L": 13,   # SLA Status
+            "M": 30,   # API Message
+            "N": 34,   # Request Headers
+            "O": 34,   # Request Payload
+            "P": 40,   # Response Body
+            "Q": 20,   # Screenshot
+            "R": 40,   # Error
+            "S": 20,   # Timestamp
         }
 
         for column_letter, width in widths.items():
@@ -480,7 +604,19 @@ class HealthReporter:
 
     def write_summary_json(self) -> str:
         """
-        Writes the machine-readable health summary.
+        Writes the machine-readable health summary, including the
+        per-module breakdown, as a real monitoring contract:
+
+        {
+          "total": ..., "passed": ..., "failed": ..., "pass_rate": ...,
+          "critical_failed": [...], "sla_breaches": [...],
+          "failed_endpoints": [...], "run_time": "...",
+          "modules": {
+            "Payroll": {"total": .., "passed": .., "failed": ..,
+                        "pass_rate": .., "failed_apis": [...]},
+            ...
+          }
+        }
 
         This MUST remain inside the HealthReporter class.
         """
@@ -492,7 +628,8 @@ class HealthReporter:
             "summary.json",
         )
 
-        summary = self.summary
+        payload = dict(self.summary)
+        payload["modules"] = self.modules
 
         with open(
             output_path,
@@ -501,7 +638,7 @@ class HealthReporter:
         ) as file:
 
             json.dump(
-                summary,
+                payload,
                 file,
                 indent=2,
                 ensure_ascii=False,

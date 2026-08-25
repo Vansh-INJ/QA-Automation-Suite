@@ -7,7 +7,7 @@ class LoginPage:
 
     def open(self):
         """Navigate to the login page."""
-        login_url = "https://injin.injtechnologies.com/login"
+        login_url = "https://injin-dev.injtechnologies.com/login"
         self.page.goto(login_url, wait_until="domcontentloaded")
         self.page.wait_for_load_state("networkidle")
 

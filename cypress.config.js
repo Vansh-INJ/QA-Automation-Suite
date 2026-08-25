@@ -2,7 +2,7 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "https://injin.injtechnologies.com",
+    baseUrl: "https://injin-dev.injtechnologies.com",
 
     supportFile: "cypress/support/e2e.js",
 
