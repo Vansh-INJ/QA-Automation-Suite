@@ -1,0 +1,2825 @@
+{
+  "form_name": "onboarding_add_employee",
+  "source": "api",
+  "fetched_at": "2026-08-26T10:20:32.017871+00:00",
+  "schema_hash": "3fcc663ea66227a00de6d284b23db29004ecb7aea757ef38078ba270ee098fe8",
+  "fields": [
+    {
+      "name": "profile_image",
+      "field_id": null,
+      "label": "Profile Image",
+      "input_type": "file",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "gender",
+      "field_id": null,
+      "label": "Gender",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "date_of_birth",
+      "field_id": null,
+      "label": "Date of Birth",
+      "input_type": "date",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "blood_group",
+      "field_id": null,
+      "label": "Blood Group",
+      "input_type": "dropdown",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^(A|B|AB|O)[+-]$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "country_code",
+      "field_id": null,
+      "label": "Country Code",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "primary_phone",
+      "field_id": null,
+      "label": "Primary Phone",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{10}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "secondary_country_code",
+      "field_id": null,
+      "label": "Country Code",
+      "input_type": "dropdown",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "secondary_phone",
+      "field_id": null,
+      "label": "Secondary Phone",
+      "input_type": "text",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{10}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "linkedin_url",
+      "field_id": null,
+      "label": "LinkedIn URL",
+      "input_type": "text",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "account_holder_name",
+      "field_id": null,
+      "label": "Account Holder Name",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z\\s]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "bank_name",
+      "field_id": null,
+      "label": "Bank Name",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "branch",
+      "field_id": null,
+      "label": "Branch",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "account_number",
+      "field_id": null,
+      "label": "Account Number",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{9,18}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "ifsc_code",
+      "field_id": null,
+      "label": "IFSC Code",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "aadhar",
+      "field_id": null,
+      "label": "Aadhar Number",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{12}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "pan",
+      "field_id": null,
+      "label": "PAN Number",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "uan",
+      "field_id": null,
+      "label": "UAN",
+      "input_type": "text",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{12}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "line1",
+      "field_id": null,
+      "label": "Address Line 1",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "line2",
+      "field_id": null,
+      "label": "Address Line 2",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "country",
+      "field_id": null,
+      "label": "Country",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "pin_code",
+      "field_id": null,
+      "label": "PIN Code",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{6}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "state",
+      "field_id": null,
+      "label": "State",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "city",
+      "field_id": null,
+      "label": "City",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z\\s]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "line1",
+      "field_id": null,
+      "label": "Address Line 1",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "line2",
+      "field_id": null,
+      "label": "Address Line 2",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "country",
+      "field_id": null,
+      "label": "Country",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "pin_code",
+      "field_id": null,
+      "label": "PIN Code",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{6}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "state",
+      "field_id": null,
+      "label": "State",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "city",
+      "field_id": null,
+      "label": "City",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z\\s]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "same_as_current",
+      "field_id": null,
+      "label": "Same as Current Address",
+      "input_type": "checkbox",
+      "required": false,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "relation",
+      "field_id": null,
+      "label": "Relation",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "name",
+      "field_id": null,
+      "label": "Name",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z\\s]{1,100}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "country_code",
+      "field_id": null,
+      "label": "Country Code",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "contact_number",
+      "field_id": null,
+      "label": "Contact Number",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^\\d{10}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "is_emergency_contact",
+      "field_id": null,
+      "label": "Mark as Emergency Contact",
+      "input_type": "checkbox",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "college",
+      "field_id": null,
+      "label": "College",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "level",
+      "field_id": null,
+      "label": "Level",
+      "input_type": "dropdown",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": null,
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "course",
+      "field_id": null,
+      "label": "Course",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "specialization",
+      "field_id": null,
+      "label": "Specialization",
+      "input_type": "text",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    },
+    {
+      "name": "passing_year",
+      "field_id": null,
+      "label": "Passing Year",
+      "input_type": "number",
+      "required": true,
+      "min_length": null,
+      "max_length": null,
+      "minimum": null,
+      "maximum": null,
+      "pattern": "^(19[5-9]\\d|20\\d{2})$",
+      "options": [],
+      "placeholder": null,
+      "source": "api"
+    }
+  ],
+  "field_metadata": [
+    {
+      "name": "profile_image",
+      "section_key": "personal",
+      "section_title": "Personal Information",
+      "section_index": 0,
+      "field_index": 0,
+      "section_path": "personal",
+      "qualified_name": "personal.profile_image",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "avatar",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "invalid": "Only JPG, JPEG, or PNG files are allowed for profile image."
+      },
+      "api_field": {
+        "name": "profile_image",
+        "label": "Profile Image",
+        "type": "avatar",
+        "required": false,
+        "messages": {
+          "invalid": "Only JPG, JPEG, or PNG files are allowed for profile image."
+        }
+      }
+    },
+    {
+      "name": "gender",
+      "section_key": "personal",
+      "section_title": "Personal Information",
+      "section_index": 0,
+      "field_index": 1,
+      "section_path": "personal",
+      "qualified_name": "personal.gender",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "gender",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your gender."
+      },
+      "api_field": {
+        "name": "gender",
+        "label": "Gender",
+        "type": "select",
+        "options_key": "gender",
+        "required": true,
+        "messages": {
+          "required": "Please select your gender."
+        }
+      }
+    },
+    {
+      "name": "date_of_birth",
+      "section_key": "personal",
+      "section_title": "Personal Information",
+      "section_index": 0,
+      "field_index": 2,
+      "section_path": "personal",
+      "qualified_name": "personal.date_of_birth",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "date",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{4}-\\d{2}-\\d{2}$/",
+      "constraints": {
+        "max_date": "today"
+      },
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Date of birth is required.",
+        "invalid": "Please enter a valid date of birth.",
+        "max_date": "Date of birth cannot be a future date."
+      },
+      "api_field": {
+        "name": "date_of_birth",
+        "label": "Date of Birth",
+        "type": "date",
+        "required": true,
+        "validation": "regex:/^\\d{4}-\\d{2}-\\d{2}$/",
+        "constraints": {
+          "max_date": "today"
+        },
+        "messages": {
+          "required": "Date of birth is required.",
+          "invalid": "Please enter a valid date of birth.",
+          "max_date": "Date of birth cannot be a future date."
+        }
+      }
+    },
+    {
+      "name": "blood_group",
+      "section_key": "personal",
+      "section_title": "Personal Information",
+      "section_index": 0,
+      "field_index": 3,
+      "section_path": "personal",
+      "qualified_name": "personal.blood_group",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "blood_groups",
+      "lookup_key": null,
+      "validation": "regex:/^(A|B|AB|O)[+-]$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "invalid": "Please enter a valid blood group — accepted values are A+, A−, B+, B−, O+, O−, AB+, or AB−."
+      },
+      "api_field": {
+        "name": "blood_group",
+        "label": "Blood Group",
+        "type": "select",
+        "options_key": "blood_groups",
+        "required": false,
+        "validation": "regex:/^(A|B|AB|O)[+-]$/",
+        "messages": {
+          "invalid": "Please enter a valid blood group — accepted values are A+, A−, B+, B−, O+, O−, AB+, or AB−."
+        }
+      }
+    },
+    {
+      "name": "country_code",
+      "section_key": "communication",
+      "section_title": "Communication Details",
+      "section_index": 1,
+      "field_index": 0,
+      "section_path": "communication",
+      "qualified_name": "communication.country_code",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "country_codes",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {
+        "display": "compact",
+        "width": "auto",
+        "class": "country-code-select"
+      },
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your country code.",
+        "invalid": "Please select a valid country code."
+      },
+      "api_field": {
+        "name": "country_code",
+        "label": "Country Code",
+        "type": "select",
+        "options_key": "country_codes",
+        "required": true,
+        "ui_config": {
+          "display": "compact",
+          "width": "auto",
+          "class": "country-code-select"
+        },
+        "messages": {
+          "required": "Please select your country code.",
+          "invalid": "Please select a valid country code."
+        }
+      }
+    },
+    {
+      "name": "primary_phone",
+      "section_key": "communication",
+      "section_title": "Communication Details",
+      "section_index": 1,
+      "field_index": 1,
+      "section_path": "communication",
+      "qualified_name": "communication.primary_phone",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{10}$/",
+      "constraints": {},
+      "ui_config": {
+        "prefix_field": "country_code"
+      },
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Primary phone number is required.",
+        "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+      },
+      "api_field": {
+        "name": "primary_phone",
+        "label": "Primary Phone",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{10}$/",
+        "ui_config": {
+          "prefix_field": "country_code"
+        },
+        "messages": {
+          "required": "Primary phone number is required.",
+          "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+        }
+      }
+    },
+    {
+      "name": "secondary_country_code",
+      "section_key": "communication",
+      "section_title": "Communication Details",
+      "section_index": 1,
+      "field_index": 2,
+      "section_path": "communication",
+      "qualified_name": "communication.secondary_country_code",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "country_codes",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {
+        "display": "compact",
+        "width": "auto",
+        "class": "country-code-select"
+      },
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "invalid": "Please select a valid country code."
+      },
+      "api_field": {
+        "name": "secondary_country_code",
+        "label": "Country Code",
+        "type": "select",
+        "options_key": "country_codes",
+        "required": false,
+        "ui_config": {
+          "display": "compact",
+          "width": "auto",
+          "class": "country-code-select"
+        },
+        "messages": {
+          "invalid": "Please select a valid country code."
+        }
+      }
+    },
+    {
+      "name": "secondary_phone",
+      "section_key": "communication",
+      "section_title": "Communication Details",
+      "section_index": 1,
+      "field_index": 3,
+      "section_path": "communication",
+      "qualified_name": "communication.secondary_phone",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{10}$/",
+      "constraints": {},
+      "ui_config": {
+        "prefix_field": "secondary_country_code"
+      },
+      "cross_validations": [
+        {
+          "id": "secondary_not_same_as_primary",
+          "type": "not_equal",
+          "compare_to_field": "primary_phone",
+          "scope": "local",
+          "message": "Secondary phone number cannot be the same as the primary phone number."
+        }
+      ],
+      "conditions": [],
+      "messages": {
+        "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+      },
+      "api_field": {
+        "name": "secondary_phone",
+        "label": "Secondary Phone",
+        "type": "text",
+        "required": false,
+        "validation": "regex:/^\\d{10}$/",
+        "ui_config": {
+          "prefix_field": "secondary_country_code"
+        },
+        "cross_validations": [
+          {
+            "id": "secondary_not_same_as_primary",
+            "type": "not_equal",
+            "compare_to_field": "primary_phone",
+            "scope": "local",
+            "message": "Secondary phone number cannot be the same as the primary phone number."
+          }
+        ],
+        "messages": {
+          "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+        }
+      }
+    },
+    {
+      "name": "linkedin_url",
+      "section_key": "communication",
+      "section_title": "Communication Details",
+      "section_index": 1,
+      "field_index": 4,
+      "section_path": "communication",
+      "qualified_name": "communication.linkedin_url",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "invalid": "Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/your-name)."
+      },
+      "api_field": {
+        "name": "linkedin_url",
+        "label": "LinkedIn URL",
+        "type": "text",
+        "required": false,
+        "validation": "regex:/^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$/",
+        "messages": {
+          "invalid": "Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/your-name)."
+        }
+      }
+    },
+    {
+      "name": "account_holder_name",
+      "section_key": "bank",
+      "section_title": "Bank Details",
+      "section_index": 2,
+      "field_index": 0,
+      "section_path": "bank",
+      "qualified_name": "bank.account_holder_name",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Account holder name is required.",
+        "invalid": "Name must contain only letters and spaces, up to 100 characters."
+      },
+      "api_field": {
+        "name": "account_holder_name",
+        "label": "Account Holder Name",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+        "messages": {
+          "required": "Account holder name is required.",
+          "invalid": "Name must contain only letters and spaces, up to 100 characters."
+        }
+      }
+    },
+    {
+      "name": "bank_name",
+      "section_key": "bank",
+      "section_title": "Bank Details",
+      "section_index": 2,
+      "field_index": 1,
+      "section_path": "bank",
+      "qualified_name": "bank.bank_name",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Bank name is required.",
+        "invalid": "Please enter a valid bank name (max 100 characters)."
+      },
+      "api_field": {
+        "name": "bank_name",
+        "label": "Bank Name",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+        "messages": {
+          "required": "Bank name is required.",
+          "invalid": "Please enter a valid bank name (max 100 characters)."
+        }
+      }
+    },
+    {
+      "name": "branch",
+      "section_key": "bank",
+      "section_title": "Bank Details",
+      "section_index": 2,
+      "field_index": 2,
+      "section_path": "bank",
+      "qualified_name": "bank.branch",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Branch name is required.",
+        "invalid": "Please enter a valid branch name (max 100 characters)."
+      },
+      "api_field": {
+        "name": "branch",
+        "label": "Branch",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+        "messages": {
+          "required": "Branch name is required.",
+          "invalid": "Please enter a valid branch name (max 100 characters)."
+        }
+      }
+    },
+    {
+      "name": "account_number",
+      "section_key": "bank",
+      "section_title": "Bank Details",
+      "section_index": 2,
+      "field_index": 3,
+      "section_path": "bank",
+      "qualified_name": "bank.account_number",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{9,18}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Account number is required.",
+        "invalid": "Account number must contain only digits and be between 9 and 18 characters long."
+      },
+      "api_field": {
+        "name": "account_number",
+        "label": "Account Number",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{9,18}$/",
+        "messages": {
+          "required": "Account number is required.",
+          "invalid": "Account number must contain only digits and be between 9 and 18 characters long."
+        }
+      }
+    },
+    {
+      "name": "ifsc_code",
+      "section_key": "bank",
+      "section_title": "Bank Details",
+      "section_index": 2,
+      "field_index": 4,
+      "section_path": "bank",
+      "qualified_name": "bank.ifsc_code",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[A-Z]{4}0[A-Z0-9]{6}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "IFSC code is required.",
+        "invalid": "Please enter a valid IFSC code — 4 uppercase letters, followed by 0, then 6 alphanumeric characters (e.g., SBIN0001234)."
+      },
+      "api_field": {
+        "name": "ifsc_code",
+        "label": "IFSC Code",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[A-Z]{4}0[A-Z0-9]{6}$/",
+        "messages": {
+          "required": "IFSC code is required.",
+          "invalid": "Please enter a valid IFSC code — 4 uppercase letters, followed by 0, then 6 alphanumeric characters (e.g., SBIN0001234)."
+        }
+      }
+    },
+    {
+      "name": "aadhar",
+      "section_key": "identity",
+      "section_title": "Identity Details",
+      "section_index": 3,
+      "field_index": 0,
+      "section_path": "identity",
+      "qualified_name": "identity.aadhar",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{12}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Aadhar number is required.",
+        "invalid": "Please enter a valid 12-digit Aadhar number."
+      },
+      "api_field": {
+        "name": "aadhar",
+        "label": "Aadhar Number",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{12}$/",
+        "messages": {
+          "required": "Aadhar number is required.",
+          "invalid": "Please enter a valid 12-digit Aadhar number."
+        }
+      }
+    },
+    {
+      "name": "pan",
+      "section_key": "identity",
+      "section_title": "Identity Details",
+      "section_index": 3,
+      "field_index": 1,
+      "section_path": "identity",
+      "qualified_name": "identity.pan",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "PAN number is required.",
+        "invalid": "Please enter a valid PAN number — 5 uppercase letters, 4 digits, then 1 uppercase letter (e.g., ABCDE1234F)."
+      },
+      "api_field": {
+        "name": "pan",
+        "label": "PAN Number",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/",
+        "messages": {
+          "required": "PAN number is required.",
+          "invalid": "Please enter a valid PAN number — 5 uppercase letters, 4 digits, then 1 uppercase letter (e.g., ABCDE1234F)."
+        }
+      }
+    },
+    {
+      "name": "uan",
+      "section_key": "identity",
+      "section_title": "Identity Details",
+      "section_index": 3,
+      "field_index": 2,
+      "section_path": "identity",
+      "qualified_name": "identity.uan",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{12}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "invalid": "Please enter a valid 12-digit Universal Account Number (UAN)."
+      },
+      "api_field": {
+        "name": "uan",
+        "label": "UAN",
+        "type": "text",
+        "required": false,
+        "validation": "regex:/^\\d{12}$/",
+        "messages": {
+          "invalid": "Please enter a valid 12-digit Universal Account Number (UAN)."
+        }
+      }
+    },
+    {
+      "name": "line1",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 0,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.line1",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Address Line 1 is required.",
+        "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+      },
+      "api_field": {
+        "name": "line1",
+        "label": "Address Line 1",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+        "messages": {
+          "required": "Address Line 1 is required.",
+          "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "line2",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 1,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.line2",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Address Line 2 is required.",
+        "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+      },
+      "api_field": {
+        "name": "line2",
+        "label": "Address Line 2",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+        "messages": {
+          "required": "Address Line 2 is required.",
+          "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "country",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 2,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.country",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "countries",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your country."
+      },
+      "api_field": {
+        "name": "country",
+        "label": "Country",
+        "type": "select",
+        "options_key": "countries",
+        "required": true,
+        "messages": {
+          "required": "Please select your country."
+        }
+      }
+    },
+    {
+      "name": "pin_code",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 3,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.pin_code",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": "pincode",
+      "validation": "regex:/^\\d{6}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "PIN code is required.",
+        "invalid": "Please enter a valid 6-digit PIN code."
+      },
+      "api_field": {
+        "name": "pin_code",
+        "label": "PIN Code",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{6}$/",
+        "lookup_key": "pincode",
+        "messages": {
+          "required": "PIN code is required.",
+          "invalid": "Please enter a valid 6-digit PIN code."
+        }
+      }
+    },
+    {
+      "name": "state",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 4,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.state",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "states",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your state."
+      },
+      "api_field": {
+        "name": "state",
+        "label": "State",
+        "type": "select",
+        "options_key": "states",
+        "required": true,
+        "messages": {
+          "required": "Please select your state."
+        }
+      }
+    },
+    {
+      "name": "city",
+      "section_key": "addresses.current",
+      "section_title": "Current Address",
+      "section_index": 4,
+      "field_index": 5,
+      "section_path": "addresses.current",
+      "qualified_name": "addresses.current.city",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "City is required.",
+        "invalid": "City name must contain only letters (max 100 characters)."
+      },
+      "api_field": {
+        "name": "city",
+        "label": "City",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+        "messages": {
+          "required": "City is required.",
+          "invalid": "City name must contain only letters (max 100 characters)."
+        }
+      }
+    },
+    {
+      "name": "line1",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 0,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.line1",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Address Line 1 is required.",
+        "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+      },
+      "api_field": {
+        "name": "line1",
+        "label": "Address Line 1",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+        "messages": {
+          "required": "Address Line 1 is required.",
+          "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "line2",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 1,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.line2",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Address Line 2 is required.",
+        "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+      },
+      "api_field": {
+        "name": "line2",
+        "label": "Address Line 2",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+        "messages": {
+          "required": "Address Line 2 is required.",
+          "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "country",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 2,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.country",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "countries",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your country."
+      },
+      "api_field": {
+        "name": "country",
+        "label": "Country",
+        "type": "select",
+        "options_key": "countries",
+        "required": true,
+        "messages": {
+          "required": "Please select your country."
+        }
+      }
+    },
+    {
+      "name": "pin_code",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 3,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.pin_code",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": "pincode",
+      "validation": "regex:/^\\d{6}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "PIN code is required.",
+        "invalid": "Please enter a valid 6-digit PIN code."
+      },
+      "api_field": {
+        "name": "pin_code",
+        "label": "PIN Code",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{6}$/",
+        "lookup_key": "pincode",
+        "messages": {
+          "required": "PIN code is required.",
+          "invalid": "Please enter a valid 6-digit PIN code."
+        }
+      }
+    },
+    {
+      "name": "state",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 4,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.state",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "states",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your state."
+      },
+      "api_field": {
+        "name": "state",
+        "label": "State",
+        "type": "select",
+        "options_key": "states",
+        "required": true,
+        "messages": {
+          "required": "Please select your state."
+        }
+      }
+    },
+    {
+      "name": "city",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 5,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.city",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "City is required.",
+        "invalid": "City name must contain only letters (max 100 characters)."
+      },
+      "api_field": {
+        "name": "city",
+        "label": "City",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+        "messages": {
+          "required": "City is required.",
+          "invalid": "City name must contain only letters (max 100 characters)."
+        }
+      }
+    },
+    {
+      "name": "same_as_current",
+      "section_key": "addresses.permanent",
+      "section_title": "Permanent Address",
+      "section_index": 5,
+      "field_index": 6,
+      "section_path": "addresses.permanent",
+      "qualified_name": "addresses.permanent.same_as_current",
+      "repeatable": false,
+      "section_rules": [],
+      "api_type": "checkbox",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [
+        {
+          "id": "sync_permanent_with_current",
+          "trigger": {
+            "event": "on_change",
+            "operator": "is_true"
+          },
+          "actions": [
+            {
+              "type": "copy_section",
+              "source_section": "addresses.current",
+              "target_section": "addresses.permanent",
+              "exclude_fields": [
+                "same_as_current"
+              ],
+              "live_sync": true
+            },
+            {
+              "type": "disable",
+              "target_section": "addresses.permanent",
+              "exclude_fields": [
+                "same_as_current"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "unsync_permanent_from_current",
+          "trigger": {
+            "event": "on_change",
+            "operator": "is_false"
+          },
+          "actions": [
+            {
+              "type": "enable",
+              "target_section": "addresses.permanent",
+              "exclude_fields": [
+                "same_as_current"
+              ]
+            },
+            {
+              "type": "clear",
+              "target_section": "addresses.permanent",
+              "exclude_fields": [
+                "same_as_current"
+              ]
+            }
+          ]
+        }
+      ],
+      "messages": {},
+      "api_field": {
+        "name": "same_as_current",
+        "label": "Same as Current Address",
+        "type": "checkbox",
+        "required": false,
+        "conditions": [
+          {
+            "id": "sync_permanent_with_current",
+            "trigger": {
+              "event": "on_change",
+              "operator": "is_true"
+            },
+            "actions": [
+              {
+                "type": "copy_section",
+                "source_section": "addresses.current",
+                "target_section": "addresses.permanent",
+                "exclude_fields": [
+                  "same_as_current"
+                ],
+                "live_sync": true
+              },
+              {
+                "type": "disable",
+                "target_section": "addresses.permanent",
+                "exclude_fields": [
+                  "same_as_current"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "unsync_permanent_from_current",
+            "trigger": {
+              "event": "on_change",
+              "operator": "is_false"
+            },
+            "actions": [
+              {
+                "type": "enable",
+                "target_section": "addresses.permanent",
+                "exclude_fields": [
+                  "same_as_current"
+                ]
+              },
+              {
+                "type": "clear",
+                "target_section": "addresses.permanent",
+                "exclude_fields": [
+                  "same_as_current"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "relation",
+      "section_key": "family_members",
+      "section_title": "Family Members",
+      "section_index": 6,
+      "field_index": 0,
+      "section_path": "family_members",
+      "qualified_name": "family_members.relation",
+      "repeatable": true,
+      "section_rules": [
+        {
+          "id": "unique_relation_rule",
+          "type": "unique_select",
+          "field": "relation",
+          "scope": "across_instances",
+          "behavior": "exclude_used",
+          "error_message": "This relation has already been added. Each relation can only appear once."
+        },
+        {
+          "id": "emergency_contact_rule",
+          "type": "exclusive_checkbox",
+          "field": "is_emergency_contact",
+          "scope": "across_instances",
+          "min_selected": 1,
+          "max_selected": 1,
+          "behavior": "radio_like",
+          "error_messages": {
+            "min": "At least one family member must be designated as the emergency contact.",
+            "max": "Only one family member can be the emergency contact at a time."
+          }
+        }
+      ],
+      "api_type": "select",
+      "options_key": "relations",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select the relation of this family member."
+      },
+      "api_field": {
+        "name": "relation",
+        "label": "Relation",
+        "type": "select",
+        "options_key": "relations",
+        "required": true,
+        "messages": {
+          "required": "Please select the relation of this family member."
+        }
+      }
+    },
+    {
+      "name": "name",
+      "section_key": "family_members",
+      "section_title": "Family Members",
+      "section_index": 6,
+      "field_index": 1,
+      "section_path": "family_members",
+      "qualified_name": "family_members.name",
+      "repeatable": true,
+      "section_rules": [
+        {
+          "id": "unique_relation_rule",
+          "type": "unique_select",
+          "field": "relation",
+          "scope": "across_instances",
+          "behavior": "exclude_used",
+          "error_message": "This relation has already been added. Each relation can only appear once."
+        },
+        {
+          "id": "emergency_contact_rule",
+          "type": "exclusive_checkbox",
+          "field": "is_emergency_contact",
+          "scope": "across_instances",
+          "min_selected": 1,
+          "max_selected": 1,
+          "behavior": "radio_like",
+          "error_messages": {
+            "min": "At least one family member must be designated as the emergency contact.",
+            "max": "Only one family member can be the emergency contact at a time."
+          }
+        }
+      ],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Family member's name is required.",
+        "invalid": "Name must contain only letters and spaces (max 100 characters)."
+      },
+      "api_field": {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+        "messages": {
+          "required": "Family member's name is required.",
+          "invalid": "Name must contain only letters and spaces (max 100 characters)."
+        }
+      }
+    },
+    {
+      "name": "country_code",
+      "section_key": "family_members",
+      "section_title": "Family Members",
+      "section_index": 6,
+      "field_index": 2,
+      "section_path": "family_members",
+      "qualified_name": "family_members.country_code",
+      "repeatable": true,
+      "section_rules": [
+        {
+          "id": "unique_relation_rule",
+          "type": "unique_select",
+          "field": "relation",
+          "scope": "across_instances",
+          "behavior": "exclude_used",
+          "error_message": "This relation has already been added. Each relation can only appear once."
+        },
+        {
+          "id": "emergency_contact_rule",
+          "type": "exclusive_checkbox",
+          "field": "is_emergency_contact",
+          "scope": "across_instances",
+          "min_selected": 1,
+          "max_selected": 1,
+          "behavior": "radio_like",
+          "error_messages": {
+            "min": "At least one family member must be designated as the emergency contact.",
+            "max": "Only one family member can be the emergency contact at a time."
+          }
+        }
+      ],
+      "api_type": "select",
+      "options_key": "country_codes",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {
+        "display": "compact",
+        "width": "auto",
+        "class": "country-code-select"
+      },
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select country code."
+      },
+      "api_field": {
+        "name": "country_code",
+        "label": "Country Code",
+        "type": "select",
+        "options_key": "country_codes",
+        "required": true,
+        "ui_config": {
+          "display": "compact",
+          "width": "auto",
+          "class": "country-code-select"
+        },
+        "messages": {
+          "required": "Please select country code."
+        }
+      }
+    },
+    {
+      "name": "contact_number",
+      "section_key": "family_members",
+      "section_title": "Family Members",
+      "section_index": 6,
+      "field_index": 3,
+      "section_path": "family_members",
+      "qualified_name": "family_members.contact_number",
+      "repeatable": true,
+      "section_rules": [
+        {
+          "id": "unique_relation_rule",
+          "type": "unique_select",
+          "field": "relation",
+          "scope": "across_instances",
+          "behavior": "exclude_used",
+          "error_message": "This relation has already been added. Each relation can only appear once."
+        },
+        {
+          "id": "emergency_contact_rule",
+          "type": "exclusive_checkbox",
+          "field": "is_emergency_contact",
+          "scope": "across_instances",
+          "min_selected": 1,
+          "max_selected": 1,
+          "behavior": "radio_like",
+          "error_messages": {
+            "min": "At least one family member must be designated as the emergency contact.",
+            "max": "Only one family member can be the emergency contact at a time."
+          }
+        }
+      ],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^\\d{10}$/",
+      "constraints": {},
+      "ui_config": {
+        "prefix_field": "country_code",
+        "prefix_label": "+"
+      },
+      "cross_validations": [
+        {
+          "id": "not_same_as_personal_primary",
+          "type": "not_equal",
+          "compare_to_field": "communication.primary_phone",
+          "scope": "global",
+          "message": "Family member's contact number cannot be the same as your primary phone number."
+        }
+      ],
+      "conditions": [],
+      "messages": {
+        "required": "Contact number is required for this family member.",
+        "invalid": "Please enter a valid 10-digit contact number."
+      },
+      "api_field": {
+        "name": "contact_number",
+        "label": "Contact Number",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^\\d{10}$/",
+        "ui_config": {
+          "prefix_field": "country_code",
+          "prefix_label": "+"
+        },
+        "cross_validations": [
+          {
+            "id": "not_same_as_personal_primary",
+            "type": "not_equal",
+            "compare_to_field": "communication.primary_phone",
+            "scope": "global",
+            "message": "Family member's contact number cannot be the same as your primary phone number."
+          }
+        ],
+        "messages": {
+          "required": "Contact number is required for this family member.",
+          "invalid": "Please enter a valid 10-digit contact number."
+        }
+      }
+    },
+    {
+      "name": "is_emergency_contact",
+      "section_key": "family_members",
+      "section_title": "Family Members",
+      "section_index": 6,
+      "field_index": 4,
+      "section_path": "family_members",
+      "qualified_name": "family_members.is_emergency_contact",
+      "repeatable": true,
+      "section_rules": [
+        {
+          "id": "unique_relation_rule",
+          "type": "unique_select",
+          "field": "relation",
+          "scope": "across_instances",
+          "behavior": "exclude_used",
+          "error_message": "This relation has already been added. Each relation can only appear once."
+        },
+        {
+          "id": "emergency_contact_rule",
+          "type": "exclusive_checkbox",
+          "field": "is_emergency_contact",
+          "scope": "across_instances",
+          "min_selected": 1,
+          "max_selected": 1,
+          "behavior": "radio_like",
+          "error_messages": {
+            "min": "At least one family member must be designated as the emergency contact.",
+            "max": "Only one family member can be the emergency contact at a time."
+          }
+        }
+      ],
+      "api_type": "checkbox",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please mark one family member as the emergency contact."
+      },
+      "api_field": {
+        "name": "is_emergency_contact",
+        "label": "Mark as Emergency Contact",
+        "type": "checkbox",
+        "required": true,
+        "messages": {
+          "required": "Please mark one family member as the emergency contact."
+        }
+      }
+    },
+    {
+      "name": "college",
+      "section_key": "education",
+      "section_title": "Education Details",
+      "section_index": 7,
+      "field_index": 0,
+      "section_path": "education",
+      "qualified_name": "education.college",
+      "repeatable": true,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "College name is required.",
+        "invalid": "Please enter a valid college name (max 255 characters)."
+      },
+      "api_field": {
+        "name": "college",
+        "label": "College",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+        "messages": {
+          "required": "College name is required.",
+          "invalid": "Please enter a valid college name (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "level",
+      "section_key": "education",
+      "section_title": "Education Details",
+      "section_index": 7,
+      "field_index": 1,
+      "section_path": "education",
+      "qualified_name": "education.level",
+      "repeatable": true,
+      "section_rules": [],
+      "api_type": "select",
+      "options_key": "education_levels",
+      "lookup_key": null,
+      "validation": null,
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Please select your education level."
+      },
+      "api_field": {
+        "name": "level",
+        "label": "Level",
+        "type": "select",
+        "options_key": "education_levels",
+        "required": true,
+        "messages": {
+          "required": "Please select your education level."
+        }
+      }
+    },
+    {
+      "name": "course",
+      "section_key": "education",
+      "section_title": "Education Details",
+      "section_index": 7,
+      "field_index": 2,
+      "section_path": "education",
+      "qualified_name": "education.course",
+      "repeatable": true,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Course name is required.",
+        "invalid": "Please enter a valid course name (max 255 characters)."
+      },
+      "api_field": {
+        "name": "course",
+        "label": "Course",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+        "messages": {
+          "required": "Course name is required.",
+          "invalid": "Please enter a valid course name (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "specialization",
+      "section_key": "education",
+      "section_title": "Education Details",
+      "section_index": 7,
+      "field_index": 3,
+      "section_path": "education",
+      "qualified_name": "education.specialization",
+      "repeatable": true,
+      "section_rules": [],
+      "api_type": "text",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Specialization is required.",
+        "invalid": "Please enter a valid specialization (max 255 characters)."
+      },
+      "api_field": {
+        "name": "specialization",
+        "label": "Specialization",
+        "type": "text",
+        "required": true,
+        "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+        "messages": {
+          "required": "Specialization is required.",
+          "invalid": "Please enter a valid specialization (max 255 characters)."
+        }
+      }
+    },
+    {
+      "name": "passing_year",
+      "section_key": "education",
+      "section_title": "Education Details",
+      "section_index": 7,
+      "field_index": 4,
+      "section_path": "education",
+      "qualified_name": "education.passing_year",
+      "repeatable": true,
+      "section_rules": [],
+      "api_type": "number",
+      "options_key": null,
+      "lookup_key": null,
+      "validation": "regex:/^(19[5-9]\\d|20\\d{2})$/",
+      "constraints": {},
+      "ui_config": {},
+      "cross_validations": [],
+      "conditions": [],
+      "messages": {
+        "required": "Passing year is required.",
+        "invalid": "Please enter a valid passing year (e.g., 2020). Accepted range: 1950 to present."
+      },
+      "api_field": {
+        "name": "passing_year",
+        "label": "Passing Year",
+        "type": "number",
+        "required": true,
+        "validation": "regex:/^(19[5-9]\\d|20\\d{2})$/",
+        "messages": {
+          "required": "Passing year is required.",
+          "invalid": "Please enter a valid passing year (e.g., 2020). Accepted range: 1950 to present."
+        }
+      }
+    }
+  ],
+  "raw_schema": {
+    "status": "success",
+    "data": {
+      "sections": [
+        {
+          "key": "personal",
+          "title": "Personal Information",
+          "fields": [
+            {
+              "name": "profile_image",
+              "label": "Profile Image",
+              "type": "avatar",
+              "required": false,
+              "messages": {
+                "invalid": "Only JPG, JPEG, or PNG files are allowed for profile image."
+              }
+            },
+            {
+              "name": "gender",
+              "label": "Gender",
+              "type": "select",
+              "options_key": "gender",
+              "required": true,
+              "messages": {
+                "required": "Please select your gender."
+              }
+            },
+            {
+              "name": "date_of_birth",
+              "label": "Date of Birth",
+              "type": "date",
+              "required": true,
+              "validation": "regex:/^\\d{4}-\\d{2}-\\d{2}$/",
+              "constraints": {
+                "max_date": "today"
+              },
+              "messages": {
+                "required": "Date of birth is required.",
+                "invalid": "Please enter a valid date of birth.",
+                "max_date": "Date of birth cannot be a future date."
+              }
+            },
+            {
+              "name": "blood_group",
+              "label": "Blood Group",
+              "type": "select",
+              "options_key": "blood_groups",
+              "required": false,
+              "validation": "regex:/^(A|B|AB|O)[+-]$/",
+              "messages": {
+                "invalid": "Please enter a valid blood group — accepted values are A+, A−, B+, B−, O+, O−, AB+, or AB−."
+              }
+            }
+          ]
+        },
+        {
+          "key": "communication",
+          "title": "Communication Details",
+          "fields": [
+            {
+              "name": "country_code",
+              "label": "Country Code",
+              "type": "select",
+              "options_key": "country_codes",
+              "required": true,
+              "ui_config": {
+                "display": "compact",
+                "width": "auto",
+                "class": "country-code-select"
+              },
+              "messages": {
+                "required": "Please select your country code.",
+                "invalid": "Please select a valid country code."
+              }
+            },
+            {
+              "name": "primary_phone",
+              "label": "Primary Phone",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{10}$/",
+              "ui_config": {
+                "prefix_field": "country_code"
+              },
+              "messages": {
+                "required": "Primary phone number is required.",
+                "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+              }
+            },
+            {
+              "name": "secondary_country_code",
+              "label": "Country Code",
+              "type": "select",
+              "options_key": "country_codes",
+              "required": false,
+              "ui_config": {
+                "display": "compact",
+                "width": "auto",
+                "class": "country-code-select"
+              },
+              "messages": {
+                "invalid": "Please select a valid country code."
+              }
+            },
+            {
+              "name": "secondary_phone",
+              "label": "Secondary Phone",
+              "type": "text",
+              "required": false,
+              "validation": "regex:/^\\d{10}$/",
+              "ui_config": {
+                "prefix_field": "secondary_country_code"
+              },
+              "cross_validations": [
+                {
+                  "id": "secondary_not_same_as_primary",
+                  "type": "not_equal",
+                  "compare_to_field": "primary_phone",
+                  "scope": "local",
+                  "message": "Secondary phone number cannot be the same as the primary phone number."
+                }
+              ],
+              "messages": {
+                "invalid": "Please enter a valid 10-digit phone number without spaces or special characters."
+              }
+            },
+            {
+              "name": "linkedin_url",
+              "label": "LinkedIn URL",
+              "type": "text",
+              "required": false,
+              "validation": "regex:/^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$/",
+              "messages": {
+                "invalid": "Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/your-name)."
+              }
+            }
+          ]
+        },
+        {
+          "key": "bank",
+          "title": "Bank Details",
+          "fields": [
+            {
+              "name": "account_holder_name",
+              "label": "Account Holder Name",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+              "messages": {
+                "required": "Account holder name is required.",
+                "invalid": "Name must contain only letters and spaces, up to 100 characters."
+              }
+            },
+            {
+              "name": "bank_name",
+              "label": "Bank Name",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+              "messages": {
+                "required": "Bank name is required.",
+                "invalid": "Please enter a valid bank name (max 100 characters)."
+              }
+            },
+            {
+              "name": "branch",
+              "label": "Branch",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$/",
+              "messages": {
+                "required": "Branch name is required.",
+                "invalid": "Please enter a valid branch name (max 100 characters)."
+              }
+            },
+            {
+              "name": "account_number",
+              "label": "Account Number",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{9,18}$/",
+              "messages": {
+                "required": "Account number is required.",
+                "invalid": "Account number must contain only digits and be between 9 and 18 characters long."
+              }
+            },
+            {
+              "name": "ifsc_code",
+              "label": "IFSC Code",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[A-Z]{4}0[A-Z0-9]{6}$/",
+              "messages": {
+                "required": "IFSC code is required.",
+                "invalid": "Please enter a valid IFSC code — 4 uppercase letters, followed by 0, then 6 alphanumeric characters (e.g., SBIN0001234)."
+              }
+            }
+          ]
+        },
+        {
+          "key": "identity",
+          "title": "Identity Details",
+          "fields": [
+            {
+              "name": "aadhar",
+              "label": "Aadhar Number",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{12}$/",
+              "messages": {
+                "required": "Aadhar number is required.",
+                "invalid": "Please enter a valid 12-digit Aadhar number."
+              }
+            },
+            {
+              "name": "pan",
+              "label": "PAN Number",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/",
+              "messages": {
+                "required": "PAN number is required.",
+                "invalid": "Please enter a valid PAN number — 5 uppercase letters, 4 digits, then 1 uppercase letter (e.g., ABCDE1234F)."
+              }
+            },
+            {
+              "name": "uan",
+              "label": "UAN",
+              "type": "text",
+              "required": false,
+              "validation": "regex:/^\\d{12}$/",
+              "messages": {
+                "invalid": "Please enter a valid 12-digit Universal Account Number (UAN)."
+              }
+            }
+          ]
+        },
+        {
+          "key": "addresses.current",
+          "title": "Current Address",
+          "fields": [
+            {
+              "name": "line1",
+              "label": "Address Line 1",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+              "messages": {
+                "required": "Address Line 1 is required.",
+                "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+              }
+            },
+            {
+              "name": "line2",
+              "label": "Address Line 2",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+              "messages": {
+                "required": "Address Line 2 is required.",
+                "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+              }
+            },
+            {
+              "name": "country",
+              "label": "Country",
+              "type": "select",
+              "options_key": "countries",
+              "required": true,
+              "messages": {
+                "required": "Please select your country."
+              }
+            },
+            {
+              "name": "pin_code",
+              "label": "PIN Code",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{6}$/",
+              "lookup_key": "pincode",
+              "messages": {
+                "required": "PIN code is required.",
+                "invalid": "Please enter a valid 6-digit PIN code."
+              }
+            },
+            {
+              "name": "state",
+              "label": "State",
+              "type": "select",
+              "options_key": "states",
+              "required": true,
+              "messages": {
+                "required": "Please select your state."
+              }
+            },
+            {
+              "name": "city",
+              "label": "City",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+              "messages": {
+                "required": "City is required.",
+                "invalid": "City name must contain only letters (max 100 characters)."
+              }
+            }
+          ]
+        },
+        {
+          "key": "addresses.permanent",
+          "title": "Permanent Address",
+          "fields": [
+            {
+              "name": "line1",
+              "label": "Address Line 1",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+              "messages": {
+                "required": "Address Line 1 is required.",
+                "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+              }
+            },
+            {
+              "name": "line2",
+              "label": "Address Line 2",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$/",
+              "messages": {
+                "required": "Address Line 2 is required.",
+                "invalid": "Please enter a valid address — only letters, numbers, and common punctuation are allowed (max 255 characters)."
+              }
+            },
+            {
+              "name": "country",
+              "label": "Country",
+              "type": "select",
+              "options_key": "countries",
+              "required": true,
+              "messages": {
+                "required": "Please select your country."
+              }
+            },
+            {
+              "name": "pin_code",
+              "label": "PIN Code",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{6}$/",
+              "lookup_key": "pincode",
+              "messages": {
+                "required": "PIN code is required.",
+                "invalid": "Please enter a valid 6-digit PIN code."
+              }
+            },
+            {
+              "name": "state",
+              "label": "State",
+              "type": "select",
+              "options_key": "states",
+              "required": true,
+              "messages": {
+                "required": "Please select your state."
+              }
+            },
+            {
+              "name": "city",
+              "label": "City",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+              "messages": {
+                "required": "City is required.",
+                "invalid": "City name must contain only letters (max 100 characters)."
+              }
+            },
+            {
+              "name": "same_as_current",
+              "label": "Same as Current Address",
+              "type": "checkbox",
+              "required": false,
+              "conditions": [
+                {
+                  "id": "sync_permanent_with_current",
+                  "trigger": {
+                    "event": "on_change",
+                    "operator": "is_true"
+                  },
+                  "actions": [
+                    {
+                      "type": "copy_section",
+                      "source_section": "addresses.current",
+                      "target_section": "addresses.permanent",
+                      "exclude_fields": [
+                        "same_as_current"
+                      ],
+                      "live_sync": true
+                    },
+                    {
+                      "type": "disable",
+                      "target_section": "addresses.permanent",
+                      "exclude_fields": [
+                        "same_as_current"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "unsync_permanent_from_current",
+                  "trigger": {
+                    "event": "on_change",
+                    "operator": "is_false"
+                  },
+                  "actions": [
+                    {
+                      "type": "enable",
+                      "target_section": "addresses.permanent",
+                      "exclude_fields": [
+                        "same_as_current"
+                      ]
+                    },
+                    {
+                      "type": "clear",
+                      "target_section": "addresses.permanent",
+                      "exclude_fields": [
+                        "same_as_current"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "family_members",
+          "title": "Family Members",
+          "repeatable": true,
+          "section_rules": [
+            {
+              "id": "unique_relation_rule",
+              "type": "unique_select",
+              "field": "relation",
+              "scope": "across_instances",
+              "behavior": "exclude_used",
+              "error_message": "This relation has already been added. Each relation can only appear once."
+            },
+            {
+              "id": "emergency_contact_rule",
+              "type": "exclusive_checkbox",
+              "field": "is_emergency_contact",
+              "scope": "across_instances",
+              "min_selected": 1,
+              "max_selected": 1,
+              "behavior": "radio_like",
+              "error_messages": {
+                "min": "At least one family member must be designated as the emergency contact.",
+                "max": "Only one family member can be the emergency contact at a time."
+              }
+            }
+          ],
+          "fields": [
+            {
+              "name": "relation",
+              "label": "Relation",
+              "type": "select",
+              "options_key": "relations",
+              "required": true,
+              "messages": {
+                "required": "Please select the relation of this family member."
+              }
+            },
+            {
+              "name": "name",
+              "label": "Name",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z\\s]{1,100}$/",
+              "messages": {
+                "required": "Family member's name is required.",
+                "invalid": "Name must contain only letters and spaces (max 100 characters)."
+              }
+            },
+            {
+              "name": "country_code",
+              "label": "Country Code",
+              "type": "select",
+              "options_key": "country_codes",
+              "required": true,
+              "ui_config": {
+                "display": "compact",
+                "width": "auto",
+                "class": "country-code-select"
+              },
+              "messages": {
+                "required": "Please select country code."
+              }
+            },
+            {
+              "name": "contact_number",
+              "label": "Contact Number",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^\\d{10}$/",
+              "ui_config": {
+                "prefix_field": "country_code",
+                "prefix_label": "+"
+              },
+              "cross_validations": [
+                {
+                  "id": "not_same_as_personal_primary",
+                  "type": "not_equal",
+                  "compare_to_field": "communication.primary_phone",
+                  "scope": "global",
+                  "message": "Family member's contact number cannot be the same as your primary phone number."
+                }
+              ],
+              "messages": {
+                "required": "Contact number is required for this family member.",
+                "invalid": "Please enter a valid 10-digit contact number."
+              }
+            },
+            {
+              "name": "is_emergency_contact",
+              "label": "Mark as Emergency Contact",
+              "type": "checkbox",
+              "required": true,
+              "messages": {
+                "required": "Please mark one family member as the emergency contact."
+              }
+            }
+          ]
+        },
+        {
+          "key": "education",
+          "title": "Education Details",
+          "repeatable": true,
+          "fields": [
+            {
+              "name": "college",
+              "label": "College",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+              "messages": {
+                "required": "College name is required.",
+                "invalid": "Please enter a valid college name (max 255 characters)."
+              }
+            },
+            {
+              "name": "level",
+              "label": "Level",
+              "type": "select",
+              "options_key": "education_levels",
+              "required": true,
+              "messages": {
+                "required": "Please select your education level."
+              }
+            },
+            {
+              "name": "course",
+              "label": "Course",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+              "messages": {
+                "required": "Course name is required.",
+                "invalid": "Please enter a valid course name (max 255 characters)."
+              }
+            },
+            {
+              "name": "specialization",
+              "label": "Specialization",
+              "type": "text",
+              "required": true,
+              "validation": "regex:/^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$/",
+              "messages": {
+                "required": "Specialization is required.",
+                "invalid": "Please enter a valid specialization (max 255 characters)."
+              }
+            },
+            {
+              "name": "passing_year",
+              "label": "Passing Year",
+              "type": "number",
+              "required": true,
+              "validation": "regex:/^(19[5-9]\\d|20\\d{2})$/",
+              "messages": {
+                "required": "Passing year is required.",
+                "invalid": "Please enter a valid passing year (e.g., 2020). Accepted range: 1950 to present."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
