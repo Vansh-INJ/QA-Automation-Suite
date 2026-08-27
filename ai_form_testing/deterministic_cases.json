@@ -1,0 +1,2925 @@
+{
+  "form_name": "onboarding_add_employee",
+  "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+  "generated_by": "deterministic",
+  "model": "schema-rules-v1",
+  "total_fields": 40,
+  "total_cases": 223,
+  "fields": {
+    "personal.profile_image": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "personal.profile_image",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": []
+    },
+    "personal.gender": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "personal.gender",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "personal_gender__empty_null__empty_value_is_rejected",
+          "field": "personal.gender",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_gender__empty_null__null_value_is_rejected",
+          "field": "personal.gender",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_gender__positive__dynamic_option_resolution_required",
+          "field": "personal.gender",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'gender'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "personal.date_of_birth": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "personal.date_of_birth",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "personal_date_of_birth__positive__valid_value_is_accepted",
+          "field": "personal.date_of_birth",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "2000-01-01",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__empty_null__empty_value_is_rejected",
+          "field": "personal.date_of_birth",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__empty_null__null_value_is_rejected",
+          "field": "personal.date_of_birth",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__format__invalid_pattern_format_1",
+          "field": "personal.date_of_birth",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "01-01-2000",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{4}-\\d{2}-\\d{2}$",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__format__invalid_pattern_format_2",
+          "field": "personal.date_of_birth",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "2000/01/01",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{4}-\\d{2}-\\d{2}$",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__format__invalid_pattern_format_3",
+          "field": "personal.date_of_birth",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "not-a-date",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{4}-\\d{2}-\\d{2}$",
+          "applicable": true
+        },
+        {
+          "case_id": "personal_date_of_birth__format__invalid_date_format",
+          "field": "personal.date_of_birth",
+          "category": "FORMAT",
+          "title": "Invalid date format",
+          "value": "not-a-date",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value does not represent a valid date format.",
+          "applicable": true
+        }
+      ]
+    },
+    "personal.blood_group": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "personal.blood_group",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "personal_blood_group__positive__dynamic_option_resolution_required",
+          "field": "personal.blood_group",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'blood_groups'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "communication.country_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "communication.country_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "communication_country_code__empty_null__empty_value_is_rejected",
+          "field": "communication.country_code",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_country_code__empty_null__null_value_is_rejected",
+          "field": "communication.country_code",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_country_code__positive__dynamic_option_resolution_required",
+          "field": "communication.country_code",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'country_codes'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "communication.primary_phone": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "communication.primary_phone",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "communication_primary_phone__positive__valid_value_is_accepted",
+          "field": "communication.primary_phone",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__empty_null__empty_value_is_rejected",
+          "field": "communication.primary_phone",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__empty_null__null_value_is_rejected",
+          "field": "communication.primary_phone",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__format__invalid_pattern_format_1",
+          "field": "communication.primary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__format__invalid_pattern_format_2",
+          "field": "communication.primary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__format__invalid_pattern_format_3",
+          "field": "communication.primary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__format__invalid_pattern_format_4",
+          "field": "communication.primary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_primary_phone__special_unicode__unicode_value",
+          "field": "communication.primary_phone",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "communication.secondary_country_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "communication.secondary_country_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "communication_secondary_country_code__positive__dynamic_option_resolution_required",
+          "field": "communication.secondary_country_code",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'country_codes'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "communication.secondary_phone": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "communication.secondary_phone",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "communication_secondary_phone__positive__valid_value_is_accepted",
+          "field": "communication.secondary_phone",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__format__invalid_pattern_format_1",
+          "field": "communication.secondary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__format__invalid_pattern_format_2",
+          "field": "communication.secondary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__format__invalid_pattern_format_3",
+          "field": "communication.secondary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__format__invalid_pattern_format_4",
+          "field": "communication.secondary_phone",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__special_unicode__unicode_value",
+          "field": "communication.secondary_phone",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_secondary_phone__business_rule__cross_field_values_must_differ",
+          "field": "communication.secondary_phone",
+          "category": "BUSINESS_RULE",
+          "title": "Cross-field values must differ",
+          "value": {
+            "field": "communication.secondary_phone",
+            "compare_to": "primary_phone",
+            "scenario": "same_value"
+          },
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Cross-validation requires the two fields to contain different values.",
+          "applicable": true
+        }
+      ]
+    },
+    "communication.linkedin_url": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "communication.linkedin_url",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "communication_linkedin_url__positive__valid_value_is_accepted",
+          "field": "communication.linkedin_url",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_linkedin_url__format__invalid_pattern_format_1",
+          "field": "communication.linkedin_url",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_linkedin_url__format__invalid_pattern_format_2",
+          "field": "communication.linkedin_url",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_linkedin_url__format__invalid_pattern_format_3",
+          "field": "communication.linkedin_url",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_linkedin_url__format__invalid_pattern_format_4",
+          "field": "communication.linkedin_url",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^https:\\/\\/(www\\.)?linkedin\\.com\\/(in|company|pub)\\/[a-zA-Z0-9\\-_%]+\\/?$",
+          "applicable": true
+        },
+        {
+          "case_id": "communication_linkedin_url__special_unicode__unicode_value",
+          "field": "communication.linkedin_url",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "bank.account_holder_name": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "bank.account_holder_name",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "bank_account_holder_name__positive__valid_value_is_accepted",
+          "field": "bank.account_holder_name",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__empty_null__empty_value_is_rejected",
+          "field": "bank.account_holder_name",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__empty_null__null_value_is_rejected",
+          "field": "bank.account_holder_name",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__format__invalid_pattern_format_1",
+          "field": "bank.account_holder_name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__format__invalid_pattern_format_2",
+          "field": "bank.account_holder_name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__format__invalid_pattern_format_3",
+          "field": "bank.account_holder_name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_holder_name__special_unicode__unicode_value",
+          "field": "bank.account_holder_name",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "bank.bank_name": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "bank.bank_name",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "bank_bank_name__positive__valid_value_is_accepted",
+          "field": "bank.bank_name",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_bank_name__empty_null__empty_value_is_rejected",
+          "field": "bank.bank_name",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_bank_name__empty_null__null_value_is_rejected",
+          "field": "bank.bank_name",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_bank_name__format__invalid_pattern_format_1",
+          "field": "bank.bank_name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_bank_name__format__invalid_pattern_format_2",
+          "field": "bank.bank_name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_bank_name__special_unicode__unicode_value",
+          "field": "bank.bank_name",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "bank.branch": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "bank.branch",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "bank_branch__positive__valid_value_is_accepted",
+          "field": "bank.branch",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_branch__empty_null__empty_value_is_rejected",
+          "field": "bank.branch",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_branch__empty_null__null_value_is_rejected",
+          "field": "bank.branch",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_branch__format__invalid_pattern_format_1",
+          "field": "bank.branch",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_branch__format__invalid_pattern_format_2",
+          "field": "bank.branch",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_branch__special_unicode__unicode_value",
+          "field": "bank.branch",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "bank.account_number": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "bank.account_number",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "bank_account_number__positive__valid_value_is_accepted",
+          "field": "bank.account_number",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__empty_null__empty_value_is_rejected",
+          "field": "bank.account_number",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__empty_null__null_value_is_rejected",
+          "field": "bank.account_number",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__format__invalid_pattern_format_1",
+          "field": "bank.account_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{9,18}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__format__invalid_pattern_format_2",
+          "field": "bank.account_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{9,18}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__format__invalid_pattern_format_3",
+          "field": "bank.account_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{9,18}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__format__invalid_pattern_format_4",
+          "field": "bank.account_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{9,18}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_account_number__special_unicode__unicode_value",
+          "field": "bank.account_number",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "bank.ifsc_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "bank.ifsc_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "bank_ifsc_code__positive__valid_value_is_accepted",
+          "field": "bank.ifsc_code",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__empty_null__empty_value_is_rejected",
+          "field": "bank.ifsc_code",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__empty_null__null_value_is_rejected",
+          "field": "bank.ifsc_code",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__format__invalid_pattern_format_1",
+          "field": "bank.ifsc_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{4}0[A-Z0-9]{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__format__invalid_pattern_format_2",
+          "field": "bank.ifsc_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{4}0[A-Z0-9]{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__format__invalid_pattern_format_3",
+          "field": "bank.ifsc_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{4}0[A-Z0-9]{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__format__invalid_pattern_format_4",
+          "field": "bank.ifsc_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{4}0[A-Z0-9]{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "bank_ifsc_code__special_unicode__unicode_value",
+          "field": "bank.ifsc_code",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "identity.aadhar": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "identity.aadhar",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "identity_aadhar__positive__valid_value_is_accepted",
+          "field": "identity.aadhar",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__empty_null__empty_value_is_rejected",
+          "field": "identity.aadhar",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__empty_null__null_value_is_rejected",
+          "field": "identity.aadhar",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__format__invalid_pattern_format_1",
+          "field": "identity.aadhar",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__format__invalid_pattern_format_2",
+          "field": "identity.aadhar",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__format__invalid_pattern_format_3",
+          "field": "identity.aadhar",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__format__invalid_pattern_format_4",
+          "field": "identity.aadhar",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_aadhar__special_unicode__unicode_value",
+          "field": "identity.aadhar",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "identity.pan": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "identity.pan",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "identity_pan__positive__valid_value_is_accepted",
+          "field": "identity.pan",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__empty_null__empty_value_is_rejected",
+          "field": "identity.pan",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__empty_null__null_value_is_rejected",
+          "field": "identity.pan",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__format__invalid_pattern_format_1",
+          "field": "identity.pan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__format__invalid_pattern_format_2",
+          "field": "identity.pan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__format__invalid_pattern_format_3",
+          "field": "identity.pan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__format__invalid_pattern_format_4",
+          "field": "identity.pan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_pan__special_unicode__unicode_value",
+          "field": "identity.pan",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "identity.uan": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "identity.uan",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "identity_uan__positive__valid_value_is_accepted",
+          "field": "identity.uan",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_uan__format__invalid_pattern_format_1",
+          "field": "identity.uan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_uan__format__invalid_pattern_format_2",
+          "field": "identity.uan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_uan__format__invalid_pattern_format_3",
+          "field": "identity.uan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_uan__format__invalid_pattern_format_4",
+          "field": "identity.uan",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{12}$",
+          "applicable": true
+        },
+        {
+          "case_id": "identity_uan__special_unicode__unicode_value",
+          "field": "identity.uan",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.line1": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.line1",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_line1__positive__valid_value_is_accepted",
+          "field": "addresses.current.line1",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line1__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.line1",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line1__empty_null__null_value_is_rejected",
+          "field": "addresses.current.line1",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line1__format__invalid_pattern_format_1",
+          "field": "addresses.current.line1",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line1__format__invalid_pattern_format_2",
+          "field": "addresses.current.line1",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line1__special_unicode__unicode_value",
+          "field": "addresses.current.line1",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.line2": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.line2",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_line2__positive__valid_value_is_accepted",
+          "field": "addresses.current.line2",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line2__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.line2",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line2__empty_null__null_value_is_rejected",
+          "field": "addresses.current.line2",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line2__format__invalid_pattern_format_1",
+          "field": "addresses.current.line2",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line2__format__invalid_pattern_format_2",
+          "field": "addresses.current.line2",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_line2__special_unicode__unicode_value",
+          "field": "addresses.current.line2",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.country": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.country",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_country__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.country",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_country__empty_null__null_value_is_rejected",
+          "field": "addresses.current.country",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_country__positive__dynamic_option_resolution_required",
+          "field": "addresses.current.country",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'countries'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.pin_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.pin_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_pin_code__positive__valid_value_is_accepted",
+          "field": "addresses.current.pin_code",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.pin_code",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__empty_null__null_value_is_rejected",
+          "field": "addresses.current.pin_code",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__format__invalid_pattern_format_1",
+          "field": "addresses.current.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__format__invalid_pattern_format_2",
+          "field": "addresses.current.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__format__invalid_pattern_format_3",
+          "field": "addresses.current.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__format__invalid_pattern_format_4",
+          "field": "addresses.current.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_pin_code__special_unicode__unicode_value",
+          "field": "addresses.current.pin_code",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.state": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.state",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_state__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.state",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_state__empty_null__null_value_is_rejected",
+          "field": "addresses.current.state",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_state__positive__dynamic_option_resolution_required",
+          "field": "addresses.current.state",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'states'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.current.city": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.current.city",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_current_city__positive__valid_value_is_accepted",
+          "field": "addresses.current.city",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__empty_null__empty_value_is_rejected",
+          "field": "addresses.current.city",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__empty_null__null_value_is_rejected",
+          "field": "addresses.current.city",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__format__invalid_pattern_format_1",
+          "field": "addresses.current.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__format__invalid_pattern_format_2",
+          "field": "addresses.current.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__format__invalid_pattern_format_3",
+          "field": "addresses.current.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_current_city__special_unicode__unicode_value",
+          "field": "addresses.current.city",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.line1": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.line1",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_line1__positive__valid_value_is_accepted",
+          "field": "addresses.permanent.line1",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line1__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.line1",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line1__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.line1",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line1__format__invalid_pattern_format_1",
+          "field": "addresses.permanent.line1",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line1__format__invalid_pattern_format_2",
+          "field": "addresses.permanent.line1",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line1__special_unicode__unicode_value",
+          "field": "addresses.permanent.line1",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.line2": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.line2",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_line2__positive__valid_value_is_accepted",
+          "field": "addresses.permanent.line2",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line2__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.line2",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line2__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.line2",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line2__format__invalid_pattern_format_1",
+          "field": "addresses.permanent.line2",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line2__format__invalid_pattern_format_2",
+          "field": "addresses.permanent.line2",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\/\\#\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_line2__special_unicode__unicode_value",
+          "field": "addresses.permanent.line2",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.country": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.country",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_country__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.country",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_country__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.country",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_country__positive__dynamic_option_resolution_required",
+          "field": "addresses.permanent.country",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'countries'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.pin_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.pin_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_pin_code__positive__valid_value_is_accepted",
+          "field": "addresses.permanent.pin_code",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.pin_code",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.pin_code",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__format__invalid_pattern_format_1",
+          "field": "addresses.permanent.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__format__invalid_pattern_format_2",
+          "field": "addresses.permanent.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__format__invalid_pattern_format_3",
+          "field": "addresses.permanent.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__format__invalid_pattern_format_4",
+          "field": "addresses.permanent.pin_code",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{6}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_pin_code__special_unicode__unicode_value",
+          "field": "addresses.permanent.pin_code",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.state": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.state",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_state__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.state",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_state__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.state",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_state__positive__dynamic_option_resolution_required",
+          "field": "addresses.permanent.state",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'states'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.city": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.city",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_city__positive__valid_value_is_accepted",
+          "field": "addresses.permanent.city",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__empty_null__empty_value_is_rejected",
+          "field": "addresses.permanent.city",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__empty_null__null_value_is_rejected",
+          "field": "addresses.permanent.city",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__format__invalid_pattern_format_1",
+          "field": "addresses.permanent.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__format__invalid_pattern_format_2",
+          "field": "addresses.permanent.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__format__invalid_pattern_format_3",
+          "field": "addresses.permanent.city",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "addresses_permanent_city__special_unicode__unicode_value",
+          "field": "addresses.permanent.city",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "addresses.permanent.same_as_current": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "addresses.permanent.same_as_current",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "addresses_permanent_same_as_current__positive__valid_value_is_accepted",
+          "field": "addresses.permanent.same_as_current",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": true,
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        }
+      ]
+    },
+    "family_members.relation": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "family_members.relation",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "family_members_relation__empty_null__empty_value_is_rejected",
+          "field": "family_members.relation",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_relation__empty_null__null_value_is_rejected",
+          "field": "family_members.relation",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_relation__positive__dynamic_option_resolution_required",
+          "field": "family_members.relation",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'relations'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_relation__business_rule__section_rule_unique_relation_rule",
+          "field": "family_members.relation",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: unique_relation_rule",
+          "value": {
+            "id": "unique_relation_rule",
+            "type": "unique_select",
+            "field": "relation",
+            "scope": "across_instances",
+            "behavior": "exclude_used",
+            "error_message": "This relation has already been added. Each relation can only appear once."
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_relation__business_rule__section_rule_emergency_contact_rule",
+          "field": "family_members.relation",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: emergency_contact_rule",
+          "value": {
+            "id": "emergency_contact_rule",
+            "type": "exclusive_checkbox",
+            "field": "is_emergency_contact",
+            "scope": "across_instances",
+            "min_selected": 1,
+            "max_selected": 1,
+            "behavior": "radio_like",
+            "error_messages": {
+              "min": "At least one family member must be designated as the emergency contact.",
+              "max": "Only one family member can be the emergency contact at a time."
+            }
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        }
+      ]
+    },
+    "family_members.name": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "family_members.name",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "family_members_name__positive__valid_value_is_accepted",
+          "field": "family_members.name",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__empty_null__empty_value_is_rejected",
+          "field": "family_members.name",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__empty_null__null_value_is_rejected",
+          "field": "family_members.name",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__format__invalid_pattern_format_1",
+          "field": "family_members.name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__format__invalid_pattern_format_2",
+          "field": "family_members.name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__format__invalid_pattern_format_3",
+          "field": "family_members.name",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z\\s]{1,100}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__special_unicode__unicode_value",
+          "field": "family_members.name",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__business_rule__section_rule_unique_relation_rule",
+          "field": "family_members.name",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: unique_relation_rule",
+          "value": {
+            "id": "unique_relation_rule",
+            "type": "unique_select",
+            "field": "relation",
+            "scope": "across_instances",
+            "behavior": "exclude_used",
+            "error_message": "This relation has already been added. Each relation can only appear once."
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_name__business_rule__section_rule_emergency_contact_rule",
+          "field": "family_members.name",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: emergency_contact_rule",
+          "value": {
+            "id": "emergency_contact_rule",
+            "type": "exclusive_checkbox",
+            "field": "is_emergency_contact",
+            "scope": "across_instances",
+            "min_selected": 1,
+            "max_selected": 1,
+            "behavior": "radio_like",
+            "error_messages": {
+              "min": "At least one family member must be designated as the emergency contact.",
+              "max": "Only one family member can be the emergency contact at a time."
+            }
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        }
+      ]
+    },
+    "family_members.country_code": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "family_members.country_code",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "family_members_country_code__empty_null__empty_value_is_rejected",
+          "field": "family_members.country_code",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_country_code__empty_null__null_value_is_rejected",
+          "field": "family_members.country_code",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_country_code__positive__dynamic_option_resolution_required",
+          "field": "family_members.country_code",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'country_codes'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_country_code__business_rule__section_rule_unique_relation_rule",
+          "field": "family_members.country_code",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: unique_relation_rule",
+          "value": {
+            "id": "unique_relation_rule",
+            "type": "unique_select",
+            "field": "relation",
+            "scope": "across_instances",
+            "behavior": "exclude_used",
+            "error_message": "This relation has already been added. Each relation can only appear once."
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_country_code__business_rule__section_rule_emergency_contact_rule",
+          "field": "family_members.country_code",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: emergency_contact_rule",
+          "value": {
+            "id": "emergency_contact_rule",
+            "type": "exclusive_checkbox",
+            "field": "is_emergency_contact",
+            "scope": "across_instances",
+            "min_selected": 1,
+            "max_selected": 1,
+            "behavior": "radio_like",
+            "error_messages": {
+              "min": "At least one family member must be designated as the emergency contact.",
+              "max": "Only one family member can be the emergency contact at a time."
+            }
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        }
+      ]
+    },
+    "family_members.contact_number": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "family_members.contact_number",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "family_members_contact_number__positive__valid_value_is_accepted",
+          "field": "family_members.contact_number",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__empty_null__empty_value_is_rejected",
+          "field": "family_members.contact_number",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__empty_null__null_value_is_rejected",
+          "field": "family_members.contact_number",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__format__invalid_pattern_format_1",
+          "field": "family_members.contact_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__format__invalid_pattern_format_2",
+          "field": "family_members.contact_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "INVALID",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__format__invalid_pattern_format_3",
+          "field": "family_members.contact_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "12345678901234567890",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__format__invalid_pattern_format_4",
+          "field": "family_members.contact_number",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #4",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^\\d{10}$",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__special_unicode__unicode_value",
+          "field": "family_members.contact_number",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__business_rule__cross_field_values_must_differ",
+          "field": "family_members.contact_number",
+          "category": "BUSINESS_RULE",
+          "title": "Cross-field values must differ",
+          "value": {
+            "field": "family_members.contact_number",
+            "compare_to": "communication.primary_phone",
+            "scenario": "same_value"
+          },
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Cross-validation requires the two fields to contain different values.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__business_rule__section_rule_unique_relation_rule",
+          "field": "family_members.contact_number",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: unique_relation_rule",
+          "value": {
+            "id": "unique_relation_rule",
+            "type": "unique_select",
+            "field": "relation",
+            "scope": "across_instances",
+            "behavior": "exclude_used",
+            "error_message": "This relation has already been added. Each relation can only appear once."
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_contact_number__business_rule__section_rule_emergency_contact_rule",
+          "field": "family_members.contact_number",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: emergency_contact_rule",
+          "value": {
+            "id": "emergency_contact_rule",
+            "type": "exclusive_checkbox",
+            "field": "is_emergency_contact",
+            "scope": "across_instances",
+            "min_selected": 1,
+            "max_selected": 1,
+            "behavior": "radio_like",
+            "error_messages": {
+              "min": "At least one family member must be designated as the emergency contact.",
+              "max": "Only one family member can be the emergency contact at a time."
+            }
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        }
+      ]
+    },
+    "family_members.is_emergency_contact": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "family_members.is_emergency_contact",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "family_members_is_emergency_contact__positive__valid_value_is_accepted",
+          "field": "family_members.is_emergency_contact",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": true,
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_is_emergency_contact__empty_null__empty_value_is_rejected",
+          "field": "family_members.is_emergency_contact",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_is_emergency_contact__empty_null__null_value_is_rejected",
+          "field": "family_members.is_emergency_contact",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_is_emergency_contact__business_rule__section_rule_unique_relation_rule",
+          "field": "family_members.is_emergency_contact",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: unique_relation_rule",
+          "value": {
+            "id": "unique_relation_rule",
+            "type": "unique_select",
+            "field": "relation",
+            "scope": "across_instances",
+            "behavior": "exclude_used",
+            "error_message": "This relation has already been added. Each relation can only appear once."
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        },
+        {
+          "case_id": "family_members_is_emergency_contact__business_rule__section_rule_emergency_contact_rule",
+          "field": "family_members.is_emergency_contact",
+          "category": "BUSINESS_RULE",
+          "title": "Section rule: emergency_contact_rule",
+          "value": {
+            "id": "emergency_contact_rule",
+            "type": "exclusive_checkbox",
+            "field": "is_emergency_contact",
+            "scope": "across_instances",
+            "min_selected": 1,
+            "max_selected": 1,
+            "behavior": "radio_like",
+            "error_messages": {
+              "min": "At least one family member must be designated as the emergency contact.",
+              "max": "Only one family member can be the emergency contact at a time."
+            }
+          },
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Repeatable-section behaviour is defined by an authoritative section rule and requires runtime evaluation.",
+          "applicable": true
+        }
+      ]
+    },
+    "education.college": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "education.college",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "education_college__positive__valid_value_is_accepted",
+          "field": "education.college",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_college__empty_null__empty_value_is_rejected",
+          "field": "education.college",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_college__empty_null__null_value_is_rejected",
+          "field": "education.college",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_college__format__invalid_pattern_format_1",
+          "field": "education.college",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_college__format__invalid_pattern_format_2",
+          "field": "education.college",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_college__special_unicode__unicode_value",
+          "field": "education.college",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "education.level": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "education.level",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "education_level__empty_null__empty_value_is_rejected",
+          "field": "education.level",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_level__empty_null__null_value_is_rejected",
+          "field": "education.level",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_level__positive__dynamic_option_resolution_required",
+          "field": "education.level",
+          "category": "POSITIVE",
+          "title": "Dynamic option resolution required",
+          "value": null,
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Field uses dynamic options_key 'education_levels'. Actual option values must be resolved at runtime.",
+          "applicable": true
+        }
+      ]
+    },
+    "education.course": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "education.course",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "education_course__positive__valid_value_is_accepted",
+          "field": "education.course",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_course__empty_null__empty_value_is_rejected",
+          "field": "education.course",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_course__empty_null__null_value_is_rejected",
+          "field": "education.course",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_course__format__invalid_pattern_format_1",
+          "field": "education.course",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_course__format__invalid_pattern_format_2",
+          "field": "education.course",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_course__special_unicode__unicode_value",
+          "field": "education.course",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "education.specialization": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "education.specialization",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "education_specialization__positive__valid_value_is_accepted",
+          "field": "education.specialization",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": "Valid Test Value",
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_specialization__empty_null__empty_value_is_rejected",
+          "field": "education.specialization",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_specialization__empty_null__null_value_is_rejected",
+          "field": "education.specialization",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_specialization__format__invalid_pattern_format_1",
+          "field": "education.specialization",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_specialization__format__invalid_pattern_format_2",
+          "field": "education.specialization",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "!!!@@@###",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^[a-zA-Z0-9\\s\\.\\,\\-\\&']{1,255}$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_specialization__special_unicode__unicode_value",
+          "field": "education.specialization",
+          "category": "SPECIAL_UNICODE",
+          "title": "Unicode value",
+          "value": "José Kumar",
+          "expected_action": "observe_only",
+          "expectation_source": "schema",
+          "rationale": "Unicode handling should be verified unless the schema explicitly restricts the character set.",
+          "applicable": true
+        }
+      ]
+    },
+    "education.passing_year": {
+      "form_name": "onboarding_add_employee",
+      "field_name": "education.passing_year",
+      "schema_hash": "83f609582492f44a254a747c8380e9803bbf90f82ce6b6c60b77f485ce7a151d",
+      "generated_by": "deterministic",
+      "model": "schema-rules-v1",
+      "cases": [
+        {
+          "case_id": "education_passing_year__positive__valid_value_is_accepted",
+          "field": "education.passing_year",
+          "category": "POSITIVE",
+          "title": "Valid value is accepted",
+          "value": 1,
+          "expected_action": "accept",
+          "expectation_source": "schema",
+          "rationale": "Value is generated from the field's authoritative schema metadata.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__empty_null__empty_value_is_rejected",
+          "field": "education.passing_year",
+          "category": "EMPTY_NULL",
+          "title": "Empty value is rejected",
+          "value": "",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__empty_null__null_value_is_rejected",
+          "field": "education.passing_year",
+          "category": "EMPTY_NULL",
+          "title": "Null value is rejected",
+          "value": null,
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Field is marked required in the authoritative schema.",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__format__invalid_pattern_format_1",
+          "field": "education.passing_year",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #1",
+          "value": "abc",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^(19[5-9]\\d|20\\d{2})$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__format__invalid_pattern_format_2",
+          "field": "education.passing_year",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #2",
+          "value": "12abc",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^(19[5-9]\\d|20\\d{2})$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__format__invalid_pattern_format_3",
+          "field": "education.passing_year",
+          "category": "FORMAT",
+          "title": "Invalid pattern format #3",
+          "value": "!@#",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value intentionally violates the authoritative regex: ^(19[5-9]\\d|20\\d{2})$",
+          "applicable": true
+        },
+        {
+          "case_id": "education_passing_year__format__non_numeric_value",
+          "field": "education.passing_year",
+          "category": "FORMAT",
+          "title": "Non-numeric value",
+          "value": "abc",
+          "expected_action": "reject",
+          "expectation_source": "schema",
+          "rationale": "Value is incompatible with numeric input type.",
+          "applicable": true
+        }
+      ]
+    }
+  }
+}
