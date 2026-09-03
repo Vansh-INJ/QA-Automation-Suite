@@ -21,7 +21,7 @@ Existing:
 
 New:
 
-```text
+text
 ai_form_testing/
 ├── config.py
 ├── models.py
@@ -31,7 +31,7 @@ ai_form_testing/
 ├── qa_rules.py
 ├── run_schema_discovery.py
 └── case_cache/
-```
+
 
 Nothing existing is imported by the normal test suite unless this new package
 is explicitly invoked.
@@ -40,17 +40,17 @@ is explicitly invoked.
 
 Add the contents of `requirements-ai.txt` to the existing requirements file:
 
-```text
+text
 google-genai
 pydantic>=2
-```
+
 
 Put the Gemini key in `.env`:
 
-```text
+text
 GEMINI_API_KEY=...
 GEMINI_MODEL=gemini-3.7-flash
-```
+
 
 Do NOT commit `.env`.
 
@@ -58,9 +58,9 @@ Do NOT commit `.env`.
 
 From the project root:
 
-```bash
+bash
 python -m ai_form_testing.run_schema_discovery --api
-```
+
 
 Expected behavior:
 
@@ -89,7 +89,7 @@ After the first real run, we should inspect `form_schema.json` and tighten
 
 Once the schema is verified:
 
-```text
+text
 form_schema.json
       ↓
 GeminiCaseGenerator
@@ -97,7 +97,7 @@ GeminiCaseGenerator
 structured GeneratedCaseSet
       ↓
 CaseCache
-```
+
 
 The Gemini adapter already exists in this package, but it is not invoked by
 Phase 1.

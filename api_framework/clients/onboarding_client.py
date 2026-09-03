@@ -4,6 +4,35 @@ import os
 
 class OnboardingClient(BaseClient):
 
+    def upload_document(
+            self,
+            offer_uuid,
+            token,
+            file_path,
+            document_type,
+            filename=None,
+    ):
+        upload_filename = filename or os.path.basename(file_path)
+
+        with open(file_path, "rb") as file:
+            files = {
+                "file": (
+                    upload_filename,
+                    file,
+                    "application/pdf"
+                )
+            }
+
+            data = {
+                "document_type": document_type
+            }
+
+            return self.post(
+                f"/api/onboarding/{offer_uuid}/document?token={token}",
+                data=data,
+                files=files
+            )
+
     def submit_onboarding(
             self,
             offer_uuid,

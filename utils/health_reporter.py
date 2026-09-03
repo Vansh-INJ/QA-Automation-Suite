@@ -18,12 +18,16 @@ from datetime import datetime
 
 try:
     from openpyxl import Workbook
-    from openpyxl.styles import Font, PatternFill, Alignment
+    from openpyxl.styles import Font as StylesFont, PatternFill, Alignment
 except ImportError as e:
     raise ImportError(
         "openpyxl is required for health reporting. "
         "Add `openpyxl` to requirements.txt"
     ) from e
+
+# Alias to the cell-styling Font so it is never shadowed by
+# openpyxl.drawing.text.Font, which does NOT support `bold`.
+Font = StylesFont
 
 
 PASS_FILL = PatternFill(

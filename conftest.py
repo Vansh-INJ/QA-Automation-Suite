@@ -1,23 +1,20 @@
-import os
 import json
+import os
 from datetime import datetime
-
-from utils.logger import logger
-from utils.run_manager import get_run_folder
 
 import pytest
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
-from utils.helpers import write_result
-from utils.test_context import TEST_CONTEXT
+
 from utils.api_context import API_CONTEXT
+from utils.api_summary import print_api_summary
 from utils.helpers import (
     create_excel_report,
-    create_field_log,
     write_result,
 )
-
-from utils.api_summary import print_api_summary
+from utils.logger import logger
+from utils.run_manager import get_run_folder
+from utils.test_context import TEST_CONTEXT
 
 from api_framework.auth.token_manager import TokenManager
 from api_framework.clients.offer_client import OfferClient
@@ -28,71 +25,88 @@ from api_framework.config.settings import Settings
 load_dotenv()
 
 
-# ==========================================
-# API CLIENT FIXTURE
-# ==========================================
-# NOTE: the original file had this fixture defined TWICE (once function-scoped,
-# once session-scoped). Python silently keeps only the second definition, so the
-# session-scoped version was the one actually in effect, meaning the same token
-# was reused for the whole test session. Kept function-scoped here so a fresh
-# token is fetched per test and you don't get bitten by token expiry on long runs.
+# ===========================================================================
+# API CLIENT FIXTURES
+# ===========================================================================
 
 @pytest.fixture(scope="function")
 def authenticated_offer_client():
+    """
+    Create a fresh authenticated OfferClient for each test.
+
+    A fresh TokenManager header is used for every test to avoid problems
+    caused by token expiry during long test runs.
+    """
     return OfferClient(
         base_url=Settings.BASE_URL,
         headers=TokenManager.get_headers(),
     )
 
+
 @pytest.fixture(scope="function")
 def onboarding_client():
+    """
+    Create an onboarding client for each test.
+    """
     return OnboardingClient(
         base_url=Settings.BASE_URL,
     )
 
 
-# ==========================================
-# RUN FOLDER (SESSION-SCOPED)
-# ==========================================
-# Resolves the run folder + initializes the Excel report file exactly ONCE
-# per test session, instead of once per test. This is what `page` used to do
-# on every test setup. Both API-only tests and UI tests now depend on this,
-# so the report/run folder exists regardless of which kind of test runs first.
+# ===========================================================================
+# RUN FOLDER
+# ===========================================================================
 
 @pytest.fixture(scope="session")
 def run_folder():
+    """
+    Resolve the run folder and initialize report directories once
+    per pytest session.
+    """
     folder = get_run_folder()
+
     create_excel_report()
 
-    os.makedirs(os.path.join(folder, "screenshots"), exist_ok=True)
-    os.makedirs(os.path.join(folder, "api_failures"), exist_ok=True)
+    os.makedirs(
+        os.path.join(
+            folder,
+            "screenshots",
+        ),
+        exist_ok=True,
+    )
+
+    os.makedirs(
+        os.path.join(
+            folder,
+            "api_failures",
+        ),
+        exist_ok=True,
+    )
 
     return folder
 
 
-# ==========================================
-# RESULT REPORTING (AUTOUSE - RUNS FOR EVERY TEST)
-# ==========================================
-# This is the actual fix. Excel result-writing no longer lives inside `page`,
-# so it no longer skips tests that don't request `page` (i.e. every pure API
-# test, like test_send_offer.py).
-#
-# Teardown ordering note: this fixture does not depend on `page`, so pytest
-# instantiates it BEFORE `page` and tears it down AFTER `page` (fixtures tear
-# down in reverse setup order). That means if a UI test uses `page` and fails,
-# `page`'s teardown (below) has already written the screenshot path into
-# TEST_CONTEXT by the time this fixture's teardown runs and reads it.
+# ===========================================================================
+# RESULT REPORTING
+# ===========================================================================
 
 @pytest.fixture(autouse=True)
 def report_result(request, run_folder):
+    """
+    Generic test result reporting.
 
+    API tests are excluded from the generic report because API tests
+    have their own API execution/reporting mechanism.
+
+    UI tests continue to use this fixture for Excel reporting.
+    """
     test_path = str(
         request.node.fspath
     ).replace("\\", "/")
 
-    # Skip API tests entirely.
-    # API tests write their own rows using
-    # log_api_execution()
+    # -----------------------------------------------------------------------
+    # API TESTS
+    # -----------------------------------------------------------------------
     if "/test/api/" in test_path:
         yield
         return
@@ -105,10 +119,13 @@ def report_result(request, run_folder):
 
     yield
 
+    # -----------------------------------------------------------------------
+    # TEST RESULT
+    # -----------------------------------------------------------------------
     rep_call = getattr(
         request.node,
         "rep_call",
-        None
+        None,
     )
 
     failed = (
@@ -120,45 +137,62 @@ def report_result(request, run_folder):
         logger.error(
             f"TEST FAILED: {test_name}"
         )
-        error = str(rep_call.longrepr)
+
+        error = str(
+            rep_call.longrepr
+        )
+
     else:
         logger.info(
             f"TEST PASSED: {test_name}"
         )
+
         error = ""
 
+    # -----------------------------------------------------------------------
+    # EXCEL-SAFE VALUE HELPER
+    # -----------------------------------------------------------------------
     def excel_safe(value):
-
         if isinstance(
             value,
-            (dict, list)
+            (dict, list),
         ):
             try:
                 return json.dumps(
                     value,
-                    indent=4
+                    indent=4,
                 )
             except Exception:
                 return str(value)
 
         return value
 
+    # -----------------------------------------------------------------------
+    # DEFAULT API REPORT VALUES
+    # -----------------------------------------------------------------------
     method = ""
     endpoint = ""
+
     api_status = TEST_CONTEXT.get(
         "api_status",
-        ""
+        "",
     )
+
     duration = ""
+
     request_headers = ""
+
     request_payload = ""
+
     response_body = TEST_CONTEXT.get(
         "api_response",
-        ""
+        "",
     )
 
+    # -----------------------------------------------------------------------
+    # API CONTEXT
+    # -----------------------------------------------------------------------
     if API_CONTEXT:
-
         response_obj = API_CONTEXT.get(
             "response"
         )
@@ -179,38 +213,41 @@ def report_result(request, run_folder):
 
         method = API_CONTEXT.get(
             "method",
-            ""
+            "",
         )
 
         endpoint = API_CONTEXT.get(
             "endpoint",
-            ""
+            "",
         )
 
         api_status = getattr(
             response_obj,
             "status_code",
-            api_status
+            api_status,
         )
 
         duration = API_CONTEXT.get(
             "duration",
-            ""
+            "",
         )
 
         request_headers = API_CONTEXT.get(
             "headers",
-            ""
+            "",
         )
 
         request_payload = API_CONTEXT.get(
             "payload",
-            ""
+            "",
         )
 
+    # -----------------------------------------------------------------------
+    # SLA
+    # -----------------------------------------------------------------------
     sla = TEST_CONTEXT.get(
         "sla",
-        ""
+        "",
     )
 
     sla_status = ""
@@ -222,93 +259,40 @@ def report_result(request, run_folder):
                 if float(duration) <= float(sla)
                 else "FAIL"
             )
-        except Exception:
-            pass
-    
-    if "/api/" not in str(request.node.nodeid).replace("\\", "/"):
-        write_result(
-            test_name=test_name,
-            status="FAILED" if failed else "PASSED",
-            error=error,
-            screenshot=TEST_CONTEXT.get(
-                "screenshot",
-                ""
-            ),
-            action=TEST_CONTEXT.get(
-                "action",
-                ""
-            ),
-            candidate_name=TEST_CONTEXT.get(
-                "candidate_name",
-                ""
-            ),
-            candidate_email=TEST_CONTEXT.get(
-                "candidate_email",
-                ""
-            ),
-            api_message=TEST_CONTEXT.get(
-                "api_message",
-                ""
-            ),
-            run_id=os.path.basename(
-                run_folder
-            ),
-            environment=os.getenv(
-                "BASE_URL",
-                ""
-            ),
-            username=os.getenv(
-                "TEST_USER",
-                ""
-            ),
-            method=method,
-            endpoint=endpoint,
-            api_status=excel_safe(
-                api_status
-            ),
-            expected_status=TEST_CONTEXT.get(
-                "expected_status",
-                ""
-            ),
-            duration=duration,
-            sla=sla,
-            sla_status=sla_status,
-            request_headers=excel_safe(
-                request_headers
-            ),
-            request_payload=excel_safe(
-                request_payload
-            ),
-            response_body=excel_safe(
-                response_body
-            )
-        )
+        except (
+            TypeError,
+            ValueError,
+        ):
+            sla_status = ""
 
+    # -----------------------------------------------------------------------
+    # FINAL RESULT ROW
+    # -----------------------------------------------------------------------
     write_result(
         test_name=test_name,
         status="FAILED" if failed else "PASSED",
         action=excel_safe(
             TEST_CONTEXT.get(
                 "action",
-                ""
+                "",
             )
         ),
         candidate_name=excel_safe(
             TEST_CONTEXT.get(
                 "candidate_name",
-                ""
+                "",
             )
         ),
         candidate_email=excel_safe(
             TEST_CONTEXT.get(
                 "candidate_email",
-                ""
+                "",
             )
         ),
         api_message=excel_safe(
             TEST_CONTEXT.get(
                 "api_message",
-                ""
+                "",
             )
         ),
         run_id=os.path.basename(
@@ -321,7 +305,7 @@ def report_result(request, run_folder):
         api_status=api_status,
         expected_status=TEST_CONTEXT.get(
             "expected_status",
-            ""
+            "",
         ),
         duration=duration,
         sla=sla,
@@ -338,25 +322,39 @@ def report_result(request, run_folder):
         error=error,
         screenshot=TEST_CONTEXT.get(
             "screenshot",
-            ""
+            "",
         ),
     )
 
     logger.info(
         f"========== FINISHED TEST: {test_name} =========="
     )
-# ==========================================
-# PLAYWRIGHT PAGE FIXTURE (UI TESTS ONLY)
-# ==========================================
-# Now responsible ONLY for the browser lifecycle: launch, context/page,
-# API-failure listener, autocomplete disabling, and screenshot-on-failure.
-# It no longer touches the Excel report directly — on failure it just drops
-# the screenshot path into TEST_CONTEXT for `report_result` to pick up.
+
+
+# ===========================================================================
+# PLAYWRIGHT PAGE FIXTURE
+# ===========================================================================
 
 @pytest.fixture(scope="function")
 def page(request, run_folder):
-    SCREENSHOT_DIR = os.path.join(run_folder, "screenshots")
-    API_FAILURE_DIR = os.path.join(run_folder, "api_failures")
+    """
+    Playwright browser fixture.
+
+    Responsible only for:
+        - browser lifecycle
+        - API failure listener
+        - autocomplete disabling
+        - screenshot capture on failure
+    """
+    screenshot_dir = os.path.join(
+        run_folder,
+        "screenshots",
+    )
+
+    api_failure_dir = os.path.join(
+        run_folder,
+        "api_failures",
+    )
 
     with sync_playwright() as p:
 
@@ -364,52 +362,103 @@ def page(request, run_folder):
             headless=False,
             slow_mo=100,
         )
-        logger.info("Chromium browser launched")
+
+        logger.info(
+            "Chromium browser launched"
+        )
 
         context = browser.new_context()
+
         page = context.new_page()
-        logger.info("New browser page created")
 
-        # ======================================
+        logger.info(
+            "New browser page created"
+        )
+
+        # -------------------------------------------------------------------
         # API FAILURE LISTENER
-        # ======================================
-
+        # -------------------------------------------------------------------
         def capture_failed_response(response):
+
             if "upload" in response.url.lower():
-                print(f"UPLOAD API INTERCEPTED: {response.request.method} {response.url}")
+                print(
+                    "UPLOAD API INTERCEPTED: "
+                    f"{response.request.method} "
+                    f"{response.url}"
+                )
+
                 try:
-                    print("UPLOAD RESPONSE:", response.text())
-                except:
+                    print(
+                        "UPLOAD RESPONSE:",
+                        response.text(),
+                    )
+                except Exception:
                     pass
+
             if response.status >= 400:
+
                 logger.error(
-                    f"API FAILURE | "
+                    "API FAILURE | "
                     f"STATUS: {response.status} | "
                     f"URL: {response.url}"
                 )
+
                 try:
                     body = response.text()
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    file_path = os.path.join(
-                        API_FAILURE_DIR,
-                        f"failure_{response.status}_{timestamp}.txt",
+
+                    timestamp = datetime.now().strftime(
+                        "%Y%m%d_%H%M%S"
                     )
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(f"STATUS: {response.status}\n")
-                        f.write(f"URL: {response.url}\n\n")
+
+                    file_path = os.path.join(
+                        api_failure_dir,
+                        (
+                            f"failure_"
+                            f"{response.status}_"
+                            f"{timestamp}.txt"
+                        ),
+                    )
+
+                    with open(
+                        file_path,
+                        "w",
+                        encoding="utf-8",
+                    ) as f:
+                        f.write(
+                            f"STATUS: {response.status}\n"
+                        )
+
+                        f.write(
+                            f"URL: {response.url}\n\n"
+                        )
+
                         f.write(body)
-                    logger.info(f"API failure log saved: {file_path}")
+
+                    logger.info(
+                        "API failure log saved: "
+                        f"{file_path}"
+                    )
+
                 except Exception as e:
-                    logger.exception(f"Failed to capture API response body: {e}")
+                    logger.exception(
+                        "Failed to capture API "
+                        f"response body: {e}"
+                    )
 
-        page.on("response", capture_failed_response)
-        logger.info("Response listener attached")
+        page.on(
+            "response",
+            capture_failed_response,
+        )
 
-        # ======================================
+        logger.info(
+            "Response listener attached"
+        )
+
+        # -------------------------------------------------------------------
         # DISABLE AUTOCOMPLETE
-        # ======================================
-
-        page.add_init_script("""
+        # -------------------------------------------------------------------
+        page.add_init_script(
+            """
             window.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('input').forEach(el => {
                     el.setAttribute('autocomplete', 'off');
@@ -418,53 +467,104 @@ def page(request, run_folder):
                     el.setAttribute('spellcheck', 'false');
                 });
             });
-        """)
+            """
+        )
 
+        # -------------------------------------------------------------------
+        # TEST EXECUTION
+        # -------------------------------------------------------------------
         yield page
 
-        # ======================================
+        # -------------------------------------------------------------------
         # SCREENSHOT ON FAILURE
-        # ======================================
-
+        # -------------------------------------------------------------------
         test_name = request.node.name
 
-        if request.node.rep_call.failed:
+        rep_call = getattr(
+            request.node,
+            "rep_call",
+            None,
+        )
+
+        if (
+            rep_call is not None
+            and rep_call.failed
+        ):
             try:
                 screenshot_path = os.path.join(
-                    SCREENSHOT_DIR,
+                    screenshot_dir,
                     f"{test_name}.png",
                 )
+
                 page.screenshot(
                     path=screenshot_path,
                     full_page=True,
                 )
-                logger.info(f"Failure screenshot saved: {screenshot_path}")
-                TEST_CONTEXT["screenshot"] = screenshot_path
+
+                logger.info(
+                    "Failure screenshot saved: "
+                    f"{screenshot_path}"
+                )
+
+                TEST_CONTEXT["screenshot"] = (
+                    screenshot_path
+                )
+
             except Exception as e:
-                logger.exception(f"Failed to capture screenshot: {e}")
+
+                logger.exception(
+                    "Failed to capture screenshot: "
+                    f"{e}"
+                )
+
                 TEST_CONTEXT["screenshot"] = ""
 
+        # -------------------------------------------------------------------
+        # CLOSE BROWSER
+        # -------------------------------------------------------------------
         context.close()
-        logger.info(f"Closing browser for: {test_name}")
+
+        logger.info(
+            f"Closing browser for: {test_name}"
+        )
+
         browser.close()
 
 
-# ==========================================
+# ===========================================================================
 # PYTEST REPORT HOOK
-# ==========================================
-# Unchanged. (Original file also defined `pytest_sessionfinish` twice;
-# deduplicated below — the second definition was silently overriding the
-# first anyway, so this changes no behavior.)
+# ===========================================================================
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
+    """
+    Store pytest reports on the test item so fixtures can inspect
+    setup/call/teardown results.
+    """
     outcome = yield
-    rep = outcome.get_result()
-    setattr(item, "rep_" + rep.when, rep)
 
+    rep = outcome.get_result()
+
+    setattr(
+        item,
+        "rep_" + rep.when,
+        rep,
+    )
+
+
+# ===========================================================================
+# PYTEST SESSION FINISH
+# ===========================================================================
 
 def pytest_sessionfinish(session, exitstatus):
+    """
+    Print API execution summary after the complete test session.
+    """
     try:
         print_api_summary()
+
     except Exception as e:
-        print("\n[SUMMARY ERROR]", e)
+        print(
+            "\n[SUMMARY ERROR]",
+            e,
+        )

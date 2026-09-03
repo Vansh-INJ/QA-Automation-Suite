@@ -19,6 +19,9 @@ from api_framework.utils.master_data import MasterData
 
 
 # ============================================================================
+# SQL INJECTION SECURITY FRAMEWORK
+# ============================================================================
+# ============================================================================
 # SQL INJECTION SECURITY FRAMEWORK IMPORTS
 # ============================================================================
 
@@ -35,6 +38,11 @@ from api_framework.security.core.sqli_fields import (
     INJECTABLE_FIELDS,
 )
 
+from api_framework.security.core.sqli_engine import (
+    build_injected_payload,
+    find_sql_error_signatures,
+)
+
 from api_framework.security.core.sqli_analyzer import (
     build_response_signature,
 )
@@ -46,11 +54,6 @@ from api_framework.security.core.sqli_reporter import (
 from api_framework.security.core.sqli_assertions import (
     assert_sqli_safe,
 )
-
-from api_framework.security.core.sqli_engine import (
-    find_sql_error_signatures,
-)
-
 
 # ============================================================================
 # TEST DOCUMENT CONFIGURATION
@@ -86,7 +89,8 @@ REQUIRED_DOCUMENT_TYPES = [
 @pytest.fixture(scope="module")
 def module_offer_client():
     """
-    Module-scoped OfferClient used for creating real offers.
+    Module-scoped OfferClient used for creating the real offer required
+    by the SQL injection tests.
     """
 
     from api_framework.auth.token_manager import TokenManager
@@ -100,7 +104,7 @@ def module_offer_client():
 @pytest.fixture(scope="module")
 def module_onboarding_client():
     """
-    Module-scoped OnboardingClient.
+    Module-scoped onboarding client used by the setup fixture.
     """
 
     return OnboardingClient(
@@ -108,195 +112,17 @@ def module_onboarding_client():
     )
 
 
-# ============================================================================
-# FRESH ONBOARDING CONTEXT
-# ============================================================================
-
-@pytest.fixture
-def fresh_onboarding_context(
-    module_offer_client,
-    module_onboarding_client,
-):
-    """
-    Create a completely fresh onboarding context for ONE SQL injection test.
-
-    Flow:
-        1. Create fresh offer
-        2. Accept offer
-        3. Upload required documents
-        4. Build clean onboarding payload
-
-    IMPORTANT:
-        The onboarding payload is NOT submitted here.
-
-    Every SQL injection test receives its own fresh onboarding request.
-    """
-
-    # ------------------------------------------------------------------------
-    # STEP 1: CREATE FRESH OFFER
-    # ------------------------------------------------------------------------
-
-    master = MasterData(module_offer_client)
-
-    offer_payload = _build_live_offer_payload(
-        master
-    )
-
-    send_response = module_offer_client.send_offer(
-        offer_payload
-    )
-
-    assert send_response.status_code in (200, 201), (
-        "Failed to create fresh offer.\n"
-        f"Status: {send_response.status_code}\n"
-        f"Response: {send_response.text}"
-    )
-
-    try:
-        response_json = send_response.json()
-    except ValueError as exc:
-        raise AssertionError(
-            "Fresh offer creation returned non-JSON response.\n"
-            f"Response: {send_response.text}"
-        ) from exc
-
-    invite_link = (
-        response_json
-        .get("data", {})
-        .get("invite_link")
-    )
-
-    assert invite_link, (
-        "Offer created but invite_link missing.\n"
-        f"Response: {send_response.text}"
-    )
-
-    offer_uuid, token = _parse_invite_link(
-        invite_link
-    )
-
-    print(
-        "\n"
-        "========================================\n"
-        "FRESH SQLI TEST CONTEXT CREATED\n"
-        "========================================\n"
-        f"Offer UUID: {offer_uuid}\n"
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 2: ACCEPT OFFER
-    # ------------------------------------------------------------------------
-
-    accept_response = (
-        module_onboarding_client.accept_offer(
-            offer_uuid,
-            token,
-        )
-    )
-
-    assert accept_response.status_code in (200, 201), (
-        "Failed to accept fresh offer.\n"
-        f"Status: {accept_response.status_code}\n"
-        f"Response: {accept_response.text}"
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 3: UPLOAD REQUIRED DOCUMENTS
-    # ------------------------------------------------------------------------
-
-    assert os.path.exists(TEST_DOCUMENT_PATH), (
-        "Test document not found.\n"
-        f"Expected path: {TEST_DOCUMENT_PATH}"
-    )
-
-    uploaded_documents = {}
-
-    print(
-        "\n"
-        "[FRESH CONTEXT] Uploading required documents..."
-    )
-
-    for document_type in REQUIRED_DOCUMENT_TYPES:
-
-        response = (
-            module_onboarding_client.upload_document(
-                offer_uuid=offer_uuid,
-                token=token,
-                file_path=TEST_DOCUMENT_PATH,
-                document_type=document_type,
-            )
-        )
-
-        assert response.status_code in (200, 201), (
-            f"Document upload failed: {document_type}\n"
-            f"Status: {response.status_code}\n"
-            f"Response: {response.text}"
-        )
-
-        try:
-            response_json = response.json()
-        except ValueError as exc:
-            raise AssertionError(
-                f"Document upload returned non-JSON response "
-                f"for {document_type}.\n"
-                f"Response: {response.text}"
-            ) from exc
-
-        document_uuid = (
-            response_json
-            .get("data", {})
-            .get("uuid")
-        )
-
-        assert document_uuid, (
-            f"Document UUID missing for: {document_type}\n"
-            f"Response: {response.text}"
-        )
-
-        uploaded_documents[
-            document_type
-        ] = document_uuid
-
-    print(
-        "[FRESH CONTEXT] All documents uploaded successfully."
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 4: BUILD CLEAN PAYLOAD
-    # ------------------------------------------------------------------------
-
-    onboarding_payload = copy.deepcopy(
-        OnboardingPayloads.valid()
-    )
-
-    onboarding_payload["documents"] = copy.deepcopy(
-        uploaded_documents
-    )
-
-    # ------------------------------------------------------------------------
-    # RETURN FRESH CONTEXT
-    # ------------------------------------------------------------------------
-
-    return {
-        "offer_uuid": offer_uuid,
-        "token": token,
-        "payload": onboarding_payload,
-    }
-
-
-# ============================================================================
-# LEGACY FIXTURES
-# These are temporarily retained for the other SQLi categories.
-# They will be migrated to fresh_onboarding_context one by one.
-# ============================================================================
-
 @pytest.fixture(scope="module")
 def accepted_offer_context(
     module_offer_client,
     module_onboarding_client,
 ):
     """
-    Create a real offer, extract offer UUID/token and accept it.
+    Create a real offer, extract offer UUID/token, accept the offer,
+    and reuse the same context for all SQL injection tests in this module.
+
+    Returns:
+        tuple[str, str]: (offer_uuid, token)
     """
 
     master = MasterData(module_offer_client)
@@ -317,7 +143,9 @@ def accepted_offer_context(
 
     try:
         response_json = send_response.json()
+
     except ValueError as exc:
+
         raise AssertionError(
             "Offer creation returned a non-JSON response: "
             f"{send_response.text!r}"
@@ -330,9 +158,8 @@ def accepted_offer_context(
     )
 
     assert invite_link, (
-        "Offer creation succeeded but response did not "
-        "contain data.invite_link.\n"
-        f"Response: {send_response.text}"
+        "Offer creation succeeded but response did not contain "
+        f"data.invite_link. Response: {send_response.text}"
     )
 
     offer_uuid, token = _parse_invite_link(
@@ -375,7 +202,14 @@ def uploaded_documents(
     """
     Upload all mandatory onboarding documents once.
 
-    Used temporarily by legacy SQLi tests.
+    Returns:
+
+        dict:
+        {
+            "aadhar": "<uploaded-file-uuid>",
+            "pan": "<uploaded-file-uuid>",
+            ...
+        }
     """
 
     offer_uuid, token = accepted_offer_context
@@ -415,14 +249,28 @@ def uploaded_documents(
             f"Status={response.status_code}"
         )
 
+        print(
+            f"[DOCUMENT UPLOAD] "
+            f"Response={response.text[:1000]}"
+        )
+
         assert response.status_code in (200, 201), (
-            f"Failed to upload required document: "
-            f"{document_type}\n"
+            f"Failed to upload required document: {document_type}\n"
             f"Status: {response.status_code}\n"
             f"Response: {response.text}"
         )
 
-        response_json = response.json()
+        try:
+
+            response_json = response.json()
+
+        except ValueError as exc:
+
+            raise AssertionError(
+                f"Document upload returned non-JSON response "
+                f"for document type '{document_type}': "
+                f"{response.text!r}"
+            ) from exc
 
         document_uuid = (
             response_json
@@ -431,19 +279,78 @@ def uploaded_documents(
         )
 
         assert document_uuid, (
-            f"Document upload succeeded but UUID missing "
-            f"for {document_type}.\n"
+            f"Document upload succeeded but UUID was missing "
+            f"for document type '{document_type}'.\n"
             f"Response: {response.text}"
         )
 
         uploaded[document_type] = document_uuid
 
+        print(
+            f"[DOCUMENT UPLOAD SUCCESS] "
+            f"{document_type} -> {document_uuid}"
+        )
+
     print(
         "\n"
-        "[LEGACY CONTEXT] All required documents uploaded."
+        "========================================\n"
+        "ALL REQUIRED DOCUMENTS UPLOADED\n"
+        "========================================"
     )
 
+    for document_type, document_uuid in uploaded.items():
+
+        print(
+            f"{document_type}: {document_uuid}"
+        )
+
     return uploaded
+
+
+# ============================================================================
+# DOCUMENT DEBUG TEST
+# ============================================================================
+
+@pytest.mark.negative
+def test_document_upload_debug(
+    module_onboarding_client,
+    accepted_offer_context,
+):
+    """
+    Standalone diagnostic test.
+
+    Run:
+
+        pytest test/negative/test_sql_injection.py \
+            -k document_upload_debug -v -s
+    """
+
+    offer_uuid, token = accepted_offer_context
+
+    response = (
+        module_onboarding_client.upload_document(
+            offer_uuid=offer_uuid,
+            token=token,
+            file_path=TEST_DOCUMENT_PATH,
+            document_type="aadhar",
+        )
+    )
+
+    print("\n[DOCUMENT UPLOAD DEBUG]")
+
+    print(
+        f"File Path: {TEST_DOCUMENT_PATH}"
+    )
+
+    print(
+        f"Status: {response.status_code}"
+    )
+
+    print(
+        f"Response: {response.text}"
+    )
+
+    assert response.status_code in (200, 201)
 
 
 # ============================================================================
@@ -457,9 +364,9 @@ def validated_onboarding_payload(
     uploaded_documents,
 ):
     """
-    LEGACY fixture.
+    Create and validate one clean baseline onboarding payload.
 
-    Retained temporarily for categories not yet migrated.
+    Every SQL injection test uses a deep copy of this validated payload.
     """
 
     offer_uuid, token = accepted_offer_context
@@ -478,6 +385,18 @@ def validated_onboarding_payload(
         "VALIDATING SQLI BASELINE PAYLOAD\n"
         "========================================"
     )
+
+    print(
+        "\n[BASELINE DOCUMENT UUIDS]"
+    )
+
+    for document_type, document_uuid in (
+        baseline_payload["documents"].items()
+    ):
+
+        print(
+            f"{document_type}: {document_uuid}"
+        )
 
     baseline_response = (
         module_onboarding_client.submit_onboarding(
@@ -509,7 +428,7 @@ def _build_live_offer_payload(
     master: MasterData,
 ) -> dict:
     """
-    Build offer payload using fresh active master-data IDs.
+    Build an offer payload using fresh, active master-data IDs.
     """
 
     payload = copy.deepcopy(
@@ -536,22 +455,27 @@ def _build_live_offer_payload(
     )
 
     if not job_titles:
+
         raise AssertionError(
-            "No active job titles returned."
+            "No active job titles returned by MasterData."
         )
 
     if not legal_entities:
+
         raise AssertionError(
-            "No active legal entities returned."
+            "No active legal entities returned by MasterData."
         )
 
     if not work_locations:
+
         raise AssertionError(
-            "No active work locations returned."
+            "No active work locations returned by MasterData."
         )
 
     job_title = job_titles[0]
+
     legal_entity = legal_entities[0]
+
     work_location = work_locations[0]
 
     hierarchy_level = (
@@ -577,16 +501,31 @@ def _build_live_offer_payload(
     payload.update(
         {
             "function_id": function["uuid"],
-            "sub_function_id": sub_function["uuid"],
-            "job_title_id": job_title["uuid"],
-            "legal_entity_id": legal_entity["uuid"],
-            "work_location_id": work_location["uuid"],
+
+            "sub_function_id": (
+                sub_function["uuid"]
+            ),
+
+            "job_title_id": (
+                job_title["uuid"]
+            ),
+
+            "legal_entity_id": (
+                legal_entity["uuid"]
+            ),
+
+            "work_location_id": (
+                work_location["uuid"]
+            ),
+
             "reporting_manager_uuid": (
                 reporting_manager["uuid"]
             ),
+
             "hierarchy_level_uuid": (
                 hierarchy_level["uuid"]
             ),
+
             "salary_structure_uuid": (
                 salary_structure["uuid"]
             ),
@@ -604,15 +543,18 @@ def _parse_invite_link(
     invite_link: str,
 ):
     """
-    Extract (offer_uuid, token) from invite link.
+    Extract (offer_uuid, token) from invite_link.
     """
 
     if not invite_link:
+
         raise AssertionError(
             "invite_link is empty or missing."
         )
 
-    parsed = urlparse(invite_link)
+    parsed = urlparse(
+        invite_link
+    )
 
     path_parts = [
         part
@@ -621,8 +563,9 @@ def _parse_invite_link(
     ]
 
     if not path_parts:
+
         raise AssertionError(
-            "Could not parse offer_uuid from invite link: "
+            "Could not parse offer_uuid from invite_link: "
             f"{invite_link!r}"
         )
 
@@ -638,8 +581,9 @@ def _parse_invite_link(
     )
 
     if not token_values or not token_values[0]:
+
         raise AssertionError(
-            "Could not parse token from invite link: "
+            "Could not parse token from invite_link: "
             f"{invite_link!r}"
         )
 
@@ -664,8 +608,10 @@ def test_offer_creation_prerequisite(
         authenticated_offer_client
     )
 
-    offer_payload = _build_live_offer_payload(
-        master
+    offer_payload = (
+        _build_live_offer_payload(
+            master
+        )
     )
 
     print(
@@ -691,49 +637,6 @@ def test_offer_creation_prerequisite(
 
 
 # ============================================================================
-# FRESH CONTEXT DIAGNOSTIC
-# ============================================================================
-
-@pytest.mark.negative
-def test_fresh_onboarding_context_debug(
-    fresh_onboarding_context,
-):
-    """
-    Diagnostic test to verify fresh context creation.
-    """
-
-    offer_uuid = fresh_onboarding_context[
-        "offer_uuid"
-    ]
-
-    token = fresh_onboarding_context[
-        "token"
-    ]
-
-    payload = fresh_onboarding_context[
-        "payload"
-    ]
-
-    print(
-        "\n"
-        "========================================\n"
-        "FRESH CONTEXT DEBUG\n"
-        "========================================\n"
-        f"Offer UUID: {offer_uuid}\n"
-        f"Token Available: {bool(token)}\n"
-        f"Document Count: "
-        f"{len(payload.get('documents', {}))}\n"
-    )
-
-    assert offer_uuid
-    assert token
-
-    assert len(
-        payload.get("documents", {})
-    ) == len(REQUIRED_DOCUMENT_TYPES)
-
-
-# ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
 
@@ -743,7 +646,8 @@ def _build_payload(
     baseline_payload: dict,
 ) -> dict:
     """
-    Create deep copy and inject malicious value.
+    Create a deep copy of the validated baseline payload and inject
+    a malicious value into the specified field.
     """
 
     payload = copy.deepcopy(
@@ -755,6 +659,7 @@ def _build_payload(
     )
 
     if setter is None:
+
         raise AssertionError(
             f"No injectable field setter registered for: "
             f"{field_name}"
@@ -776,7 +681,7 @@ def _log_evidence(
     elapsed=None,
 ):
     """
-    Wrapper around centralized SQLi reporter.
+    Wrapper around centralized SQLi evidence reporter.
     """
 
     return log_sqli_evidence(
@@ -794,7 +699,7 @@ def _assert_safe_response(
     field_name: str,
 ):
     """
-    Wrapper around centralized SQLi assertions.
+    Wrapper around centralized SQLi assertion utility.
     """
 
     return assert_sqli_safe(
@@ -808,7 +713,7 @@ def _response_signature(
     response,
 ) -> dict:
     """
-    Build response signature.
+    Build a response signature for boolean blind comparison.
     """
 
     return build_response_signature(
@@ -819,6 +724,9 @@ def _response_signature(
 def _extract_error_message(
     response,
 ) -> str:
+    """
+    Extract readable error message.
+    """
 
     response_text = getattr(
         response,
@@ -827,17 +735,20 @@ def _extract_error_message(
     ) or ""
 
     try:
+
         response_json = response.json()
 
         if isinstance(
             response_json,
             dict,
         ):
+
             message = response_json.get(
                 "message"
             )
 
             if message:
+
                 return str(message)
 
             errors = response_json.get(
@@ -845,6 +756,7 @@ def _extract_error_message(
             )
 
             if errors:
+
                 return str(errors)
 
     except (
@@ -852,6 +764,7 @@ def _extract_error_message(
         TypeError,
         AttributeError,
     ):
+
         pass
 
     return response_text[:2000]
@@ -861,7 +774,7 @@ def _assert_baseline_payload_is_valid(
     response,
 ):
     """
-    Verify clean baseline does not cause server error.
+    Verify clean onboarding payload does not cause server failure.
     """
 
     status = getattr(
@@ -876,8 +789,10 @@ def _assert_baseline_payload_is_valid(
         "",
     ) or ""
 
-    error_message = _extract_error_message(
-        response
+    error_message = (
+        _extract_error_message(
+            response
+        )
     )
 
     print(
@@ -887,8 +802,8 @@ def _assert_baseline_payload_is_valid(
     )
 
     assert status is not None, (
-        "Baseline onboarding prerequisite did not "
-        "receive an HTTP response."
+        "Baseline onboarding prerequisite did not receive "
+        "an HTTP response."
     )
 
     assert status < 500, (
@@ -901,14 +816,25 @@ def _assert_baseline_payload_is_valid(
         f"HTTP Status : {status}\n"
         f"API Message : {error_message}\n\n"
         "SQL injection testing has NOT started yet.\n"
+        "The malicious payload is not responsible for "
+        "this failure.\n"
         "========================================"
     )
 
-    assert "missing required document" not in (
+    missing_document_message = (
+        "missing required document"
+    )
+
+    assert missing_document_message not in (
         response_text.lower()
     ), (
+        "\n"
+        "========================================\n"
         "DOCUMENT PREREQUISITE FAILURE\n"
-        f"Response: {response_text}"
+        "========================================\n"
+        "The onboarding API still reports missing documents "
+        "even though upload requests completed.\n\n"
+        f"Response: {response_text}\n"
     )
 
 
@@ -927,43 +853,18 @@ def _assert_baseline_payload_is_valid(
 )
 def test_sql_injection_classic_payloads(
     module_onboarding_client,
-    fresh_onboarding_context,
+    accepted_offer_context,
+    validated_onboarding_payload,
     field_name,
     payload,
 ):
-    """
-    Test classic SQL injection payloads.
 
-    Every parametrized test gets a completely fresh onboarding
-    request and submits exactly once.
-    """
-
-    offer_uuid = fresh_onboarding_context[
-        "offer_uuid"
-    ]
-
-    token = fresh_onboarding_context[
-        "token"
-    ]
-
-    baseline_payload = fresh_onboarding_context[
-        "payload"
-    ]
-
-    print(
-        "\n"
-        "========================================\n"
-        "SQLI CLASSIC PAYLOAD TEST\n"
-        "========================================\n"
-        f"Offer UUID : {offer_uuid}\n"
-        f"Field      : {field_name}\n"
-        f"Payload    : {payload!r}\n"
-    )
+    offer_uuid, token = accepted_offer_context
 
     onboarding_payload = _build_payload(
         field_name,
         payload,
-        baseline_payload,
+        validated_onboarding_payload,
     )
 
     response = (
@@ -979,13 +880,6 @@ def test_sql_injection_classic_payloads(
         field_name,
         payload,
         response,
-    )
-
-    print(
-        "\n"
-        "[SQLI RESPONSE]\n"
-        f"Status   : {response.status_code}\n"
-        f"Response : {response.text[:2000]}\n"
     )
 
     _assert_safe_response(
@@ -1154,7 +1048,9 @@ def test_sql_injection_time_based_blind(
         )
     )
 
-    elapsed = time.monotonic() - start
+    elapsed = (
+        time.monotonic() - start
+    )
 
     _log_evidence(
         "time_based_blind",
@@ -1256,12 +1152,16 @@ def test_sql_injection_boolean_blind_possibility(
         field_name,
     )
 
-    true_signature = _response_signature(
-        true_response
+    true_signature = (
+        _response_signature(
+            true_response
+        )
     )
 
-    false_signature = _response_signature(
-        false_response
+    false_signature = (
+        _response_signature(
+            false_response
+        )
     )
 
     sql_error_diff = (
@@ -1378,8 +1278,11 @@ def test_sql_injection_login_bypass_attempt(
     response_json = {}
 
     try:
+
         response_json = response.json()
+
     except ValueError:
+
         pass
 
     response_data = (
@@ -1404,9 +1307,11 @@ def test_sql_injection_login_bypass_attempt(
             for key, value in data.items():
 
                 if (
-                    key.lower() in possible_token_keys
+                    key.lower()
+                    in possible_token_keys
                     and value
                 ):
+
                     returned_tokens.append(
                         key
                     )
@@ -1415,12 +1320,18 @@ def test_sql_injection_login_bypass_attempt(
                     value,
                     (dict, list),
                 ):
-                    _find_tokens(value)
+
+                    _find_tokens(
+                        value
+                    )
 
         elif isinstance(data, list):
 
             for item in data:
-                _find_tokens(item)
+
+                _find_tokens(
+                    item
+                )
 
     _find_tokens(
         response_data

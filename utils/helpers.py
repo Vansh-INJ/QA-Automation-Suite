@@ -1,6 +1,9 @@
-﻿from openpyxl import Workbook, load_workbook
+﻿from openpyxl.styles import Alignment , Font
+from openpyxl import Workbook, load_workbook
 from datetime import datetime
 import os
+import json
+import time
 
 from utils.run_manager import (
     get_run_folder
@@ -28,98 +31,8 @@ FIELD_LOG_FILE = os.path.join(
     "onboarding_data_log.xlsx"
 )
 
-# ==========================================================
-# UNIFIED EXECUTION REPORT
-# One sheet, one row per test, covering both the test-level
-# result (candidate/action/status) AND the API-level detail
-# a dev needs to debug (method, endpoint, headers, payload,
-# response, duration, SLA).
-# ==========================================================
-import json
-import time
+SQLI_SHEET_NAME = "SQL Injection Report"
 
-
-
-import json
-import time
-import os
-
-# def log_api_execution(
-#         test_name,
-#         method,
-#         endpoint,
-#         payload,
-#         response,
-#         start_time,
-#         expected_status=200,
-#         environment="",
-#         username=""
-# ):
-
-#     duration = round(
-#         (time.time() - start_time) * 1000,
-#         2
-#     )
-
-#     try:
-#         body = response.json()
-#     except Exception:
-#         body = {}
-
-#     write_result(
-#         test_name=test_name,
-#         status="PASS"
-#         if response.status_code == expected_status
-#         else "FAIL",
-
-#         run_id=os.path.basename(RUN_FOLDER),
-
-#         environment=environment,
-#         username=username,
-
-#         candidate_name=(
-#             f"{payload.get('first_name', '')} "
-#             f"{payload.get('last_name', '')}"
-#         ).strip(),
-
-#         candidate_email=payload.get("email"),
-
-#         action="Offer Creation",
-
-#         method=method,
-#         endpoint=endpoint,
-#         api_status=response.status_code,
-#         expected_status=expected_status,
-#         duration=duration,
-#         sla=1000,
-#         sla_status=(
-#             "PASS"
-#             if duration <= 1000
-#             else "FAIL"
-#         ),
-
-#         api_message=body.get(
-#             "message",
-#             body.get("status", "")
-#         ),
-
-#         request_headers=json.dumps({
-#             "Authorization": "***REDACTED***",
-#             "Content-Type": "application/json"
-#         }),
-
-#         request_payload=json.dumps(
-#             payload,
-#             indent=4
-#         ),
-
-#         response_body=json.dumps(
-#             body,
-#             indent=4
-#         ),
-
-#         error=""
-#     )
     
 def create_excel_report():
 
@@ -435,4 +348,157 @@ def write_field_log(
     wb.save(FIELD_LOG_FILE)
     print(
         f"[FIELD LOG UPDATED] {FIELD_LOG_FILE}"
+    )
+
+def create_sql_injection_report():
+    create_excel_report()
+
+    wb = load_workbook(REPORT_FILE)
+
+    if SQLI_SHEET_NAME in wb.sheetnames:
+        wb.close()
+        return
+
+    ws = wb.create_sheet(SQLI_SHEET_NAME)
+
+    headers = [
+        "Execution Time",
+        "Run ID",
+        "Environment",
+        "Username",
+        "Test Name",
+        "Field",
+        "Payload Type",
+        "Payload",
+        "Candidate Name",
+        "Candidate Email",
+        "Method",
+        "Endpoint",
+        "Expected Status",
+        "Actual Status",
+        "Result",
+        "Duration(ms)",
+        "SLA(ms)",
+        "SLA Status",
+        "API Message",
+        "Request Headers",
+        "Request Payload",
+        "Response Body",
+        "Screenshot",
+        "Error",
+    ]
+
+    ws.append(headers)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(
+            horizontal="center",
+            vertical="center",
+            wrap_text=True
+        )
+
+    ws.freeze_panes = "A2"
+
+    wb.save(REPORT_FILE)
+
+def _excel_safe(value):
+    """Convert complex Python objects into Excel-compatible values."""
+    if isinstance(value, (dict, list, tuple, set)):
+        try:
+            return json.dumps(value, ensure_ascii=False, default=str)
+        except Exception:
+            return str(value)
+    return value
+
+
+def write_sql_injection_result(
+    field,
+    payload,
+    payload_type=None,
+    execution_time=None,
+    run_id=None,
+    environment=None,
+    username=None,
+    test_name=None,
+    candidate_name=None,
+    candidate_email=None,
+    method=None,
+    endpoint=None,
+    expected_status=None,
+    actual_status=None,
+    result=None,
+    duration_ms=None,
+    sla_ms=None,
+    sla_status=None,
+    api_message=None,
+    request_headers=None,
+    request_payload=None,
+    response_body=None,
+    screenshot=None,
+    error=None,
+):
+    create_sql_injection_report()
+
+    wb = load_workbook(REPORT_FILE)
+
+    ws = wb[SQLI_SHEET_NAME]
+
+    # -----------------------------------------------------------------------
+    # EXCEL-SAFE VALUE CONVERSION
+    if isinstance(payload, (dict, list)):
+        try:
+            payload = json.dumps(payload, ensure_ascii=False)
+        except Exception:
+            payload = str(payload)
+
+        
+    payload = _excel_safe(payload)
+    request_headers = _excel_safe(request_headers)
+    request_payload = _excel_safe(request_payload)
+    response_body = _excel_safe(response_body)
+    api_message = _excel_safe(api_message)
+    error = _excel_safe(error)
+
+    row = [
+        execution_time or datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),
+        run_id,
+        environment,
+        username,
+        test_name,
+        field,
+        payload_type,
+        payload,
+        candidate_name,
+        candidate_email,
+        method,
+        endpoint,
+        expected_status,
+        actual_status,
+        result,
+        duration_ms,
+        sla_ms,
+        sla_status,
+        api_message,
+        request_headers,
+        request_payload,
+        response_body,
+        screenshot,
+        error,
+    ]
+
+    ws.append(row)
+
+    for cell in ws[ws.max_row]:
+        cell.alignment = Alignment(
+            vertical="top",
+            wrap_text=True
+        )
+
+    wb.save(REPORT_FILE)
+
+    print(
+        f"[SQLI REPORT UPDATED] {REPORT_FILE}"
     )
