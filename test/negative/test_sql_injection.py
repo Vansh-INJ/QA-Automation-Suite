@@ -1,6 +1,7 @@
 import os
 import copy
 import time
+import uuid as uuid_module
 
 from urllib.parse import parse_qs, urlparse
 
@@ -29,6 +30,9 @@ from api_framework.security.core.sqli_payloads import (
     TIME_BASED_SQLI_PAYLOADS,
     BOOLEAN_BLIND_PAIRS,
     TIME_BASED_THRESHOLD_SECONDS,
+    ERROR_BASED_SQLI_PAYLOADS,
+    ENCODING_OBFUSCATION_PAYLOADS,
+    LOGIN_BYPASS_CREDENTIALS,
 )
 
 from api_framework.security.core.sqli_fields import (
@@ -49,6 +53,8 @@ from api_framework.security.core.sqli_assertions import (
 
 from api_framework.security.core.sqli_engine import (
     find_sql_error_signatures,
+    find_sensitive_leaks,
+    find_version_string_leaks,
 )
 
 
@@ -83,10 +89,11 @@ REQUIRED_DOCUMENT_TYPES = [
 # FIXTURES
 # ============================================================================
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def module_offer_client():
     """
-    Module-scoped OfferClient used for creating real offers.
+    Function-scoped OfferClient used for creating real offers.
+    Fetches fresh headers per test to avoid token expiration.
     """
 
     from api_framework.auth.token_manager import TokenManager
@@ -97,10 +104,10 @@ def module_offer_client():
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def module_onboarding_client():
     """
-    Module-scoped OnboardingClient.
+    Function-scoped OnboardingClient.
     """
 
     return OnboardingClient(
@@ -510,11 +517,21 @@ def _build_live_offer_payload(
 ) -> dict:
     """
     Build offer payload using fresh active master-data IDs.
+
+    A UUID suffix is appended to the email to guarantee
+    uniqueness across every call, preventing 409 conflicts
+    when many tests run in the same session.
     """
 
     payload = copy.deepcopy(
         OfferPayloads.valid()
     )
+
+    # Force a globally-unique email to avoid 409 conflicts.
+    unique_suffix = uuid_module.uuid4().hex[:8]
+    base_email = payload.get("email", "sqli@injpartners.com")
+    local, _, domain = base_email.partition("@")
+    payload["email"] = f"{local}_{unique_suffix}@{domain}"
 
     function = master.get_function(
         "Pre Sales"
@@ -1010,18 +1027,23 @@ def test_sql_injection_classic_payloads(
 )
 def test_sql_injection_comment_style_payloads(
     module_onboarding_client,
-    accepted_offer_context,
-    validated_onboarding_payload,
+    fresh_onboarding_context,
     field_name,
     payload,
 ):
+    """
+    Test comment-style SQL injection payloads.
+    Uses a fresh onboarding context per test to avoid resubmission errors.
+    """
 
-    offer_uuid, token = accepted_offer_context
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
 
     onboarding_payload = _build_payload(
         field_name,
         payload,
-        validated_onboarding_payload,
+        baseline_payload,
     )
 
     response = (
@@ -1061,18 +1083,26 @@ def test_sql_injection_comment_style_payloads(
 )
 def test_sql_injection_union_based(
     module_onboarding_client,
-    accepted_offer_context,
-    validated_onboarding_payload,
+    fresh_onboarding_context,
     field_name,
     payload,
 ):
+    """
+    Test UNION-based SQL injection payloads.
 
-    offer_uuid, token = accepted_offer_context
+    Also performs a deep scan of the response for sensitive data
+    patterns and DB version strings that would indicate successful
+    data extraction.
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
 
     onboarding_payload = _build_payload(
         field_name,
         payload,
-        validated_onboarding_payload,
+        baseline_payload,
     )
 
     response = (
@@ -1102,22 +1132,23 @@ def test_sql_injection_union_based(
             "text",
             "",
         ) or ""
-    ).lower()
-
-    suspicious_keys = (
-        "password_hash",
-        "credit_card",
-        "social_security",
     )
 
-    for suspicious_key in suspicious_keys:
+    # Deep scan: sensitive field names
+    sensitive_hits = find_sensitive_leaks(body_text)
+    assert not sensitive_hits, (
+        f"Sensitive data pattern(s) detected in response after "
+        f"UNION-based payload {payload!r} on field '{field_name}': "
+        f"{sensitive_hits}"
+    )
 
-        assert suspicious_key not in body_text, (
-            f"Possible sensitive data leakage: "
-            f"'{suspicious_key}' found in response after "
-            f"UNION-based payload {payload!r} "
-            f"on field '{field_name}'."
-        )
+    # Deep scan: DB version strings
+    version_hits = find_version_string_leaks(body_text)
+    assert not version_hits, (
+        f"DB version string(s) leaked in response after "
+        f"UNION-based payload {payload!r} on field '{field_name}': "
+        f"{version_hits}"
+    )
 
 
 # ============================================================================
@@ -1126,22 +1157,35 @@ def test_sql_injection_union_based(
 
 @pytest.mark.negative
 @pytest.mark.parametrize(
+    "field_name",
+    list(INJECTABLE_FIELDS.keys()),
+)
+@pytest.mark.parametrize(
     "payload",
     TIME_BASED_SQLI_PAYLOADS,
 )
 def test_sql_injection_time_based_blind(
     module_onboarding_client,
-    accepted_offer_context,
-    validated_onboarding_payload,
+    fresh_onboarding_context,
+    field_name,
     payload,
 ):
+    """
+    Test time-based blind SQL injection payloads across ALL injectable fields.
 
-    offer_uuid, token = accepted_offer_context
+    If response time exceeds TIME_BASED_THRESHOLD_SECONDS, the payload
+    may have triggered a real delay in the backend database — possible
+    blind SQL injection vulnerability.
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
 
     onboarding_payload = _build_payload(
-        "bank.account_holder_name",
+        field_name,
         payload,
-        validated_onboarding_payload,
+        baseline_payload,
     )
 
     start = time.monotonic()
@@ -1158,7 +1202,7 @@ def test_sql_injection_time_based_blind(
 
     _log_evidence(
         "time_based_blind",
-        "bank.account_holder_name",
+        field_name,
         payload,
         response,
         elapsed,
@@ -1167,14 +1211,14 @@ def test_sql_injection_time_based_blind(
     assert elapsed < TIME_BASED_THRESHOLD_SECONDS, (
         f"Response took {elapsed:.2f}s "
         f"(threshold {TIME_BASED_THRESHOLD_SECONDS}s) "
-        f"for time-based payload {payload!r} — "
+        f"for time-based payload {payload!r} on field '{field_name}' — "
         "possible blind SQL injection vulnerability."
     )
 
     _assert_safe_response(
         response,
         payload,
-        "bank.account_holder_name",
+        field_name,
     )
 
 
@@ -1193,25 +1237,33 @@ def test_sql_injection_time_based_blind(
 )
 def test_sql_injection_boolean_blind_possibility(
     module_onboarding_client,
-    accepted_offer_context,
-    validated_onboarding_payload,
+    fresh_onboarding_context,
     field_name,
     true_payload,
     false_payload,
 ):
+    """
+    Test boolean-based blind SQL injection by comparing TRUE vs FALSE responses.
 
-    offer_uuid, token = accepted_offer_context
+    Checks for:
+        - SQL error differences between TRUE and FALSE responses
+        - Differing response lengths that may indicate data-dependent output
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
 
     true_payload_body = _build_payload(
         field_name,
         true_payload,
-        validated_onboarding_payload,
+        baseline_payload,
     )
 
     false_payload_body = _build_payload(
         field_name,
         false_payload,
-        validated_onboarding_payload,
+        baseline_payload,
     )
 
     true_response = (
@@ -1298,22 +1350,16 @@ def test_sql_injection_boolean_blind_possibility(
 @pytest.mark.negative
 @pytest.mark.parametrize(
     "credentials",
-    [
-        {
-            "username": "admin' --",
-            "password": "anything",
-        },
-        {
-            "username": "admin' OR '1'='1",
-            "password": "' OR '1'='1",
-        },
-    ],
+    LOGIN_BYPASS_CREDENTIALS,
 )
 def test_sql_injection_login_bypass_attempt(
     credentials,
 ):
     """
     Test SQL injection authentication bypass attempts.
+
+    Covers comment truncation, tautology, HAVING, stacked queries,
+    double-quote variants, and null byte bypasses.
     """
 
     auth_client = AuthClient(
@@ -1432,3 +1478,236 @@ def test_sql_injection_login_bypass_attempt(
         f"Credentials={credentials!r}, "
         f"token_fields={returned_tokens}"
     )
+
+
+# ============================================================================
+# ERROR BASED SQL INJECTION TESTS
+# ============================================================================
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "field_name",
+    list(INJECTABLE_FIELDS.keys()),
+)
+@pytest.mark.parametrize(
+    "payload",
+    ERROR_BASED_SQLI_PAYLOADS,
+)
+def test_sql_injection_error_based(
+    module_onboarding_client,
+    fresh_onboarding_context,
+    field_name,
+    payload,
+):
+    """
+    Test error-based SQL injection payloads.
+
+    These payloads attempt to force the database to return version
+    information or table names inside error messages.
+
+    Checks:
+        - No SQL error signatures in the response
+        - No DB version strings in the response
+        - No sensitive schema names in the response
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
+
+    onboarding_payload = _build_payload(
+        field_name,
+        payload,
+        baseline_payload,
+    )
+
+    response = (
+        module_onboarding_client.submit_onboarding(
+            offer_uuid,
+            token,
+            onboarding_payload,
+        )
+    )
+
+    _log_evidence(
+        "error_based",
+        field_name,
+        payload,
+        response,
+    )
+
+    _assert_safe_response(
+        response,
+        payload,
+        field_name,
+    )
+
+    body_text = getattr(response, "text", "") or ""
+
+    version_hits = find_version_string_leaks(body_text)
+    assert not version_hits, (
+        f"DB version string leaked via error-based payload "
+        f"{payload!r} on field '{field_name}': {version_hits}"
+    )
+
+    sensitive_hits = find_sensitive_leaks(body_text)
+    assert not sensitive_hits, (
+        f"Sensitive data pattern detected via error-based payload "
+        f"{payload!r} on field '{field_name}': {sensitive_hits}"
+    )
+
+
+# ============================================================================
+# ENCODING / OBFUSCATION SQL INJECTION TESTS
+# ============================================================================
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "field_name",
+    list(INJECTABLE_FIELDS.keys()),
+)
+@pytest.mark.parametrize(
+    "payload",
+    ENCODING_OBFUSCATION_PAYLOADS,
+)
+def test_sql_injection_encoding_obfuscation(
+    module_onboarding_client,
+    fresh_onboarding_context,
+    field_name,
+    payload,
+):
+    """
+    Test encoding and obfuscation SQL injection bypass techniques.
+
+    These payloads check whether WAF rules or input sanitization
+    can be bypassed by encoding the injection characters in
+    URL-encoded, HTML-entity, Unicode, or CHAR() form.
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
+
+    onboarding_payload = _build_payload(
+        field_name,
+        payload,
+        baseline_payload,
+    )
+
+    response = (
+        module_onboarding_client.submit_onboarding(
+            offer_uuid,
+            token,
+            onboarding_payload,
+        )
+    )
+
+    _log_evidence(
+        "encoding_obfuscation",
+        field_name,
+        payload,
+        response,
+    )
+
+    _assert_safe_response(
+        response,
+        payload,
+        field_name,
+    )
+
+    body_text = getattr(response, "text", "") or ""
+
+    version_hits = find_version_string_leaks(body_text)
+    assert not version_hits, (
+        f"DB version string leaked via obfuscated payload "
+        f"{payload!r} on field '{field_name}': {version_hits}"
+    )
+
+
+# ============================================================================
+# HEADER INJECTION TESTS
+# ============================================================================
+
+_INJECTABLE_HEADERS = {
+    "X-Forwarded-For": "127.0.0.1' OR '1'='1",
+    "User-Agent": "Mozilla' OR '1'='1",
+    "Referer": "https://example.com/' OR 1=1--",
+    "X-Real-IP": "127.0.0.1' OR SLEEP(0)--",
+}
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "header_name,sqli_value",
+    list(_INJECTABLE_HEADERS.items()),
+)
+def test_sql_injection_via_http_headers(
+    module_onboarding_client,
+    fresh_onboarding_context,
+    header_name,
+    sqli_value,
+):
+    """
+    Test SQL injection via HTTP request headers.
+
+    Some backends log or store request headers (IP, User-Agent, Referer)
+    and pass them unsanitized to database queries. This test injects
+    SQL payloads in common headers and checks the response for:
+        - SQL error signatures
+        - DB version string leaks
+        - Unexpected 500 server errors
+    """
+
+    offer_uuid = fresh_onboarding_context["offer_uuid"]
+    token = fresh_onboarding_context["token"]
+    baseline_payload = fresh_onboarding_context["payload"]
+
+    # Clone the client's existing headers and inject the SQLi header.
+    injection_headers = {
+        header_name: sqli_value,
+    }
+
+    print(
+        "\n"
+        "========================================\n"
+        "SQLI HEADER INJECTION TEST\n"
+        "========================================\n"
+        f"Header : {header_name}\n"
+        f"Value  : {sqli_value!r}\n"
+    )
+
+    response = module_onboarding_client.submit_onboarding(
+        offer_uuid,
+        token,
+        copy.deepcopy(baseline_payload),
+        extra_headers=injection_headers,
+    )
+
+    status = getattr(response, "status_code", None)
+    body_text = getattr(response, "text", "") or ""
+
+    sql_errors = find_sql_error_signatures(body_text)
+    version_hits = find_version_string_leaks(body_text)
+
+    print(
+        f"[HEADER SQLI] header={header_name!r} "
+        f"status={status} "
+        f"sql_errors={sql_errors or 'none'} "
+        f"version_leaks={version_hits or 'none'}"
+    )
+
+    assert not sql_errors, (
+        f"SQL error signature leaked via header '{header_name}' "
+        f"with value {sqli_value!r}: {sql_errors}"
+    )
+
+    assert not version_hits, (
+        f"DB version string leaked via header '{header_name}' "
+        f"with value {sqli_value!r}: {version_hits}"
+    )
+
+    assert status != 500, (
+        f"Server error (500) triggered by SQL payload in header "
+        f"'{header_name}' with value {sqli_value!r}. "
+        "The backend may be passing this header unsanitized to a query."
+    )

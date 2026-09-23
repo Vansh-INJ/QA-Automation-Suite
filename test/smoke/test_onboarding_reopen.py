@@ -30,7 +30,7 @@ def test_employee_onboarding_reopen(page):
 
     login.open()
 
-    login.login.login()
+    login.login()
 
 
     # =====================================

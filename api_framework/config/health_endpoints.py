@@ -68,24 +68,24 @@ def notifications_params():
 # since the underlying account is identical to "employee" today and
 # would give a false sense of role-based coverage.
 # ---------------------------------------------------------------------------
-AUTH_PROFILES = {
-    "employee": {
-        "username_env": "HEALTH_USER_USERNAME",
-        "password_env": "HEALTH_USER_PASSWORD",
-    },
-    "hr": {
-        "username_env": "HEALTH_HR_USERNAME",
-        "password_env": "HEALTH_HR_PASSWORD",
-    },
-    "admin": {
-        "username_env": "HEALTH_ADMIN_USERNAME",
-        "password_env": "HEALTH_ADMIN_PASSWORD",
-    },
-    "finance": {
-        "username_env": "HEALTH_FINANCE_USERNAME",
-        "password_env": "HEALTH_FINANCE_PASSWORD",
-    },
-}
+# AUTH_PROFILES = {
+#     "employee": {
+#         "username_env": "HEALTH_USER_USERNAME",
+#         "password_env": "HEALTH_USER_PASSWORD",
+#     },
+#     "hr": {
+#         "username_env": "HEALTH_HR_USERNAME",
+#         "password_env": "HEALTH_HR_PASSWORD",
+#     },
+#     "admin": {
+#         "username_env": "HEALTH_ADMIN_USERNAME",
+#         "password_env": "HEALTH_ADMIN_PASSWORD",
+#     },
+#     "finance": {
+#         "username_env": "HEALTH_FINANCE_USERNAME",
+#         "password_env": "HEALTH_FINANCE_PASSWORD",
+#     },
+# }
 
 DEFAULT_SLA_MS = 2000
 
@@ -2521,4 +2521,33 @@ ENDPOINTS = [
         "critical": False,
         "sla_ms": 1500,
     },
+
+    
 ]
+
+AUTH_PROFILES = {
+    "employee": {
+        "username_env": "HEALTH_USER_USERNAME",
+        "password_env": "HEALTH_USER_PASSWORD",
+    },
+    "hr": {
+        "username_env": "HEALTH_HR_USERNAME",
+        "password_env": "HEALTH_HR_PASSWORD",
+    },
+    "admin": {
+        "username_env": "HEALTH_ADMIN_USERNAME",
+        "password_env": "HEALTH_ADMIN_PASSWORD",
+    },
+    "finance": {
+        "username_env": "HEALTH_FINANCE_USERNAME",
+        "password_env": "HEALTH_FINANCE_PASSWORD",
+    },
+    "employee_a": {
+        "username_env": "HEALTH_EMPLOYEE_A_USERNAME",
+        "password_env": "HEALTH_EMPLOYEE_A_PASSWORD",
+    },
+    "employee_b": {
+        "username_env": "HEALTH_EMPLOYEE_B_USERNAME",
+        "password_env": "HEALTH_EMPLOYEE_B_PASSWORD",
+    },
+}

@@ -6,3 +6,5 @@ python-dotenv
 resend
 google-genai
 pydantic>=2
+pytest-sugar
+pytest-xdist

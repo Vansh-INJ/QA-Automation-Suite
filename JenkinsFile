@@ -1,0 +1,182 @@
+pipeline {
+
+    agent any
+
+    parameters {
+
+        choice(
+            name: 'TEST_SCOPE',
+            choices: [
+                'API_NEGATIVE',
+                'API_REGRESSION',
+                'API_SECURITY',
+                'API_HEALTH',
+                'ALL_API'
+            ],
+            description: 'Select the API test suite to execute'
+        )
+
+    }
+
+    environment {
+
+        PYTHONUNBUFFERED = '1'
+        REPORT_DIR = 'reports'
+
+    }
+
+    stages {
+
+        stage('Checkout') {
+
+            steps {
+
+                checkout scm
+
+            }
+
+        }
+
+
+        stage('Setup Python Environment') {
+
+            steps {
+
+                sh '''
+                    python3 --version
+
+                    python3 -m venv .venv
+
+                    . .venv/bin/activate
+
+                    python -m pip install --upgrade pip
+
+                    pip install -r requirements.txt
+                '''
+
+            }
+
+        }
+
+
+        stage('Prepare Reports') {
+
+            steps {
+
+                sh '''
+                    mkdir -p reports
+                '''
+
+            }
+
+        }
+
+
+        stage('Execute Tests') {
+
+            steps {
+
+                script {
+
+                    def command = ""
+
+                    switch(params.TEST_SCOPE) {
+
+                        case 'API_NEGATIVE':
+
+                            command = '''
+                                . .venv/bin/activate
+                                pytest test/api/negative \
+                                    --junitxml=reports/junit-negative.xml
+                            '''
+
+                            break
+
+
+                        case 'API_REGRESSION':
+
+                            command = '''
+                                . .venv/bin/activate
+                                pytest test/api/regression \
+                                    --junitxml=reports/junit-regression.xml
+                            '''
+
+                            break
+
+
+                        case 'API_SECURITY':
+
+                            command = '''
+                                . .venv/bin/activate
+                                pytest test/api/security \
+                                    --junitxml=reports/junit-security.xml
+                            '''
+
+                            break
+
+
+                        case 'API_HEALTH':
+
+                            command = '''
+                                . .venv/bin/activate
+                                pytest test/api/health -q \
+                                    --junitxml=reports/junit-health.xml
+                            '''
+
+                            break
+
+
+                        case 'ALL_API':
+
+                            command = '''
+                                . .venv/bin/activate
+                                pytest test/api \
+                                    --junitxml=reports/junit-api.xml
+                            '''
+
+                            break
+
+
+                        default:
+
+                            error("Unknown TEST_SCOPE: ${params.TEST_SCOPE}")
+
+                    }
+
+
+                    sh command
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    post {
+
+        always {
+
+            junit allowEmptyResults: true,
+                  testResults: 'reports/*.xml'
+
+
+            archiveArtifacts artifacts: '''
+                reports/**/*,
+                **/*.xlsx,
+                **/summary.json,
+                **/api_failures/**/*,
+                **/screenshots/**/*
+            ''',
+            allowEmptyArchive: true
+
+
+            cleanWs()
+
+        }
+
+    }
+
+}

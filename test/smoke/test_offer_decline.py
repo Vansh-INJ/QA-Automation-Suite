@@ -75,7 +75,7 @@ def test_offer_decline(page,):
 
     login.open()
 
-    login.login.login()
+    login.login()
 
     page.wait_for_load_state(
         "networkidle",

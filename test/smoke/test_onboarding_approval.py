@@ -17,7 +17,7 @@ def test_employee_onboarding_approval(page):
 
     login.open()
 
-    login.login.login()
+    login.login()
     
 
     onboarding.open()

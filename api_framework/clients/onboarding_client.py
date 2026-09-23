@@ -37,11 +37,13 @@ class OnboardingClient(BaseClient):
             self,
             offer_uuid,
             token,
-            payload
+            payload,
+            extra_headers=None,
     ):
         return self.post(
             f"/api/onboarding/{offer_uuid}/submit?token={token}",
-            payload
+            payload,
+            extra_headers=extra_headers,
         )
 
     def accept_offer(

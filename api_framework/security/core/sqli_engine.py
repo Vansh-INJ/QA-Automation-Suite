@@ -39,18 +39,23 @@ SQL_ERROR_SIGNATURES = [
     "sql syntax",
     "syntax error at or near",
     "syntax error",
+    "unterminated quoted string",
+    "quoted string not properly terminated",
 
     # MySQL
     "mysql_fetch",
     "mysql error",
     "you have an error in your sql syntax",
     "warning: mysql",
+    "column count doesn't match value count",
+    "unknown column",
 
     # PostgreSQL
     "postgresql",
     "psycopg",
     "psycopg2",
     "pg::syntaxerror",
+    "pgerror",
 
     # SQLite
     "sqlite",
@@ -61,20 +66,41 @@ SQL_ERROR_SIGNATURES = [
     "microsoft sql server",
     "odbc sql server driver",
     "sqlserverexception",
+    "invalid object name",
+    "conversion failed when converting",
+    "incorrect syntax near",
 
     # Oracle
     "ora-",
     "ora-01756",
     "oracle error",
+    "pl/sql",
 
     # Java / JDBC
     "jdbc",
     "sqlexception",
+    "java.sql",
 
     # ORM / Database frameworks
     "sqlalchemy",
     "database error",
     "database exception",
+    "hibernate",
+    "nhibernate",
+    "entity framework",
+    "sequelize",
+    "typeorm",
+    "knex",
+    "activerecord",
+    "django.db",
+    "peewee",
+
+    # Stack trace indicators
+    "at org.springframework",
+    "at com.mysql",
+    "at java.sql",
+    "traceback (most recent call last)",
+    "stacktrace",
 
 ]
 
@@ -104,6 +130,84 @@ def find_sql_error_signatures(
         signature
         for signature in SQL_ERROR_SIGNATURES
         if signature in text
+    ]
+
+
+# ============================================================================
+# DB VERSION STRING PATTERNS (for error-based injection detection)
+# ============================================================================
+
+VERSION_STRING_PATTERNS = [
+    # MySQL versions like 5.7.x, 8.0.x
+    "5.7.", "8.0.", "8.1.", "8.2.",
+    # PostgreSQL versions like 14.x, 15.x, 16.x
+    "postgresql 14", "postgresql 15", "postgresql 16",
+    # MSSQL
+    "microsoft sql server 20",
+    # MariaDB
+    "mariadb",
+    # SQLite version
+    "sqlite version",
+]
+
+
+def find_version_string_leaks(
+    response_text: str,
+) -> list[str]:
+    """
+    Detect if a DB version string is reflected in the response,
+    which would indicate successful error-based extraction.
+    """
+
+    text = (response_text or "").lower()
+
+    return [
+        pattern
+        for pattern in VERSION_STRING_PATTERNS
+        if pattern in text
+    ]
+
+
+# ============================================================================
+# SENSITIVE DATA PATTERNS (for UNION / deep leakage scan)
+# ============================================================================
+
+SENSITIVE_RESPONSE_PATTERNS = [
+    "password",
+    "passwd",
+    "password_hash",
+    "pwd_hash",
+    "secret",
+    "api_key",
+    "private_key",
+    "access_token",
+    "refresh_token",
+    "credit_card",
+    "cvv",
+    "social_security",
+    "ssn",
+    "information_schema",
+    "mysql.user",
+    "pg_shadow",
+    "sys.tables",
+    "sysobjects",
+]
+
+
+def find_sensitive_leaks(
+    response_text: str,
+) -> list[str]:
+    """
+    Return any sensitive data patterns found in the API response.
+    Useful after UNION or error-based payloads.
+    """
+
+    text = (response_text or "").lower()
+
+    return [
+        pattern
+        for pattern in SENSITIVE_RESPONSE_PATTERNS
+        if pattern in text
     ]
 
 

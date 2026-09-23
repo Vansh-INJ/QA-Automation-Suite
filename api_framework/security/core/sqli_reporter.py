@@ -16,6 +16,54 @@ from api_framework.security.core.sqli_analyzer import (
     analyze_sql_errors,
 )
 
+from api_framework.security.core.sqli_engine import (
+    find_version_string_leaks,
+)
+
+
+# ============================================================================
+# SEVERITY RATING
+# ============================================================================
+
+def _compute_severity(
+    result: str,
+    status_code,
+    leaked: list,
+    version_leaks: list,
+) -> str:
+    """
+    Map result + evidence to a severity level for the report.
+
+    CRITICAL : SQL/DB error or version string leaked
+    HIGH     : Server error (500) with malicious input, or 2xx accepted
+    MEDIUM   : Unexpected status code / inconclusive
+    LOW      : Safely rejected (4xx) without any leakage
+    INFO     : Informational — zero-delay or safe probe passed
+    """
+
+    if leaked or version_leaks:
+        return "CRITICAL"
+
+    if result == "FAIL":
+        if status_code and 200 <= status_code < 300:
+            return "HIGH"
+        if status_code and status_code >= 500:
+            return "HIGH"
+        return "MEDIUM"
+
+    if result == "BLOCKED":
+        return "MEDIUM"
+
+    # PASS
+    if status_code in (400, 401, 403, 404, 409, 422):
+        return "LOW"
+
+    return "INFO"
+
+
+# ============================================================================
+# EVIDENCE LOGGER
+# ============================================================================
 
 def log_sqli_evidence(
     category: str,
@@ -60,6 +108,10 @@ def log_sqli_evidence(
         response
     )
 
+    version_leaks = find_version_string_leaks(
+        response_text
+    )
+
     result, message = classify_sqli_result(
         status=status,
         leaked=leaked,
@@ -68,11 +120,20 @@ def log_sqli_evidence(
         response_text=response_text,
     )
 
+    severity = _compute_severity(
+        result=result,
+        status_code=status,
+        leaked=leaked,
+        version_leaks=version_leaks,
+    )
+
     elapsed_display = (
         f"{elapsed:.3f}s"
         if elapsed is not None
         else "n/a"
     )
+
+    all_leaks = leaked + version_leaks
 
     print(
         f"[SECURITY EVIDENCE] {category} | "
@@ -82,8 +143,9 @@ def log_sqli_evidence(
         f"resp_len={len(response_text)} | "
         f"elapsed={elapsed_display} | "
         f"sql_error_leak="
-        f"{leaked if leaked else 'none'} | "
+        f"{all_leaks if all_leaks else 'none'} | "
         f"result={result} | "
+        f"severity={severity} | "
         f"verdict={message}"
     )
 
@@ -99,7 +161,9 @@ def log_sqli_evidence(
             else None
         ),
         result=result,
-        api_message=message,
+        api_message=(
+            f"[{severity}] {message}"
+        ),
     )
 
-    return result, message
+    return result, message

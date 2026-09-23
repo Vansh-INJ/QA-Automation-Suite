@@ -1,0 +1,19 @@
+{
+  "total": 24,
+  "pass": 17,
+  "fail": 7,
+  "blocked": 0,
+  "error": 0,
+  "high_confidence_vulnerabilities": 7,
+  "by_vulnerability_type": {
+    "HORIZONTAL_ACCESS": {
+      "total": 9,
+      "failed": 2
+    },
+    "VERTICAL_ACCESS": {
+      "total": 15,
+      "failed": 5
+    }
+  },
+  "owasp_category": "A01:2021-Broken Access Control"
+}

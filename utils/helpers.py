@@ -132,14 +132,14 @@ def write_result(
         str(duration),
         str(sla),
         str(sla_status),
-        api_message,
-        str(request_headers),
-        str(request_payload),
-        str(response_body),
+        _excel_safe(api_message),
+        _excel_safe(str(request_headers)),
+        _excel_safe(str(request_payload)),
+        _excel_safe(str(response_body)),
 
-        error,
+        _excel_safe(error),
         screenshot,
-    ])
+    ])    
 
     wb.save(REPORT_FILE)
 
@@ -402,13 +402,22 @@ def create_sql_injection_report():
 
     wb.save(REPORT_FILE)
 
+import re
+
+_ILLEGAL_CHARACTERS_RE = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')
+
 def _excel_safe(value):
-    """Convert complex Python objects into Excel-compatible values."""
+    """Convert complex Python objects into Excel-compatible values,
+    and strip control characters openpyxl rejects."""
     if isinstance(value, (dict, list, tuple, set)):
         try:
-            return json.dumps(value, ensure_ascii=False, default=str)
+            value = json.dumps(value, ensure_ascii=False, default=str)
         except Exception:
-            return str(value)
+            value = str(value)
+
+    if isinstance(value, str):
+        value = _ILLEGAL_CHARACTERS_RE.sub('', value)
+
     return value
 
 

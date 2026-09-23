@@ -110,20 +110,27 @@ class BaseClient:
             self,
             endpoint,
             payload=None,
+            extra_headers=None,
             **kwargs
     ):
         start = time.time()
 
+        # Merge extra_headers without mutating self.headers.
+        request_headers = {
+            **self.headers,
+            **(extra_headers or {}),
+        }
+
         if kwargs:
             response = requests.post(
                 f"{self.base_url}{endpoint}",
-                headers=self.headers,
+                headers=request_headers,
                 **kwargs
             )
         else:
             response = requests.post(
                 f"{self.base_url}{endpoint}",
-                headers=self.headers,
+                headers=request_headers,
                 json=payload
             )
 
